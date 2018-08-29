@@ -82,4 +82,6 @@ if false
     spatial_preprocess(dir,subs,fmapFiles);
 end
 
-fmri_plotMovements(dir,subs)
+%% save movement data on a .pdf
+% fmri_plotMovements(dir,subs)
+

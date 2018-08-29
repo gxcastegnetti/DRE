@@ -2,8 +2,9 @@ function dre_contrasts(dir,anName,subs)
 %% function fieldmap_preprocess(dirSub,sub,runType)
 % ~~~
 % INPUTS:
-%   subs: subjects
-%   spmMat_name: name of the SPM.mat
+%   dir: struct with directories
+%   anName: analysis name
+%   subs: vector of subject numbers
 % ~~~
 % GX Castegnetti --- start ~ 11.07.18 --- last ~ 18.08.18
 
@@ -48,7 +49,6 @@ for s = 1:length(subs)
     job{1}.spm.stats.con.consess{7}.tcon.sessrep = 'none';
     
     %% choice - imagination
-    
     job{1}.spm.stats.con.consess{8}.tcon.name = 'cho-ima';
     job{1}.spm.stats.con.consess{8}.tcon.weights = [-1 0 0 0 1 0 0 movNull -1 0 0 0 1 0 0 movNull -1 0 0 0 1 0 0 movNull -1 0 0 0 1 0 0 movNull];
     job{1}.spm.stats.con.consess{8}.tcon.sessrep = 'none';

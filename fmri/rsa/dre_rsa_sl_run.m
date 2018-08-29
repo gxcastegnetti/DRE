@@ -6,13 +6,16 @@ clear
 close all
 restoredefaultpath
 
+%% analysisName
+analysisName = 'rsa_sl_grey_1';
+
 %% folders
-maskName = 'brain';
 fs      = filesep;
 dir.rsa = pwd;
 idcs    = strfind(dir.rsa,'/');
 dir.dre = dir.rsa(1:idcs(end-2)-1);
 dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'stats'];
+dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'grey'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
@@ -25,68 +28,79 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
 
-%% 1st level for RSA
-if false
-    
-    % extract behavioural data
-    bData = dre_extractData(dir,subs,taskOrd,0);
-        
-    % reference EPI
-    epiRef = [dir.data,fs,'SF039',fs,'fun',fs,'S4',fs,'wuafMQ04784-0008-00225-000225-01.nii,1'];
-    maskUnwarp = [dir.dre,fs,'codes',fs,'fmri',fs,'stats',fs,'masks',fs,maskName,'.nii,1'];
-    job{1}.spm.spatial.coreg.write.ref = {epiRef};
-    job{1}.spm.spatial.coreg.write.source = {maskUnwarp};
-    job{1}.spm.spatial.coreg.write.roptions.interp = 4;
-    job{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
-    job{1}.spm.spatial.coreg.write.roptions.mask = 0;
-    job{1}.spm.spatial.coreg.write.roptions.prefix = 'r';
-    d = spm_jobman('run',job);
-    dre_level1_rsa(dir,['r',maskName],subs,bData);
-end
-
-
-%% load fMRI data
+%% user options
 userOptions = DRE_RSA_userOptions(dir,subs);
-userOptions.analysisName = 'RSA_prova_rand';
+userOptions.analysisName = analysisName;
 userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
-% load data with different masks
-dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'for_RSA_pulse',fs,'r',maskName];
-userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-[~, fullBrainVols_full] = rsa.fmri.fMRIDataPreparation('SPM', userOptions);
+%% 1st level for RSA
+nameBeta = 'rsa_level1_out';
+if false
+    bData = dre_extractData(dir,subs,taskOrd,0);
+    dre_level1_rsa(dir,nameBeta,subs,bData);
+end
 
+%% load betas
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
+userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
+if ~exist([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'file')
+    [~, fullBrainVols] = rsa.fmri.fMRIDataPreparation('SPM', userOptions);
+    save([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'fullBrainVols','-v7.3')
+else
+    load([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'fullBrainVols')
+end
 
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
-
 userOptions.voxelSize = [3 3 3];
 userOptions.searchlightRadius = 9;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
 searchlightOptions.nConditions = 240;
-binaryMask = niftiread([dir.sta,fs,'masks',fs,'rbrain.nii']);
-binaryMask = logical(binaryMask);
 
+%% run searchlight
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
-    thisSubject = userOptions.subjectNam es{s};
-    model.name = 'value';
-    model.RDM = RDMs{s}.val;
-    model.color = [0 1 0];
-    [rs{s},ps{s},ns{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols_full.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<ASGLU>
-    
+    binaryMask = niftiread([dir.msk,fs,'grey_SF',num2str(subs(s),'%03d'),'.nii']);
+    binaryMask = logical(binaryMask);
+    thisSubject = userOptions.subjectNames{s};
+    model_val.name = 'value';
+    model_val.RDM = RDMs{s}.val;
+    model_val.color = [0 1 0];
+    model_con.name = 'confidence';
+    model_con.RDM = RDMs{s}.con;
+    model_con.color = [0 1 0];
+    model_fam.name = 'familiarity';
+    model_fam.RDM = RDMs{s}.fam;
+    model_fam.color = [0 1 0];
+    model_pri.name = 'price';
+    model_pri.RDM = RDMs{s}.pri;
+    model_pri.color = [0 1 0];
+    [rs_val{s},ps_val{s},ns_val{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_val, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_con{s},ps_con{s},ns_con{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_con, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_fam{s},ps_fam{s},ns_fam{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_fam, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_pri{s},ps_pri{s},ns_pri{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_pri, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
 end
 
 % save stuff
 for ss = 1:length(subs)
-    foo_rs = rs{ss};
-    foo_ps = ps{ss};
-    foo_ns = ns{ss};
-    save([dir.out,fs,'searchLight',fs,'rs_rand_SF',num2str(subs(ss),'%03d')],'foo_rs')
-    save([dir.out,fs,'searchLight',fs,'ps_rand_SF',num2str(subs(ss),'%03d')],'foo_ps')
-    save([dir.out,fs,'searchLight',fs,'ns_rand_SF',num2str(subs(ss),'%03d')],'foo_ns')
+    rs = rs_val{ss}; %#ok<*NASGU>
+    ps = ps_val{ss};
+    ns = ns_val{ss};
+    save([dir.out,fs,'searchLight',fs,analysisName,fs,'sl_val_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    rs = rs_con{ss}; %#ok<*NASGU>
+    ps = ps_con{ss};
+    ns = ns_con{ss};
+    save([dir.out,fs,'searchLight',fs,analysisName,fs,'sl_con_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    rs = rs_fam{ss}; %#ok<*NASGU>
+    ps = ps_fam{ss};
+    ns = ns_fam{ss};
+    save([dir.out,fs,'searchLight',fs,analysisName,fs,'sl_fam_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    rs = rs_pri{ss}; %#ok<*NASGU>
+    ps = ps_pri{ss};
+    ns = ns_pri{ss};
+    save([dir.out,fs,'searchLight',fs,analysisName,fs,'sl_pri_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
 end
-clear rs ps ns

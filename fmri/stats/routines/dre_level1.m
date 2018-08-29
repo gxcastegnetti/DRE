@@ -4,9 +4,10 @@ function spmMat_name = dre_level1(dir,analysisName,subs,bData)
 % INPUTS:
 %   dir: directories
 %   subj: subject number
-%   taskOrd: FBFB (1) or BFBF (2)
+%   analysisName: output folder
+%   bdData: behavioural data struct created in dre_extractData.m
 % ~~~
-% GX Castegnetti --- start ~ 14.06.18 --- last ~ 18.08.18
+% GX Castegnetti --- start ~ 14.07.18 --- last ~ 18.08.18
 
 fs = filesep;
 n_sess = 4;

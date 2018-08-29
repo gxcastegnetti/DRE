@@ -1,4 +1,4 @@
-function betas = getDataFromSPM(userOptions)
+function betas = getDataFromSPM(userOptions,s)
 %
 % getDataFromSPM is a function which will extract from the SPM metadata the
 % correspondence between the beta image filenames and the condition and session
@@ -43,13 +43,13 @@ import rsa.stat.*
 import rsa.util.*
 
 	%% Set defaults and check for problems.
-	if ~isfield(userOptions, 'betaPath'), error('getDataFromSPM:NoBetaPath', 'userOptions.betaPath is not set. See help.'); end%if
-	if ~isfield(userOptions, 'subjectNames'), error('getDataFromSPM:NoSubjectNames', 'userOptions.subjectNames is not set. See help.'); end%if
-	if ~isfield(userOptions, 'conditionLabels'), error('getDataFromSPM:NoConditionLabels', 'userOptions.conditionLabels is not set. See help.'); end%if
+	if ~isfield(userOptions, 'betaPath'), error('getDataFromSPM:NoBetaPath', 'userOptions.betaPath is not set. See help.'); end
+	if ~isfield(userOptions, 'subjectNames'), error('getDataFromSPM:NoSubjectNames', 'userOptions.subjectNames is not set. See help.'); end
+	if ~isfield(userOptions, 'conditionLabels'), error('getDataFromSPM:NoConditionLabels', 'userOptions.conditionLabels is not set. See help.'); end
 
-    firstSubject = userOptions.subjectNames{1};
+    Subject = userOptions.subjectNames{s};
 
-	readFile = replaceWildcards(fullfile(userOptions.betaPath, 'SPM.mat'), '[[subjectName]]', firstSubject, '[[betaIdentifier]]', '');
+	readFile = replaceWildcards(fullfile(userOptions.betaPath, 'SPM.mat'), '[[subjectName]]', Subject, '[[betaIdentifier]]', '');
 	load(readFile);
 	nBetas = max(size(SPM.Vbeta));
 
@@ -68,7 +68,7 @@ import rsa.util.*
 		[thisBetaName, thisSessionNumber, thisConditionName] = extractSingleBetaInfo(thisBetaDescrip);
         thisSessionNumber = 1; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GC 27/07/18
 
-
+        
 		% Check if it's one of the conditions
 		thisBetaIsACondition = false; % (What a delicious variable name!)
 		for condition = 1:nConditions
@@ -86,7 +86,7 @@ import rsa.util.*
 			highestSessionNumber = max(highestSessionNumber, thisSessionNumber);
 			
 			% Store the file name in the betas struct
-% 			betas(thisSessionNumber, conditionNumber).identifier = [thisBetaName '.img'];
+			% betas(thisSessionNumber, conditionNumber).identifier = [thisBetaName '.img'];
             betas(thisSessionNumber, conditionNumber).identifier = [thisBetaName '.nii']; %%%%%%%% GXC 14.08.18
 			
 		end%if

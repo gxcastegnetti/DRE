@@ -1,4 +1,4 @@
-%% dre_rsa
+%% dre_rsa_roi
 % ~~~
 % GX Castegnetti --- start ~ 17.07.18 --- last ~ 03.08.18
 
@@ -19,8 +19,11 @@ addpath([dir.dre,fs,'codes',fs,'fmri',fs,'stats',fs,'routines'])
 addpath(genpath([dir.root,fs,'rsatoolbox']))
 addpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12')
 
+%% load masks and map them back to subjective space
+roiNames = {'hpc','vmpfc','parietal_sup','parietal_inf'};
+
 %% subjects
-subss = [3:5 7:9 12:17 19:23 25:27 29:37 39];
+subss = [4:5 7:9 12:17 19:23 25:27 29:37 39];
 taskOrd = [ones(1,12),2*ones(1,14),1,1,2,1];
 
 %% load fMRI data

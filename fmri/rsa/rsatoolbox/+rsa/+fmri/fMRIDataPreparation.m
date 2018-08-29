@@ -48,7 +48,7 @@ function [varargout] = fMRIDataPreparation(betaCorrespondence, userOptions)
 %                userOptions.analysisName_fMRIDataPreparation_Details.mat
 %                        Contains the userOptions for this execution of the
 %                        function and a timestamp.
-%  
+%
 %  Cai Wingfield 11-2009 -- 1-2010, 6-2010
 %__________________________________________________________________________
 % Copyright (C) 2010 Medical Research Council
@@ -71,104 +71,63 @@ if ~isfield(userOptions, 'betaPath'), error('fMRIDataPreparation:NoBetaPath', 'b
 if ~isfield(userOptions, 'subjectNames'), error('fMRIDataPreparation:NoSubjectNames', 'subjectNames must be set. See help'); end%if
 if (~isfield(userOptions, 'conditionLabels') && ischar(betaCorrespondence) && strcmpi(betaCorrespondence, 'SPM')), error('fMRIDataPreparation:NoConditionLabels', 'conditionLables must be set if the data is being extracted from SPM.'); end%if
 
-% The filenames contain the analysisName as specified in the user options file
-ImageDataFilename = [userOptions.analysisName, '_ImageData.mat'];
-DetailsFilename = [userOptions.analysisName, '_fMRIDataPreparation_Details.mat'];
+%% Get Data
+nSubjects = numel(userOptions.subjectNames);
 
-promptOptions.functionCaller = 'fMRIDataPreparation';
-promptOptions.defaultResponse = 'S';
-promptOptions.checkFiles(1).address = fullfile(userOptions.rootPath, 'ImageData', ImageDataFilename);
-promptOptions.checkFiles(2).address = fullfile(userOptions.rootPath, 'Details', DetailsFilename);
+fprintf('Gathering scans.\n');
 
-overwriteFlag = overwritePrompt(userOptions, promptOptions);
+for subject = 1:nSubjects
+    
+    betas = spm.getDataFromSPM(userOptions,subject);
+    nConditions = size(betas, 2);
+    nSessions = size(betas, 1);
+    
+    % Figure out the subject's name
+    thisSubject = userOptions.subjectNames{subject};
+    
+    fprintf(['Reading beta volumes for subject number ' num2str(subject) ' of ' num2str(nSubjects) ': ' thisSubject]);
+    
+    for session = 1:nSessions
+        for condition = 1:nConditions
+            
+            readPath = replaceWildcards(userOptions.betaPath, '[[betaIdentifier]]', betas(session,condition).identifier, '[[subjectName]]', thisSubject);
+            if strcmp(betaCorrespondence,'SPM')
+                brainMatrix = spm_read_vols(spm_vol(readPath));
+            else
+                load(readPath);
+                brainMatrix = betaImage;
+            end
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GXC
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 14.08.18
+            brainVector = reshape(brainMatrix, 1, []);
+            brainVector_full = brainVector;
+            brainVector = brainVector(~isnan(brainVector));
+            
+            subjectMatrix(:, condition, session) = brainVector; % (voxel, condition, session)
+            subjectMatrix_full(:, condition, session) = brainVector_full;
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GXC
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 14.08.18
+            
+            clear brainMatrix brainVector brainVector_full;
+            
+            fprintf('.');
+            
+        end
+        
+    end
+    
+    % For each subject, record the vectorised brain scan in a subject-name-indexed structure
+    fullBrainVols.(thisSubject) = subjectMatrix; clear subjectMatrix;
+    fullBrainVols_full.(thisSubject) = subjectMatrix_full; clear subjectMatrix_full;
+    
+    fprintf('\b:\n');
+    
+end
 
-if overwriteFlag
-
-	%% Get Data
-
-    if ischar(betaCorrespondence) && strcmpi(betaCorrespondence, 'SPM')
-        betas = spm.getDataFromSPM(userOptions);
-    else
-        betas = betaCorrespondence;
-    end%if:SPM
-
-	nSubjects = numel(userOptions.subjectNames);
-	nConditions = size(betas, 2);
-	nSessions = size(betas, 1);
-
-	fprintf('Gathering scans.\n');
-
-	for subject = 1:nSubjects % For each subject
-
-		% Figure out the subject's name
-		thisSubject = userOptions.subjectNames{subject};
-
-		fprintf(['Reading beta volumes for subject number ' num2str(subject) ' of ' num2str(nSubjects) ': ' thisSubject]);
-
-		for session = 1:nSessions % For each session...
-			for condition = 1:nConditions % and each condition...
-
-				readPath = replaceWildcards(userOptions.betaPath, '[[betaIdentifier]]', betas(session,condition).identifier, '[[subjectName]]', thisSubject);
-                if strcmp(betaCorrespondence,'SPM')
-                    brainMatrix = spm_read_vols(spm_vol(readPath));
-                else
-                    load(readPath);
-                    brainMatrix = betaImage;
-                end
-                
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GXC
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 14.08.18
-				brainVector = reshape(brainMatrix, 1, []);
-                brainVector_full = brainVector;
-                brainVector = brainVector(~isnan(brainVector));
-                
-                subjectMatrix(:, condition, session) = brainVector; % (voxel, condition, session)
-                subjectMatrix_full(:, condition, session) = brainVector_full;
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GXC
-                %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 14.08.18
-                
-				clear brainMatrix brainVector brainVector_full;
-
-				fprintf('.');
-
-			end%for
-
-		end%for
-
-		% For each subject, record the vectorised brain scan in a subject-name-indexed structure
-        fullBrainVols.(thisSubject) = subjectMatrix; clear subjectMatrix;
-        fullBrainVols_full.(thisSubject) = subjectMatrix_full; clear subjectMatrix_full;
-
-		fprintf('\b:\n');
-
-	end%for
-
-	%% Save relevant info
-
-	timeStamp = datestr(now);
-
-% 	fprintf(['Saving image data to ' fullfile(userOptions.rootPath, 'ImageData', ImageDataFilename) '\n']);
-    disp(['Saving image data to ' fullfile(userOptions.rootPath, 'ImageData', ImageDataFilename)]);
-	gotoDir(userOptions.rootPath, 'ImageData');
-	save(ImageDataFilename, 'fullBrainVols', '-v7.3');
-
-% 	fprintf(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename) '\n']);
-    disp(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename)]);
-	gotoDir(userOptions.rootPath, 'Details');
-	save(DetailsFilename, 'timeStamp', 'userOptions');
-	
-else
-	disp(['Loading previously saved volumes from ' fullfile(userOptions.rootPath, 'ImageData', ImageDataFilename) '...']);
-	load(fullfile(userOptions.rootPath, 'ImageData', ImageDataFilename));
-end%if
-
-% if nargout == 1
 varargout{1} = fullBrainVols;
 varargout{2} = fullBrainVols_full;
-% elseif nargout > 0
-% 	error('0 or 1 arguments out, please.');
-% end%if:nargout
 
 cd(returnHere); % Go back (probably will never have left)
 
-end%function
+end%

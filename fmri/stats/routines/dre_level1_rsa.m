@@ -1,9 +1,9 @@
-function spmMat_name = dre_level1_rsa(dir,mask,subs,bData)
+function spmMat_name = dre_level1_rsa(dir,anName,subs,bData)
 %% function DRE_First(dirSub,sub,runType)
 % ~~~
 % INPUTS:
 %   dir: structure with directories
-%   mask: name of the mask
+%   anName: name of the analysis
 %   subs: subjects
 %   bData: behavioural data
 % ~~~
@@ -26,7 +26,7 @@ for s = 1:length(subs)
     
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
-    dirOut = [dir.out,fs,'for_RSA_pulse',fs,mask,fs,'SF',num2str(subs(s),'%03d')];
+    dirOut = [dir.out,fs,anName,fs,'SF',num2str(subs(s),'%03d')];
     mkdir(dirOut)
     job{1}.spm.stats.fmri_spec.dir = {dirOut};
     
@@ -47,16 +47,12 @@ for s = 1:length(subs)
         numObj = length(bData(subs(s)).imagination(r).(sessType).names);
         
         %% loop over trials in the session
-        for obj = 1:numObj
-            
-            %% imagination
+        for obj = 1:numObj           
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).name = [sessLabel,'-',bData(subs(s)).imagination(r).(sessType).names{obj}];
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).onset = bData(subs(s)).imagination(r).(sessType).onset(obj);
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).duration = 0;
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).tmod = 0;
-            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).orth = 0;
-            
-            
+            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).orth = 0;             
         end
         
         %% select movement regressors
@@ -76,7 +72,7 @@ for s = 1:length(subs)
     job{1}.spm.stats.fmri_spec.volt = 1;
     job{1}.spm.stats.fmri_spec.global = 'None';
     job{1}.spm.stats.fmri_spec.mthresh = 0.0;
-    job{1}.spm.stats.fmri_spec.mask = {[dir.dre,fs,'codes',fs,'fmri',fs,'stats',fs,'masks',fs,mask,'.nii,1']};
+    job{1}.spm.stats.fmri_spec.mask = {''};
     job{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     %% run job and save file names

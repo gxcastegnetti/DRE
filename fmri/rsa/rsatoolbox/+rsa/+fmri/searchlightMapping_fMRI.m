@@ -48,18 +48,8 @@ import rsa.util.*
 localOptions = setIfUnset(localOptions, 'averageSessions', true);
 
 %% Figure out whether to average over sessions or not
-if localOptions.averageSessions
-    for sessionNumber = 1:size(fullBrainVolumes,3)
-        thisSessionId = ['s' num2str(sessionNumber)];
-        t_patsPerSession.(thisSessionId) = fullBrainVolumes(:,:,sessionNumber)';
-    end%for:sessionNumber
-else
-    justThisSession = 1;
-    t_pats = fullBrainVolumes(:,:,justThisSession)';
-    
-    fprintf(['\nYou have selected not to average over sessions.\n         Only session number ' num2str(justThisSession) ' will be used.\n']);
-    
-end%if
+justThisSession = 1;
+t_pats = fullBrainVolumes(:,:,justThisSession)';
 
 %% Get parameters
 voxSize_mm = userOptions.voxelSize;
@@ -83,16 +73,9 @@ else
 end
 
 % Check to see if there's more data than mask...
-if localOptions.averageSessions
-    for sessionNumber = 1:numel(fieldnames(t_patsPerSession))
-        thisSessionId = ['s' num2str(sessionNumber)];
-        t_patsPerSession.(thisSessionId) = t_patsPerSession.(thisSessionId)(:, inputDataMask(:));
-    end%for:sessionNumber
-else
-    if (size(t_pats,2)>sum(inputDataMask(:)))
-        t_pats=t_pats(:,inputDataMask(:));
-    end%if
-end%if
+if (size(t_pats,2)>sum(inputDataMask(:)))
+    t_pats=t_pats(:,inputDataMask(:));
+end
 
 % Other data
 volSize_vox=size(inputDataMask);
@@ -120,28 +103,14 @@ nSearchlightVox=size(sphereSUBs,1);
 %% define masks
 validInputDataMask=inputDataMask;
 
-if localOptions.averageSessions
-    for sessionNumber = 1:numel(fieldnames(t_patsPerSession))
-        thisSessionId = ['s' num2str(sessionNumber)];
-        sumAbsY=sum(abs(t_patsPerSession.(thisSessionId)),1);
-    end%for:sessionNumber
-else
-    sumAbsY=sum(abs(t_pats),1);
-end%if
+sumAbsY=sum(abs(t_pats),1);
 
 validYspace_logical= (sumAbsY~=0) & ~isnan(sumAbsY); clear sumAbsY;
 validInputDataMask(inputDataMask)=validYspace_logical; % define valid-input-data brain mask
 
-if localOptions.averageSessions
-    for sessionNumber = 1:numel(fieldnames(t_patsPerSession))
-        thisSessionId = ['s' num2str(sessionNumber)];
-        t_patsPerSession.(thisSessionId) = t_patsPerSession.(thisSessionId)(:,validYspace_logical);
-        nVox_validInputData=size(t_patsPerSession.(thisSessionId),2);
-    end%for:sessionNumber
-else
-    t_pats=t_pats(:,validYspace_logical); % reduce t_pats to the valid-input-data brain mask
-    nVox_validInputData=size(t_pats,2);
-end%if
+% reduce t_pats to the valid-input-data brain mask
+t_pats=t_pats(:,validYspace_logical); 
+nVox_validInputData=size(t_pats,2);
 
 mappingMask_request_INDs=find(mappingMask_request);
 nVox_mappingMask_request=length(mappingMask_request_INDs);
@@ -175,11 +144,10 @@ for cMappingVoxI=1:nVox_mappingMask_request
     if mod(cMappingVoxI,1000)==0
         if monitor
             progressMonitor(cMappingVoxI, nVox_mappingMask_request, 'Searchlight mapping Mahalanobis distance...', h_progressMonitor);
-            %                 cMappingVoxI/nVox_mappingMask_request
         else
             fprintf('.');
-        end%if
-    end%if
+        end
+    end
     
     [x y z]=ind2sub(volSize_vox,mappingMask_request_INDs(cMappingVoxI));
     
@@ -205,17 +173,7 @@ for cMappingVoxI=1:nVox_mappingMask_request
     
     if n(x,y,z) < 2, continue; end%if % This stops the function crashing if it accidentally encounters an out-of-brain floating voxel (these can occur if, for example, skull stripping fails)
     
-    if localOptions.averageSessions
-        searchlightRDM = zeros(localOptions.nConditions, localOptions.nConditions);
-        for session = 1:localOptions.nSessions
-            sessionId = ['s' num2str(session)];
-            searchlightRDM = searchlightRDM + squareform(pdist(t_patsPerSession.(sessionId)(:,cIllValidVox_YspaceINDs),'correlation'));
-        end%for:sessions
-        searchlightRDM = searchlightRDM / localOptions.nSessions;
-    else
-        searchlightRDM = squareform(pdist(t_pats(:,cIllValidVox_YspaceINDs), 'correlation'));
-    end%if
-    
+    searchlightRDM = squareform(pdist(t_pats(:,cIllValidVox_YspaceINDs), 'correlation'));
     searchlightRDM = vectorizeRDM(searchlightRDM);
     
     % Locally store the full brain's worth of indexed RDMs.
@@ -226,21 +184,18 @@ for cMappingVoxI=1:nVox_mappingMask_request
         [rs, ps] = corr(searchlightRDM', modelRDMs_ltv', 'type', 'Spearman', 'rows', 'pairwise');
     catch
         [rs, ps] = corr(searchlightRDM', modelRDMs_ltv, 'type', 'Spearman', 'rows', 'pairwise');
-    end%try
+    end
     
     if localOptions.fisher
         for i = 1:numel(rs)
             rs(i) = fisherTransform(rs(i));
-        end%for:i
-    end%if
+        end
+    end
     
-    %	[ignore, bestModelI] = max(rs);
-    
-    %    smm_bestModel(x,y,z) = bestModelI;
     smm_ps(x,y,z,:) = ps;
     smm_rs(x,y,z,:) = rs;
     
-end%for:cMappingVoxI
+end
 
 %% END OF THE BIG LOOP! %%
 
@@ -276,11 +231,6 @@ if monitor
     
     showVol(vol);
     
-    % 	vol2 = vol2*0.1;
-    % 	vol2(vol<1) = vol(vol<1);
-    %
-    % 	showVol(vol2);
-    
-end%if
+end
 
-end%function
+end

@@ -29,14 +29,14 @@ subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
 
 %% user options
-userOptions = DRE_RSA_userOptions(dir,subs);
+userOptions = dre_rsa_userOptions(dir,subs);
 userOptions.analysisName = analysisName;
 userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
 %% 1st level for RSA
-nameBeta = 'rsa_level1_out';
+nameBeta = '_level1_gm';
 if false
     bData = dre_extractData(dir,subs,taskOrd,0);
     dre_level1_rsa(dir,nameBeta,subs,bData);

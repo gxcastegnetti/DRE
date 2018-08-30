@@ -72,14 +72,10 @@ for s = 1:length(subs)
     job{1}.spm.stats.fmri_spec.volt = 1;
     job{1}.spm.stats.fmri_spec.global = 'None';
     job{1}.spm.stats.fmri_spec.mthresh = 0.0;
-    
-    % if there is a mask, apply it
     if ~strcmp(maskName,'none')
-        mask = [dir.msk,fs,maskName,fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];
+        mask = [dir.msk,fs,maskName,fs,'];
         job{1}.spm.stats.fmri_spec.mask = {mask};
-    else
-        job{1}.spm.stats.fmri_spec.mask = {''};
-    end    
+    job{1}.spm.stats.fmri_spec.mask = {''};
     job{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     %% run job and save file names

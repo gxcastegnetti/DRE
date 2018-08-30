@@ -85,25 +85,34 @@ for i = 1:length(roiNames)
 end
 
 %% 1st level
+nameBeta = ['_level1_','ba8'];
 if true
-    for i = 1:length(roiNames)
-        nameBeta = ['_level1_',roiNames{i}];
-        bData = dre_extractData(dir,subs,taskOrd,0);
-        dre_level1_rsa(dir,nameBeta,subs,bData,'ba8');
-    end
+    bData = dre_extractData(dir,subs,taskOrd,0);
+    dre_level1_rsa(dir,nameBeta,subs,bData,'ba8');
 end
 
-%% load betas
+%% load fMRI data
 userOptions = dre_rsa_userOptions(dir,subs);
 userOptions.analysisName = analysisName;
 userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
+% load data with different masks
 for i = 1:length(roiNames)
-    dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
+    dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'stats',fs,'for_RSA_pulse',fs,'r',roiNames{i}];
     userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-    [fullBrainVols, ~] = rsa.fmri.fMRIDataPreparation('SPM', userOptions);
+    [fullBrainVols ~] = rsa.fmri.fMRIDataPreparation('SPM', userOptions);
     responsePatterns.(roiNames{i}) = fullBrainVols; clear fullBrainVols
+end
+
+%% load betas
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
+userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
+if ~exist([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'file')
+    [~, fullBrainVols] = rsa.fmri.fMRIDataPreparation('SPM', userOptions);
+    save([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'fullBrainVols','-v7.3')
+else
+    load([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'fullBrainVols')
 end
 
 %% construct RDMs

@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_grey_1';
+analysisName = 'sl_gm_box_-1';
 
 %% folders
 fs      = filesep;
@@ -15,7 +15,7 @@ dir.rsa = pwd;
 idcs    = strfind(dir.rsa,'/');
 dir.dre = dir.rsa(1:idcs(end-2)-1);
 dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'stats'];
-dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'grey'];
+dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'subjective',fs,'gm'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
@@ -35,21 +35,16 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
-%% 1st level for RSA
-nameBeta = '_level1_gm';
-if false
-    bData = dre_extractData(dir,subs,taskOrd,0);
-    dre_level1_rsa(dir,nameBeta,subs,bData);
-end
-
 %% load betas
-dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
+betaName = 'roi_box_-1';
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi',fs,betaName,fs,'level1',fs,'gm'];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-if ~exist([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'file')
-    [~, fullBrainVols] = rsa.fmri.fMRIDataPreparation('SPM', userOptions);
-    save([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'fullBrainVols','-v7.3')
+if ~exist([dir.out,fs,'searchLight',fs,analysisName,fs,'fullBrainVols.mat'],'file')
+    [~, fullBrainVols] = fMRIDataPreparation('SPM', userOptions);
+    mkdir([dir.out,fs,'searchLight',fs,analysisName])
+    save([dir.out,fs,'searchLight',fs,analysisName,fs,'fullBrainVols.mat'],'fullBrainVols','-v7.3')
 else
-    load([dir.out,fs,'searchLight',fs,'fullBrainVols.mat'],'fullBrainVols')
+    load([dir.out,fs,'searchLight',fs,analysisName,fs,'fullBrainVols.mat'],'fullBrainVols')
 end
 
 %% extract models of value, confidence, familiarity, price
@@ -79,10 +74,10 @@ for s = 1:length(subs)
     model_pri.name = 'price';
     model_pri.RDM = RDMs{s}.pri;
     model_pri.color = [0 1 0];
-    [rs_val{s},ps_val{s},ns_val{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_val, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-    [rs_con{s},ps_con{s},ns_con{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_con, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-    [rs_fam{s},ps_fam{s},ns_fam{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_fam, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-    [rs_pri{s},ps_pri{s},ns_pri{s},~] = rsa.fmri.searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_pri, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_val{s},ps_val{s},ns_val{s},~] = searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_val, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_con{s},ps_con{s},ns_con{s},~] = searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_con, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_fam{s},ps_fam{s},ns_fam{s},~] = searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_fam, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_pri{s},ps_pri{s},ns_pri{s},~] = searchlightMapping_fMRI(fullBrainVols.(thisSubject), model_pri, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
 end
 
 % save stuff

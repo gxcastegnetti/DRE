@@ -50,25 +50,17 @@ function [varargout] = fMRIDataPreparation(betaCorrespondence, userOptions)
 %                        function and a timestamp.
 %
 %  Cai Wingfield 11-2009 -- 1-2010, 6-2010
+%  edited by GX Castegnetti 08-2018
 %__________________________________________________________________________
 % Copyright (C) 2010 Medical Research Council
-
-import rsa.*
-import rsa.fig.*
-import rsa.fmri.*
-import rsa.rdm.*
-import rsa.sim.*
-import rsa.spm.*
-import rsa.stat.*
-import rsa.util.*
 
 returnHere = pwd; % We'll return to the pwd when the function has finished
 
 %% Set defaults and check options struct
-if ~isfield(userOptions, 'analysisName'), error('fMRIDataPreparation:NoAnalysisName', 'analysisName must be set. See help'); end%if
-if ~isfield(userOptions, 'rootPath'), error('fMRIDataPreparation:NoRootPath', 'rootPath must be set. See help'); end%if
-if ~isfield(userOptions, 'betaPath'), error('fMRIDataPreparation:NoBetaPath', 'betaPath must be set. See help'); end%if
-if ~isfield(userOptions, 'subjectNames'), error('fMRIDataPreparation:NoSubjectNames', 'subjectNames must be set. See help'); end%if
+if ~isfield(userOptions, 'analysisName'), error('fMRIDataPreparation:NoAnalysisName', 'analysisName must be set. See help'); end
+if ~isfield(userOptions, 'rootPath'), error('fMRIDataPreparation:NoRootPath', 'rootPath must be set. See help'); end
+if ~isfield(userOptions, 'betaPath'), error('fMRIDataPreparation:NoBetaPath', 'betaPath must be set. See help'); end
+if ~isfield(userOptions, 'subjectNames'), error('fMRIDataPreparation:NoSubjectNames', 'subjectNames must be set. See help'); end
 if (~isfield(userOptions, 'conditionLabels') && ischar(betaCorrespondence) && strcmpi(betaCorrespondence, 'SPM')), error('fMRIDataPreparation:NoConditionLabels', 'conditionLables must be set if the data is being extracted from SPM.'); end%if
 
 %% Get Data
@@ -78,42 +70,33 @@ fprintf('Gathering scans.\n');
 
 for subject = 1:nSubjects
     
-    betas = spm.getDataFromSPM(userOptions,subject);
+    betas = getDataFromSPM(userOptions,subject);
     nConditions = size(betas, 2);
-    nSessions = size(betas, 1);
     
-    % Figure out the subject's name
+    % extract subject name
     thisSubject = userOptions.subjectNames{subject};
     
     fprintf(['Reading beta volumes for subject number ' num2str(subject) ' of ' num2str(nSubjects) ': ' thisSubject]);
     
-    for session = 1:nSessions
-        for condition = 1:nConditions
-            
-            readPath = replaceWildcards(userOptions.betaPath, '[[betaIdentifier]]', betas(session,condition).identifier, '[[subjectName]]', thisSubject);
-            if strcmp(betaCorrespondence,'SPM')
-                brainMatrix = spm_read_vols(spm_vol(readPath));
-            else
-                load(readPath);
-                brainMatrix = betaImage;
-            end
-            
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GXC
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 14.08.18
-            brainVector = reshape(brainMatrix, 1, []);
-            brainVector_full = brainVector;
-            brainVector = brainVector(~isnan(brainVector));
-            
-            subjectMatrix(:, condition, session) = brainVector; % (voxel, condition, session)
-            subjectMatrix_full(:, condition, session) = brainVector_full;
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% GXC
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 14.08.18
-            
-            clear brainMatrix brainVector brainVector_full;
-            
-            fprintf('.');
-            
-        end
+    for condition = 1:nConditions
+        
+        readPath = replaceWildcards(userOptions.betaPath, '[[betaIdentifier]]', betas(1,condition).identifier, '[[subjectName]]', thisSubject);
+        
+        % open brain activity pattern
+        brainMatrix = spm_read_vols(spm_vol(readPath));
+
+        % vectorise it
+        brainVector = reshape(brainMatrix, 1, []);
+        brainVector_full = brainVector;
+        brainVector = brainVector(~isnan(brainVector));
+        
+        % put everyting in a matrix (nVoxels x nConditions)
+        subjectMatrix(:, condition, 1) = brainVector;
+        subjectMatrix_full(:, condition, 1) = brainVector_full; %#ok<*AGROW>
+        
+        clear brainMatrix brainVector brainVector_full;
+        
+        fprintf('.');
         
     end
     
@@ -130,4 +113,4 @@ varargout{2} = fullBrainVols_full;
 
 cd(returnHere); % Go back (probably will never have left)
 
-end%
+end

@@ -33,7 +33,7 @@ for s = 1:length(subs)
     for r = 1:n_sess
         %% select EPI files
         dirFun = [dirSub,'/fun/S',num2str(r)];
-        d = spm_select('List', dirFun, '^swuaf.*\.nii$');
+        d = spm_select('List', dirFun, '^uaf.*\.nii$');
         files = cellstr([repmat([dirFun fs],size(d,1),1) d]);
         job{1}.spm.stats.fmri_spec.sess(r).scans = files;
         
@@ -72,10 +72,16 @@ for s = 1:length(subs)
     job{1}.spm.stats.fmri_spec.volt = 1;
     job{1}.spm.stats.fmri_spec.global = 'None';
     job{1}.spm.stats.fmri_spec.mthresh = 0.0;
-    if ~strcmp(maskName,'none')
-        mask = [dir.msk,fs,maskName,fs,'];
-        job{1}.spm.stats.fmri_spec.mask = {mask};
-    job{1}.spm.stats.fmri_spec.mask = {''};
+    
+    % if there is a mask, apply it
+    if strcmp(maskName,'none')
+        mask = '';
+    elseif strcmp(maskName,'gm')
+        mask = [dir.msk,fs,'subjective',fs,maskName,fs,'grey_SF',num2str(subs(s),'%03d'),'.nii'];
+    else
+        mask = [dir.msk,fs,'subjective',fs,maskName,fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];      
+    end    
+    job{1}.spm.stats.fmri_spec.mask = {mask};
     job{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     %% run job and save file names

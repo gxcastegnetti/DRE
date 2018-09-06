@@ -13,7 +13,7 @@ function [varargout] = constructRDMs(responsePatterns, betaCorrespondence, userO
 % brain activity maps in a structure such that
 % responsePatterns.(mask).(subject) is a [nMaskedVoxels nConditions
 % nSessions] matrix, where mask is a binary brain map that defines the ROI.
-% 
+%
 % betaCorrespondence: The array of beta filenames.
 % betas(condition, session).identifier is a string which refers to the
 % filename (not including the path) of the SPM beta image. Alternatively,
@@ -25,7 +25,7 @@ function [varargout] = constructRDMs(responsePatterns, betaCorrespondence, userO
 % betaCorrespondence or choosing ‘SPM’ does not automatically compute the
 % responsePatterns structure. At this point only the number of sessions
 % and/or conditions are extracted from SPM or betaCorrespondence.
-% 
+%
 % userOptions: The standard options structure containing the following
 % fields:
 % userOptions.analysisName: A string which is prepended to the  saved files.
@@ -37,7 +37,7 @@ function [varargout] = constructRDMs(responsePatterns, betaCorrespondence, userO
 % strings identifying the subject names. Defaults to the field names in
 % (the first mask of) responsePatterns.
 % userOptions.distance: A string indicating the distance measure with which
-% to calculate the RDMs. Defaults to “Correlation”, but can be set to any 
+% to calculate the RDMs. Defaults to “Correlation”, but can be set to any
 % Matlab distance measure.
 % userOptions.RoIColor: A triple indicating the [R G B] value of the colour
 % which should be used to indicated RoI RDMs on various diagrams. Defaults
@@ -85,74 +85,67 @@ promptOptions.checkFiles(2).address = fullfile(userOptions.rootPath, 'Details', 
 overwriteFlag = overwritePrompt(userOptions, promptOptions);
 
 if overwriteFlag
-	
-	%% Get Data
-
-	if ischar(betaCorrespondence) && strcmpi(betaCorrespondence, 'SPM')
-		betas = getDataFromSPM(userOptions);
-	else
-		betas = betaCorrespondence;
-	end%if:SPM
-	
-	nSubjects = numel(userOptions.subjectNames);
-	nMasks = numel(userOptions.maskNames);
-	nSessions = size(betas, 1);
-	nConditions = size(betas, 2);
-	
-	for mask = 1:nMasks % For each mask...
-
-		thisMask = userOptions.maskNames{mask};
-
-		for subject = 1:nSubjects % and for each subject...
-
-			% Figure out which subject this is
-			thisSubject = userOptions.subjectNames{subject};
-
-			for session = 1:nSessions % and each session...
-
-				% Get the brain scan vol
-				thisActivityPattern = responsePatterns.(thisMask).(thisSubject);
-
-				% Calculate the RDM
-				localRDM = squareform( ...
-					pdist( ...
-						squeeze(thisActivityPattern(:, :, session))', userOptions.distance));
-
-				% Store the RDM in a struct with the right names and things!
-				RDMs(mask, subject, session).RDM = localRDM;
-				RDMs(mask, subject, session).name = [deunderscore(thisMask) ' | ' thisSubject ' | Session: ' num2str(session)];
-				RDMs(mask, subject, session).color = userOptions.RoIColor;
-
-				clear localRDM;
-
-			end%for:session
-		end%for:subject
-	end%for:mask
-
-	%% Save relevant info
-
-	timeStamp = datestr(now);
-
-% 	fprintf(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '\n']);
+    
+    %% Get Data
+    
+    nSubjects = numel(userOptions.subjectNames);
+    nMasks = numel(userOptions.maskNames);
+    nSessions = 1;
+    
+    for mask = 1:nMasks % For each mask...
+        
+        thisMask = userOptions.maskNames{mask};
+        
+        for subject = 1:nSubjects % and for each subject...
+            
+            % Figure out which subject this is
+            thisSubject = userOptions.subjectNames{subject};
+            
+            for session = 1:nSessions % and each session...
+                
+                % Get the brain scan vol
+                thisActivityPattern = responsePatterns.(thisMask).(thisSubject);
+                
+                % Calculate the RDM
+                localRDM = squareform( ...
+                    pdist( ...
+                    squeeze(thisActivityPattern(:, :, session))', userOptions.distance));
+                
+                % Store the RDM in a struct with the right names and things!
+                RDMs(mask, subject, session).RDM = localRDM;
+                RDMs(mask, subject, session).name = [deunderscore(thisMask) ' | ' thisSubject ' | Session: ' num2str(session)];
+                RDMs(mask, subject, session).color = userOptions.RoIColor;
+                
+                clear localRDM;
+                
+            end%for:session
+        end%for:subject
+    end%for:mask
+    
+    %% Save relevant info
+    
+    timeStamp = datestr(now);
+    
+    % 	fprintf(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '\n']);
     disp(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename)]);
-	gotoDir(userOptions.rootPath, 'RDMs');
-	save(RDMsFilename, 'RDMs');
-	
-% 	fprintf(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename) '\n']);
+    gotoDir(userOptions.rootPath, 'RDMs');
+    save(RDMsFilename, 'RDMs');
+    
+    % 	fprintf(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename) '\n']);
     disp(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename)]);
-	gotoDir(userOptions.rootPath, 'Details');
-	save(DetailsFilename, 'timeStamp', 'userOptions');
-	
+    gotoDir(userOptions.rootPath, 'Details');
+    save(DetailsFilename, 'timeStamp', 'userOptions');
+    
 else
-% 	fprintf(['Loading previously saved RDMs from ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '...\n']);
-  	disp(['Loading previously saved RDMs from ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '...']);
+    % 	fprintf(['Loading previously saved RDMs from ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '...\n']);
+    disp(['Loading previously saved RDMs from ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '...']);
     load(fullfile(userOptions.rootPath, 'RDMs', RDMsFilename));
 end%if
 
 if nargout == 1
-	varargout{1} = RDMs;
+    varargout{1} = RDMs;
 elseif nargout > 0
-	error('0 or 1 arguments out, please.');
+    error('0 or 1 arguments out, please.');
 end%if:nargout
 
 cd(returnHere); % And go back to where you started

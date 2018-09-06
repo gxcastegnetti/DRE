@@ -21,8 +21,8 @@ addpath(genpath(dir.spm))
 addpath('foodir',fs,'routines'), clear foodir idcs newdir4 dirSPM
 
 %% Subjects
-subs = [3:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,1];
+subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
 
 %% Univariate
 if true
@@ -32,10 +32,10 @@ if true
     bData = dre_extractData(dir,subs,taskOrd,1);
     
     % 1st level
-%    dre_level1(dir,analysisName,subs,bData);
+    dre_level1(dir,analysisName,subs,bData);
     
     % define contrasts
-%     dre_contrasts(dir,analysisName,subs);
+    dre_contrasts(dir,analysisName,subs);
     
     % 2nd level
     dre_level2(dir,analysisName,'I_ons',subs,1);

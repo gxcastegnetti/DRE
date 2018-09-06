@@ -9,7 +9,7 @@ job{1}.spm.stats.factorial_design.dir = {dirOut};
 files = cell(length(subs),1);
 for s = 1:length(subs)
     dirSub = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
-    files{s} = [dirSub,fs,'spmT_00',num2str(contrNum,'%02d'),'.nii'];
+    files{s} = [dirSub,fs,'con_00',num2str(contrNum,'%02d'),'.nii'];
 end
 
 job{1}.spm.stats.factorial_design.des.t1.scans = files;

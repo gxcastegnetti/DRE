@@ -1,4 +1,4 @@
-function userOptions = DRE_RSA_userOptions(dir,subs)
+function userOptions = dre_rsa_userOptions(dir,subs)
 
 % subjects
 for s = 1:length(subs)
@@ -46,7 +46,7 @@ userOptions.distanceMeasure = 'Spearman';
 userOptions.significanceTestPermutations = 10000;
 
 % should RDMs entries be rank transformed into [0,1]?
-userOptions.rankTransform = false;
+userOptions.rankTransform = true;
 
 % RDM colourscheme
 userOptions.colourScheme = jet(64);

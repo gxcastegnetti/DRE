@@ -1,4 +1,4 @@
-%% dre_grayMask
+%% dre_greyMask
 % Creates individual grey matter masks
 % ~~~
 % GX Castegnetti --- start ~ 27.08.18 --- last ~ 27.08.18
@@ -44,7 +44,7 @@ for s = 1:length(subs)
     job{1}.spm.util.imcalc.input = rc1_file;
     job{1}.spm.util.imcalc.output = ['grey_SF',num2str(subs(s),'%03d')];
     job{1}.spm.util.imcalc.outdir = {dir.out};
-    job{1}.spm.util.imcalc.expression = 'i1>0.3';
+    job{1}.spm.util.imcalc.expression = 'i1>0.2';
     job{1}.spm.util.imcalc.var = struct('name', {}, 'value', {});
     job{1}.spm.util.imcalc.options.dmtx = 0;
     job{1}.spm.util.imcalc.options.mask = 0;

@@ -36,15 +36,6 @@ function [smm_rs, smm_ps, n, searchlightRDMs] = searchlightMapping_fMRI(fullBrai
 % 	- Now skips points in the searchlight where there's only one voxel inside.
 % 	- Now takes a userOptions struct for the input parameters.
 
-import rsa.*
-import rsa.fig.*
-import rsa.fmri.*
-import rsa.rdm.*
-import rsa.sim.*
-import rsa.spm.*
-import rsa.stat.*
-import rsa.util.*
-
 localOptions = setIfUnset(localOptions, 'averageSessions', true);
 
 %% Figure out whether to average over sessions or not

@@ -1,4 +1,4 @@
-function spmMat_name = dre_level1_rsa(dir,anName,subs,bData,maskName)
+function spmMat_name = dre_level1_rsa(dir,anName,subs,bData,timing,maskName)
 %% function DRE_First(dirSub,sub,runType)
 % ~~~
 % INPUTS:
@@ -26,7 +26,7 @@ for s = 1:length(subs)
     
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
-    dirOut = [dir.out,fs,anName,fs,'SF',num2str(subs(s),'%03d')];
+    dirOut = [dir.rsa,fs,anName,fs,'SF',num2str(subs(s),'%03d')];
     mkdir(dirOut)
     job{1}.spm.stats.fmri_spec.dir = {dirOut};
     
@@ -49,8 +49,8 @@ for s = 1:length(subs)
         %% loop over trials in the session
         for obj = 1:numObj           
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).name = [sessLabel,'-',bData(subs(s)).imagination(r).(sessType).names{obj}];
-            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).onset = bData(subs(s)).imagination(r).(sessType).onset(obj);
-            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).duration = 0;
+            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).onset = bData(subs(s)).imagination(r).(sessType).onset(obj) + timing.iOns;
+            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).duration = timing.iDur;
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).tmod = 0;
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).orth = 0;             
         end
@@ -71,7 +71,7 @@ for s = 1:length(subs)
     job{1}.spm.stats.fmri_spec.bases.hrf.derivs = [0 0];
     job{1}.spm.stats.fmri_spec.volt = 1;
     job{1}.spm.stats.fmri_spec.global = 'None';
-    job{1}.spm.stats.fmri_spec.mthresh = 0.0;
+    job{1}.spm.stats.fmri_spec.mthresh = 0;
     
     % if there is a mask, apply it
     if strcmp(maskName,'none')

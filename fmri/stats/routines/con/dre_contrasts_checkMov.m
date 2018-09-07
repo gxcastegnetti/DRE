@@ -28,7 +28,7 @@ for s = 1:length(subs)
     job{1}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
     
     %% movement
-    job{1}.spm.stats.con.consess{3}.tcon.name = 'C-I';
+    job{1}.spm.stats.con.consess{3}.tcon.name = 'M';
     job{1}.spm.stats.con.consess{3}.tcon.weights = [0 0 1 movNull 0 0 1 movNull 0 0 1 movNull 0 0 1 movNull];
     job{1}.spm.stats.con.consess{3}.tcon.sessrep = 'none';
     

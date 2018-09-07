@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'roi_box_-1';
+analysisName = 'rsa_pulse';
 
 %% folders
 dir.root = pwd;
@@ -18,17 +18,20 @@ dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
 dir.msk  = [dir.dre,fs,'out',fs,'fmri',fs,'masks'];
 dir.beh  = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out  = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi'];
+dir.rsa  = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 addpath([dir.root,fs,'routines'])
 addpath([dir.dre,fs,'codes',fs,'fmri',fs,'stats',fs,'routines'])
 addpath(genpath([dir.root,fs,'rsatoolbox',fs,'rsa']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
+mkdir([dir.out,fs,analysisName])
 
 %% load masks
-roiNames = {'hpc','ba8','ba9','ba10','ba11','ba25','ba32','ba33','ba34','ba44','ba45','ba46','ba47'};
+% roiNames = {'hpc','ba8','ba9','ba10','ba11','ba25','ba32','ba33','ba34','ba44','ba45','ba46','ba47'};
+roiNames = {'gm'};
 
 %% subjects
-subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
+subs = [5:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
 
 %% reverse normalise mask to subjective space and coregister
 if false
@@ -88,9 +91,11 @@ end
 %% 1st level
 if true
     for i = 1:length(roiNames)
-        nameBeta = [analysisName,fs,'level1',fs,roiNames{i}];
+        nameBeta = ['level1',fs,analysisName,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        dre_level1_rsa(dir,nameBeta,subs,bData,roiNames{i});
+        timing.iOns = 0;
+        timing.iDur = 0;
+        dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end
 end
 
@@ -101,11 +106,11 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
 for i = 1:length(roiNames)
-    nameBeta = [analysisName,fs,'level1',fs,roiNames{i}];
-    dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi',fs,nameBeta];
+    nameBeta = ['level1',fs,analysisName,fs,roiNames{i}];
+    dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
     userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
     [fullBrainVols, ~] = fMRIDataPreparation('SPM', userOptions);
     responsePatterns.(roiNames{i}) = fullBrainVols; clear fullBrainVols
 end
-save([dir.out,fs,analysisName,fs,'responsePatterns_',analysisName,'.mat'],'responsePatterns','-v7.3')
+save([dir.out,fs,analysisName,fs,'rsaPatterns_roi'],'responsePatterns','-v7.3')
 

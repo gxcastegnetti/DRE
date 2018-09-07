@@ -18,52 +18,72 @@ newdir4 = foodir(1:idcs(end-4));
 dir.spm = [newdir4,'tools/matlab/spm12'];
 
 addpath(genpath(dir.spm))
-addpath('foodir',fs,'routines'), clear foodir idcs newdir4 dirSPM
+addpath(genpath([foodir,fs,'routines'])), clear foodir idcs newdir4 dirSPM
 
 %% Subjects
-subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
 
-%% Univariate
-if true
-    analysisName = 'uni_pulse';
-    
-    % extract behavioural data
-    bData = dre_extractData(dir,subs,taskOrd,1);
-    
-    % 1st level
-    dre_level1(dir,analysisName,subs,bData);
-    
-    % define contrasts
-    dre_contrasts(dir,analysisName,subs);
-    
-    % 2nd level
-    dre_level2(dir,analysisName,'I_ons',subs,1);
-    dre_level2(dir,analysisName,'I_val',subs,2);
-    dre_level2(dir,analysisName,'I_con',subs,3);
-    dre_level2(dir,analysisName,'I_fam',subs,4);
-    dre_level2(dir,analysisName,'C_ons',subs,5);
-    dre_level2(dir,analysisName,'C_val',subs,6);
-    dre_level2(dir,analysisName,'C_sel',subs,7);
-    dre_level2(dir,analysisName,'C-I',subs,8);
-end
+%% extract behavioural data
+bData = dre_extractData(dir,subs,taskOrd,1);
+
+%% pulse - value pmod of imagination; dValue pmod of choice
+analysisName = 'uni_pulse_iV_cV';
+
+% 1st level
+timing.iDur = 0; % duration for imagination
+timing.cDur = 0; % duration for choice
+dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+
+% contrasts
+dre_con_i1_c1(dir,analysisName,subs);
+
+% 2nd level
+dre_L2(dir,analysisName,'imagination_onset',subs,1);
+dre_L2(dir,analysisName,'imagination_value',subs,2);
+dre_L2(dir,analysisName,'choice_onset',subs,3);
+dre_L2(dir,analysisName,'choice_dValue',subs,4);
+
+%% box - value pmod of imagination; dValue pmod of choice
+analysisName = 'uni_box_iV_cV';
+
+% 1st level
+timing.iDur = 5;   % duration for imagination
+timing.cDur = 3.5; % duration for choice
+dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+
+% contrasts
+dre_con_i1_c1(dir,analysisName,subs);
+
+% 2nd level
+dre_L2(dir,analysisName,'imagination_onset',subs,1);
+dre_L2(dir,analysisName,'imagination_value',subs,2);
+dre_L2(dir,analysisName,'choice_onset',subs,3);
+dre_L2(dir,analysisName,'choice_dValue',subs,4);
+
 
 %% check movement
-if false
-    analysisName = 'uni_pulse_checkMov_3cond';
-    
-    % extract behavioural data
-    bData = dre_extractData(dir,subs,taskOrd,1);
-    
-    % 1st level
-    dre_level1_checkMov(dir,analysisName,subs,bData);
-    
-    % contrasts
-    dre_contrasts_checkMov(dir,analysisName,subs);
-    
-    % 2nd level
-    dre_level2(dir,analysisName,'I',subs,1);
-    dre_level2(dir,analysisName,'C',subs,2);
-    dre_level2(dir,analysisName,'C-I',subs,3);
-
-end
+% if false
+%     analysisName = 'uni_pulse_checkMov_3cond';
+%
+%     % extract behavioural data
+%     bData = dre_extractData(dir,subs,taskOrd,1);
+%
+%     % extract behavioural data
+%     bData = dre_extractData(dir,subs,taskOrd,1);
+%
+%     % 1st level
+%     dre_level1_checkMov(dir,analysisName,subs,bData);
+%
+%     % contrasts
+%     dre_contrasts_checkMov(dir,analysisName,subs);
+%
+%     % 2nd level
+%     dre_level2(dir,analysisName,'I',subs,1);
+%     dre_level2(dir,analysisName,'C',subs,2);
+%     dre_level2(dir,analysisName,'C-I',subs,3);
+%     dre_level2(dir,analysisName,'I',subs,1);
+%     dre_level2(dir,analysisName,'C',subs,2);
+%     dre_level2(dir,analysisName,'C-I',subs,3);
+%
+% end

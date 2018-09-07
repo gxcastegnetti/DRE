@@ -1,17 +1,18 @@
-function d = dre_level2(dir,analysisName,modName,subs,contrNum)
+function d = dre_L2(dir,analysisName,modName,subs,contrNum)
+% Create 2nd level model
 
-%% Create 2nd level model
 fs = filesep;
 dirOut = [dir.out,fs,analysisName,fs,'2nd_level',fs,modName];
 job{1}.spm.stats.factorial_design.dir = {dirOut};
 
-% Select correct betas
+% Select contrast images
 files = cell(length(subs),1);
 for s = 1:length(subs)
     dirSub = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
     files{s} = [dirSub,fs,'con_00',num2str(contrNum,'%02d'),'.nii'];
 end
 
+% defaults
 job{1}.spm.stats.factorial_design.des.t1.scans = files;
 job{1}.spm.stats.factorial_design.cov = struct('c', {}, 'cname', {}, 'iCFI', {}, 'iCC', {});
 job{1}.spm.stats.factorial_design.multi_cov = struct('files', {}, 'iCFI', {}, 'iCC', {});

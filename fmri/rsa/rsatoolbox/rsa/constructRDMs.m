@@ -124,17 +124,17 @@ if overwriteFlag
     
     %% Save relevant info
     
-    timeStamp = datestr(now);
-    
-    % 	fprintf(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '\n']);
-    disp(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename)]);
-    gotoDir(userOptions.rootPath, 'RDMs');
-    save(RDMsFilename, 'RDMs');
-    
-    % 	fprintf(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename) '\n']);
-    disp(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename)]);
-    gotoDir(userOptions.rootPath, 'Details');
-    save(DetailsFilename, 'timeStamp', 'userOptions');
+%     timeStamp = datestr(now);
+%     
+%     % 	fprintf(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '\n']);
+%     disp(['Saving RDMs to ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename)]);
+%     gotoDir(userOptions.rootPath, 'RDMs');
+%     save(RDMsFilename, 'RDMs');
+%     
+%     % 	fprintf(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename) '\n']);
+%     disp(['Saving Details to ' fullfile(userOptions.rootPath, 'Details', DetailsFilename)]);
+%     gotoDir(userOptions.rootPath, 'Details');
+%     save(DetailsFilename, 'timeStamp', 'userOptions');
     
 else
     % 	fprintf(['Loading previously saved RDMs from ' fullfile(userOptions.rootPath, 'RDMs', RDMsFilename) '...\n']);

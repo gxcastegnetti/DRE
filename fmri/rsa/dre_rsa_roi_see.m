@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'roi_box_-1';
+analysisName = 'rsa_pulse';
 
 %% folders
 dir.root = pwd;
@@ -24,11 +24,11 @@ addpath(genpath([dir.root,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% load masks
-roiNames = {'hpc','ba8','ba9'};
+roiNames = {'hpc','ba8','ba11'};
 
 %% subjects
-subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
+subs = [5:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
 
 %% 1st level
 if false
@@ -46,7 +46,7 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
 %% load response patters computed in dre_rsa_roi_run
-load([dir.out,fs,analysisName,'responsePatterns_',analysisName,'.mat'],'responsePatterns')
+load([dir.out,fs,analysisName,fs,'rsaPatterns_roi.mat'],'responsePatterns')
 
 %% construct RDMs
 RDMs_data = constructRDMs(responsePatterns, 'SPM', userOptions);
@@ -82,7 +82,7 @@ end
 
 for m = 1:size(RDMs_data,1)
     for s = 1:length(subs)
-        RDMs = concatenateRDMs(RDMs_data(m,s),RDMs_fam{s});
+        RDMs = concatenateRDMs(RDMs_data(m,s),RDMs_pri{s});
         corrMat = RDMCorrMat(RDMs, 1);
         c(m,s) = corrMat(1,2);
     end

@@ -51,15 +51,6 @@ function figureRDMs(RDMs, userOptions, localOptions)
 %__________________________________________________________________________
 % Copyright (C) 2010 Medical Research Council
 
-import rsa.*
-import rsa.fig.*
-import rsa.fmri.*
-import rsa.rdm.*
-import rsa.sim.*
-import rsa.spm.*
-import rsa.stat.*
-import rsa.util.*
-
 returnHere = pwd;
 % Detect Matlab version (R2015b changes default color maps: should use
 % colormap() to specify the color of the color bar.

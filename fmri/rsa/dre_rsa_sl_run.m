@@ -27,7 +27,7 @@ mkdir([dir.out,fs,analysisName])
 
 %% subjects
 subs = [5:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
+taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);

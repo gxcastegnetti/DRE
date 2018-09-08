@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_grey_1';
+analysisName = 'rsa_pulse';
 
 %% Folders
 dir.root = pwd;
@@ -22,7 +22,7 @@ addpath(genpath([dir.root,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% Subjects
-subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 
 %% Set options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -35,11 +35,11 @@ mask = niftiread([dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas',fs,'rgm.nii']
 mask = logical(mask);
 
 %% prepare correlation volumes
-dirSl = [userOptions.rootPath,filesep,'searchLight',fs,analysisName];
+dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
 for s = 1:length(subs)
     
     % load correlations and save as nifti
-    load([dirSl,fs,'sl_pri_SF',num2str(subs(s),'%03d'),'.mat']);
+    load([dirSl,fs,'sl_val_SF',num2str(subs(s),'%03d'),'.mat']);
     niftiwrite(rs,[dirSl,fs,'rs_SF',num2str(subs(s),'%03d')])
     
     % read nifti and modify matrix
@@ -103,7 +103,7 @@ for x=1:size(rMaps,1)
         for z=1:size(rMaps,3)
             if mask(x,y,z) == 1
                 [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                [p2(x,y,z)] = rsa.util.signrank_onesided(squeeze(rMaps(x,y,z,:)));
+                [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
             else
                 p1(x,y,z) = NaN;
                 p2(x,y,z) = NaN;
@@ -114,17 +114,20 @@ for x=1:size(rMaps,1)
 end
 
 % apply FDR correction
-pThrsh_t  = rsa.stat.FDRthreshold(p1,0.05,mask);
-pThrsh_sr = rsa.stat.FDRthreshold(p2,0.05,mask);
+pThrsh_t  = FDRthreshold(p1,0.05,mask);
+pThrsh_sr = FDRthreshold(p2,0.05,mask);
 
 % % mark the suprathreshold voxels in yellow
-% supraThreshMarked_t = zeros(size(p1));
-% supraThreshMarked_t(p1 <= pThrsh_t) = 1;
-% supraThreshMarked_sr = zeros(size(p2));
-% supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
+supraThreshMarked_t = zeros(size(p1));
+supraThreshMarked_t(p1 <= pThrsh_t) = 1;
+supraThreshMarked_sr = zeros(size(p2));
+supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
 
 for i = 1:79
-    figure,imagesc(squeeze(p1(:,:,i)))
-    %     figure,imagesc(squeeze(supraThreshMarked_sr(:,:,i)))
+    figure
+    subplot(1,2,1)
+    imagesc(squeeze(p1(:,:,i)))
+    subplot(1,2,2)
+    imagesc(squeeze(supraThreshMarked_sr(:,:,i)))
     %     figure,imagesc(squeeze(thisRs(:,:,i)))
 end

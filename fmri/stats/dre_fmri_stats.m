@@ -28,12 +28,46 @@ taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
 bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value pmod of imagination; dValue pmod of choice
-analysisName = 'uni_pulse_iV_cV';
+% analysisName = 'uni_pulse_iV_cV';
+% 
+% % 1st level
+% timing.iDur = 0; % duration for imagination
+% timing.cDur = 0; % duration for choice
+% dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+% 
+% % contrasts
+% dre_con_i1_c1(dir,analysisName,subs);
+% 
+% % 2nd level
+% dre_L2(dir,analysisName,'imagination_onset',subs,1);
+% dre_L2(dir,analysisName,'imagination_value',subs,2);
+% dre_L2(dir,analysisName,'choice_onset',subs,3);
+% dre_L2(dir,analysisName,'choice_dValue',subs,4);
+
+%% box - value pmod of imagination; dValue pmod of choice
+% analysisName = 'uni_box_iV_cV';
+% 
+% % 1st level
+% timing.iDur = 5;   % duration for imagination
+% timing.cDur = 3.5; % duration for choice
+% dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+% 
+% % contrasts
+% dre_con_i1_c1(dir,analysisName,subs);
+% 
+% % 2nd level
+% dre_L2(dir,analysisName,'imagination_onset',subs,1);
+% dre_L2(dir,analysisName,'imagination_value',subs,2);
+% dre_L2(dir,analysisName,'choice_onset',subs,3);
+% dre_L2(dir,analysisName,'choice_dValue',subs,4);
+
+%% pulse - value pmod of imagination; value selected pmod of choice
+analysisName = 'uni_pulse_iV_cS';
 
 % 1st level
 timing.iDur = 0; % duration for imagination
 timing.cDur = 0; % duration for choice
-dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+dre_L1_iV_cS(dir,analysisName,subs,timing,bData);
 
 % contrasts
 dre_con_i1_c1(dir,analysisName,subs);
@@ -44,13 +78,13 @@ dre_L2(dir,analysisName,'imagination_value',subs,2);
 dre_L2(dir,analysisName,'choice_onset',subs,3);
 dre_L2(dir,analysisName,'choice_dValue',subs,4);
 
-%% box - value pmod of imagination; dValue pmod of choice
-analysisName = 'uni_box_iV_cV';
+%% box - value pmod of imagination; value selected pmod of choice
+analysisName = 'uni_box_iV_cS';
 
 % 1st level
 timing.iDur = 5;   % duration for imagination
 timing.cDur = 3.5; % duration for choice
-dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+dre_L1_iV_cS(dir,analysisName,subs,timing,bData);
 
 % contrasts
 dre_con_i1_c1(dir,analysisName,subs);
@@ -60,7 +94,6 @@ dre_L2(dir,analysisName,'imagination_onset',subs,1);
 dre_L2(dir,analysisName,'imagination_value',subs,2);
 dre_L2(dir,analysisName,'choice_onset',subs,3);
 dre_L2(dir,analysisName,'choice_dValue',subs,4);
-
 
 %% check movement
 % if false

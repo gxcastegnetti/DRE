@@ -39,7 +39,7 @@ dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
 for s = 1:length(subs)
     
     % load correlations and save as nifti
-    load([dirSl,fs,'sl_val_SF',num2str(subs(s),'%03d'),'.mat']);
+    load([dirSl,fs,'sl_con_SF',num2str(subs(s),'%03d'),'.mat']);
     niftiwrite(rs,[dirSl,fs,'rs_SF',num2str(subs(s),'%03d')])
     
     % read nifti and modify matrix

@@ -17,7 +17,7 @@ for s = 1:length(subs)
     
     %% imagination
     
-    % onset 
+    % onset
     job{1}.spm.stats.con.consess{1}.tcon.name = 'imagination_onset';
     job{1}.spm.stats.con.consess{1}.tcon.weights = [1 0 0 0 0 0 movNull 1 0 0 0 0 0 movNull 1 0 0 0 0 0 movNull 1 0 0 0 0 0 movNull];
     job{1}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
@@ -37,6 +37,7 @@ for s = 1:length(subs)
     job{1}.spm.stats.con.consess{4}.tcon.weights = [0 0 0 1 0 0 movNull 0 0 0 1 0 0 movNull 0 0 0 1 0 0 movNull 0 0 0 1 0 0 movNull];
     job{1}.spm.stats.con.consess{4}.tcon.sessrep = 'none';
     
+    
     %% choice
     
     % onset
@@ -49,6 +50,18 @@ for s = 1:length(subs)
     job{1}.spm.stats.con.consess{6}.tcon.weights = [0 0 0 0 0 1 movNull 0 0 0 0 0 1 movNull 0 0 0 0 0 1 movNull 0 0 0 0 0 1 movNull];
     job{1}.spm.stats.con.consess{6}.tcon.sessrep = 'none';
     
+    %% goal
+    taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
+    
+    job{1}.spm.stats.con.consess{7}.tcon.name = 'goal';
+    if taskOrd(s) == 1
+        job{1}.spm.stats.con.consess{7}.tcon.weights = [1 0 0 0 0 0 movNull -1 0 0 0 0 0 movNull 1 0 0 0 0 0 movNull -1 0 0 0 0 0 movNull];
+    else
+        job{1}.spm.stats.con.consess{7}.tcon.weights = [-1 0 0 0 0 0 movNull 1 0 0 0 0 0 movNull -1 0 0 0 0 0 movNull 1 0 0 0 0 0 movNull];
+    end
+    job{1}.spm.stats.con.consess{7}.tcon.sessrep = 'none';
+    
+    %% run job
     job{1}.spm.stats.con.delete = 1;
     spm_jobman('run',job)
     

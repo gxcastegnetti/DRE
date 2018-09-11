@@ -172,12 +172,3 @@ V.descrip = V_mask.descrip;
 % save modified nifti
 spm_write_vol(V,supraThreshMarked_sr);
 
-%% plot
-% for i = 1:79
-%     figure
-%     subplot(1,2,1)
-%     imagesc(squeeze(p1(:,:,i)))
-%     subplot(1,2,2)
-%     imagesc(squeeze(supraThreshMarked_sr(:,:,i)))
-%     %     figure,imagesc(squeeze(thisRs(:,:,i)))
-% end

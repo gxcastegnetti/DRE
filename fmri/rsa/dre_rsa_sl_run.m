@@ -58,7 +58,7 @@ searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
 searchlightOptions.nConditions = 240;
 
-%% run searchlight
+%% run searchlight for value, confidence, familiarity, price
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
@@ -100,4 +100,9 @@ for ss = 1:length(subs)
     ps = ps_pri{ss};
     ns = ns_pri{ss};
     save([dir.out,fs,analysisName,fs,'pri',fs,'sl_pri_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+end
+
+%% run searchlight for goal
+for s = 1:length(subs)
+    [rs_val{s},ps_val{s},ns_val{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_val, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
 end

@@ -129,8 +129,8 @@ for s = 1:length(subs)
             
             % fire
             bData(subs(s)).imagination(r).fire.names = objSes;
-            bData(subs(s)).imagination(r).fire.valIdx = idxIma_day2;
-            bData(subs(s)).imagination(r).fire.famIdx = idxFam_day2;
+            bData(subs(s)).imagination(r).fire.objIdx = idxIma_day2;
+%             bData(subs(s)).imagination(r).fire.famIdx = idxFam_day2';
             bData(subs(s)).imagination(r).fire.onset = onsIma;
             bData(subs(s)).imagination(r).fire.value = objVal;
             bData(subs(s)).imagination(r).fire.confidence = objCon;
@@ -173,8 +173,8 @@ for s = 1:length(subs)
             % boat
             bData(subs(s)).imagination(r).boat.names = objSes;
             bData(subs(s)).imagination(r).boat.onset = onsIma;
-            bData(subs(s)).imagination(r).boat.valIdx = idxIma_day2;
-            bData(subs(s)).imagination(r).boat.famIdx = idxFam_day2;
+            bData(subs(s)).imagination(r).boat.objIdx = idxIma_day2;
+%             bData(subs(s)).imagination(r).boat.famIdx = idxFam_day2';
             bData(subs(s)).imagination(r).boat.value = objVal;
             bData(subs(s)).imagination(r).boat.confidence = objCon;
             bData(subs(s)).imagination(r).boat.familiarity = objFam;

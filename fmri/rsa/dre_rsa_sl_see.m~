@@ -146,7 +146,7 @@ end
 
 % apply FDR correction
 pThrsh_t  = FDRthreshold(p1,0.05,mask);
-pThrsh_sr = FDRthreshold(p2,0.05,mask);
+pThrsh_sr = FDRthreshold(p2,0.99,mask);
 
 % % mark the suprathreshold voxels in yellow
 supraThreshMarked_t = zeros(size(p1));
@@ -166,11 +166,29 @@ V = spm_vol([dirSl,fs,'signVox_sr_',scorP,'.nii']);
 V_mask = spm_vol([dir.msk,fs,'rgm.nii']);
 
 % change header
-V.mat = V_mask.mat;
-V.descrip = V_mask.descrip;
+V.mat = V_mask{1.mat;
+V.descrip = V_mask{1}.descrip;
 
 % save modified nifti
-spm_write_vol(V,supraThreshMarked_sr);
+spm_write_vol(V,rs);
+
+% % use gm mask as reference
+% job{1}.spm.spatial.coreg.write.ref = {[dir.msk,fs,'rgm.nii']};
+% 
+% % select significance map to coregister
+% job{1}.spm.spatial.coreg.write.source = {[dirSl,fs,'signVox_sr_',scorP,'.nii']};
+% 
+% % defaults
+% job{1}.spm.spatial.coreg.write.roptions.interp = 4;
+% job{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
+% job{1}.spm.spatial.coreg.write.roptions.mask = 0;
+% job{1}.spm.spatial.coreg.write.roptions.prefix = 'r';
+
+% run job
+% disp('Coregistering grey matter mask')
+% spm_jobman('run',job);
+% clear job
+
 
 %% plot
 % for i = 1:79

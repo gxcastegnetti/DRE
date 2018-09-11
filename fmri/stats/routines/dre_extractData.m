@@ -1,14 +1,16 @@
 function bData = dre_extractData(dir,subs,taskOrd,excNan)
-%% function DRE_extractData(dirSub,sub,runType)
+%% function dre_extractData(dirSub,sub,runType)
 % ~~~
 % INPUTS:
-%   dirSub: directory of subject's data
-%   subj: subject number
+%   dir: struct of directories
+%   subj: subject numbers
 %   taskOrd: FBFB or BFBF
+%   excNaN: whether (1) or not (0) to exclude NaNs from behavioural
+%           measures
 % OUTPUTS:
-%   bData: structure with all trial onsets and behavioural parameters
+%   bData: struct with trial onsets and behavioural measures
 % ~~~
-% GX Castegnetti --- start ~ 13.06.18 --- last ~ 22.06.18
+% GX Castegnetti --- 2018
 
 fs = filesep;
 n_sess = 4;

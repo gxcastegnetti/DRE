@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_pulse';
+analysisName = 'rsa_roi_box';
 
 %% folders
 dir.root = pwd;
@@ -24,20 +24,11 @@ addpath(genpath([dir.root,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% load masks
-roiNames = {'hpc','ba8','ba11'};
+roiNames = {'HPC','ACC','infFG','medFG','midFG','supFG'};
 
 %% subjects
-subs = [5:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
-
-%% 1st level
-if false
-    for i = 1:length(roiNames)
-        nameBeta = ['_level1_',roiNames{i}];
-        bData = dre_extractData(dir,subs,taskOrd,0);
-        dre_level1_rsa(dir,nameBeta,subs,bData,roiNames{i});
-    end
-end
 
 %% some options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -57,7 +48,7 @@ RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 figureRDMs(RDM_average,userOptions)
 
 % dendrograms
-dendrogramConditions(RDM_average,userOptions)
+% dendrogramConditions(RDM_average,userOptions)
 
 % MDS
 MDSConditions(RDM_average,userOptions)
@@ -82,7 +73,7 @@ end
 
 for m = 1:size(RDMs_data,1)
     for s = 1:length(subs)
-        RDMs = concatenateRDMs(RDMs_data(m,s),RDMs_pri{s});
+        RDMs = concatenateRDMs(RDMs_data(m,s),RDMs_val{s});
         corrMat = RDMCorrMat(RDMs, 1);
         c(m,s) = corrMat(1,2);
     end

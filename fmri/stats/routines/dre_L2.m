@@ -1,7 +1,11 @@
 function d = dre_L2(dir,analysisName,modName,subs,contrNum)
-% Create 2nd level model
+%% create 2nd level model
+% ~~~
+% GX Castegnetti --- 2018
 
 fs = filesep;
+
+% output folder
 dirOut = [dir.out,fs,analysisName,fs,'2nd_level',fs,modName];
 job{1}.spm.stats.factorial_design.dir = {dirOut};
 
@@ -32,4 +36,5 @@ job{1}.spm.stats.fmri_est.spmmat = d{1}.spmmat;
 job{1}.spm.stats.fmri_est.write_residuals = 0;
 job{1}.spm.stats.fmri_est.method.Classical = 1;
 
+% run job
 spm_jobman('run',job);

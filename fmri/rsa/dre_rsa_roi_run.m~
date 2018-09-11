@@ -28,14 +28,14 @@ mkdir([dir.out,fs,analysisName])
 %% load masks
 % roiNames = {'hpc','ba8','ba9','ba10','ba11','ba25','ba32','ba33','ba34','ba44','ba45','ba46','ba47'};
 % roiNames = {'gm'};
-roiNames = {'HPC','ACC','infFG','medFG','midFG','supFG','infOcc','supOcc','PCC','AG','Ins','paraHPC'};
+roiNames = {'HPC','ACC','infFG','medFG','midFG','supFG','infOcc','supOcc','PCC','AG','Ins'};
 
 %% subjects
 subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
 
 %% reverse normalise mask to subjective space and coregister
-if true
+if false
     for i = 1:length(roiNames)
         for s = 1:length(subs)
             
@@ -88,7 +88,7 @@ if true
             job2{1}.spm.spatial.coreg.write.roptions.prefix = 'r';
             
             % run job
-            disp(['Coregistering sub#', num2str(subs(s),'%03d')])
+            disp(['Normalising sub#', num2str(subs(s),'%03d')])
             d = spm_jobman('run',job2);
             clear job2 d
             

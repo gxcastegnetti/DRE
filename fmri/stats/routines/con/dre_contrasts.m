@@ -24,6 +24,7 @@ for s = 1:length(subs)
     job{1}.spm.stats.con.consess{1}.tcon.sessrep = 'none';
     
     job{1}.spm.stats.con.consess{2}.tcon.name = 'imagination_value';
+                                                   [0 1 0 0 0 0 movNull 0 1 0 0 0 0 movNull 0 1 0 0 0 0 movNull 0 1 0 0 0 0 movNull];
     job{1}.spm.stats.con.consess{2}.tcon.weights = [0 1 0 0 0 0 movNull 0 1 0 0 0 0 movNull 0 1 0 0 0 0 movNull 0 1 0 0 0 0 movNull];
     job{1}.spm.stats.con.consess{2}.tcon.sessrep = 'none';
     

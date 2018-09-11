@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_pulse';
+analysisName = 'rsa_sl_box';
 
 %% folders
 fs      = filesep;
@@ -15,7 +15,7 @@ dir.rsa = pwd;
 idcs    = strfind(dir.rsa,'/');
 dir.dre = dir.rsa(1:idcs(end-2)-1);
 dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'stats'];
-dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'subjective',fs,'gm'];
+dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
 dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
@@ -26,7 +26,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [5:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
 taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
 
 %% user options
@@ -37,7 +37,7 @@ userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
 %% load betas
-nameBeta = ['level1',fs,analysisName,fs,'gm'];
+nameBeta = ['level1',fs,'rsa_box',fs,'gm']; % <------------------------ set here which betas to look for
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 if ~exist([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'file')
@@ -49,6 +49,8 @@ end
 
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
+
+%% searchlight options
 userOptions.voxelSize = [3 3 3];
 userOptions.searchlightRadius = 9;
 searchlightOptions.monitor = false;
@@ -59,7 +61,7 @@ searchlightOptions.nConditions = 240;
 %% run searchlight
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
-    binaryMask = niftiread([dir.msk,fs,'grey_SF',num2str(subs(s),'%03d'),'.nii']);
+    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
     model_val.name = 'value';
@@ -85,17 +87,17 @@ for ss = 1:length(subs)
     rs = rs_val{ss}; %#ok<*NASGU>
     ps = ps_val{ss};
     ns = ns_val{ss};
-    save([dir.out,fs,analysisName,fs,'sl_val_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    save([dir.out,fs,analysisName,fs,'val',fs,'sl_val_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
     rs = rs_con{ss};
     ps = ps_con{ss};
     ns = ns_con{ss};
-    save([dir.out,fs,analysisName,fs,'sl_con_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    save([dir.out,fs,analysisName,fs,'con',fs,'sl_con_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
     rs = rs_fam{ss};
     ps = ps_fam{ss};
     ns = ns_fam{ss};
-    save([dir.out,fs,analysisName,fs,'sl_fam_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    save([dir.out,fs,analysisName,fs,'fam',fs,'sl_fam_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
     rs = rs_pri{ss}; 
     ps = ps_pri{ss};
     ns = ns_pri{ss};
-    save([dir.out,fs,analysisName,fs,'sl_pri_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    save([dir.out,fs,analysisName,fs,'pri',fs,'sl_pri_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
 end

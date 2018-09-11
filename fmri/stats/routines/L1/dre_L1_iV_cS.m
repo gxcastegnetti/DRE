@@ -42,7 +42,7 @@ for s = 1:length(subs)
         
         %% imagination
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['imagination_',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset + timing.iOns;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).duration = timing.iDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).tmod = 0;
         
@@ -55,7 +55,7 @@ for s = 1:length(subs)
         
         %% choice
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).name = ['choice_',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).choice(r).(sessType).onset;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).choice(r).(sessType).onset + timing.cOns;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.cDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).tmod = 0;
         

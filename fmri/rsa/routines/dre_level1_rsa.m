@@ -77,9 +77,9 @@ for s = 1:length(subs)
     if strcmp(maskName,'none')
         mask = '';
     elseif strcmp(maskName,'gm')
-        mask = [dir.msk,fs,'subjective',fs,maskName,fs,'grey_SF',num2str(subs(s),'%03d'),'.nii'];
+        mask = [dir.msk,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     else
-        mask = [dir.msk,fs,'subjective',fs,maskName,fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];      
+        mask = [dir.msk,fs,maskName,'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];      
     end    
     job{1}.spm.stats.fmri_spec.mask = {mask};
     job{1}.spm.stats.fmri_spec.cvi = 'AR(1)';

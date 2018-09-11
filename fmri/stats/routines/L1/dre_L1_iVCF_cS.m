@@ -7,7 +7,7 @@ function spmMat_name = dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData)
 %   * choice
 %       - pmod: value difference
 % ~~~
-% GX Castegnetti --- start ~ 07.09.18 --- last ~ 07.09.18
+% GX Castegnetti --- 2018
 
 fs = filesep;
 n_sess = 4;

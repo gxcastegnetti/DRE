@@ -79,15 +79,19 @@ for s = 1:length(subs)
         idxCho_day2_L = NaN(length(idCho_day2),1);
         idxCho_day2_R = NaN(length(idCho_day2),1);
         choVal = NaN(length(idCho_day2),1);
+        uncVal = NaN(length(idCho_day2),1);
         for i = 1:length(idCho_day2)
             idxCho_day2_L(i) = find(Mday1(:,2) == idCho_day2(i,1));
             idxCho_day2_R(i) = find(Mday1(:,2) == idCho_day2(i,2));
             if chosenChoice_day2(i) == -1
                 choVal(i) = Mday1(idxCho_day2_L(i),3);
+                uncVal(i) = Mday1(idxCho_day2_R(i),3);
             elseif chosenChoice_day2(i) == 1
                 choVal(i) = Mday1(idxCho_day2_R(i),3);
+                uncVal(i) = Mday1(idxCho_day2_L(i),3);
             else
                 choVal(i) = NaN;
+                uncVal(i) = NaN;
             end
         end
         difVal = abs(Mday1(idxCho_day2_L,3) - Mday1(idxCho_day2_R,3));
@@ -119,6 +123,7 @@ for s = 1:length(subs)
             onsCho = onsCho(difKeep);
             difVal = difVal(difKeep);
             choVal = choVal(difKeep);
+            uncVal = uncVal(difKeep);
             movCho = movCho(difKeep);
             sidCho = sidCho(difKeep);
         end
@@ -130,7 +135,6 @@ for s = 1:length(subs)
             % fire
             bData(subs(s)).imagination(r).fire.names = objSes;
             bData(subs(s)).imagination(r).fire.objIdx = idxIma_day2;
-%             bData(subs(s)).imagination(r).fire.famIdx = idxFam_day2';
             bData(subs(s)).imagination(r).fire.onset = onsIma;
             bData(subs(s)).imagination(r).fire.value = objVal;
             bData(subs(s)).imagination(r).fire.confidence = objCon;
@@ -139,6 +143,7 @@ for s = 1:length(subs)
             bData(subs(s)).choice(r).fire.onset = onsCho;
             bData(subs(s)).choice(r).fire.valueDiff = difVal;
             bData(subs(s)).choice(r).fire.valueChosen = choVal;
+            bData(subs(s)).choice(r).fire.valueUnchosen = uncVal;
             bData(subs(s)).choice(r).fire.movOnset = movCho;
             bData(subs(s)).choice(r).fire.movSide = sidCho;
             
@@ -151,6 +156,7 @@ for s = 1:length(subs)
             bData(subs(s)).choice(r).boat.onset = [];
             bData(subs(s)).choice(r).boat.valueDiff = [];
             bData(subs(s)).choice(r).boat.valueChosen = [];
+            bData(subs(s)).choice(r).boat.valueUnchosen = [];
             bData(subs(s)).choice(r).boat.movOnset = [];
             bData(subs(s)).choice(r).boat.movSide = [];
             
@@ -167,6 +173,7 @@ for s = 1:length(subs)
             bData(subs(s)).choice(r).fire.onset = [];
             bData(subs(s)).choice(r).fire.valueDiff = [];
             bData(subs(s)).choice(r).fire.valueChosen = [];
+            bData(subs(s)).choice(r).fire.valueUnchosen = [];
             bData(subs(s)).choice(r).fire.movOnset = [];
             bData(subs(s)).choice(r).fire.movSide = [];
             
@@ -174,7 +181,6 @@ for s = 1:length(subs)
             bData(subs(s)).imagination(r).boat.names = objSes;
             bData(subs(s)).imagination(r).boat.onset = onsIma;
             bData(subs(s)).imagination(r).boat.objIdx = idxIma_day2;
-%             bData(subs(s)).imagination(r).boat.famIdx = idxFam_day2';
             bData(subs(s)).imagination(r).boat.value = objVal;
             bData(subs(s)).imagination(r).boat.confidence = objCon;
             bData(subs(s)).imagination(r).boat.familiarity = objFam;
@@ -182,6 +188,7 @@ for s = 1:length(subs)
             bData(subs(s)).choice(r).boat.onset = onsCho;
             bData(subs(s)).choice(r).boat.valueDiff = difVal;
             bData(subs(s)).choice(r).boat.valueChosen = choVal;
+            bData(subs(s)).choice(r).boat.valueUnchosen = uncVal;
             bData(subs(s)).choice(r).boat.movOnset = movCho;
             bData(subs(s)).choice(r).boat.movSide = sidCho;
         end

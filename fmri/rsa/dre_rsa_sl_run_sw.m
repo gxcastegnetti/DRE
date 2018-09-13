@@ -1,4 +1,4 @@
-%% dre_rsa_sl_run
+%% dre_rsa_sl_run_sw
 % ~~~
 % GX Castegnetti --- start ~ 17.07.18 --- last ~ 24.08.18
 
@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box_L1_unmasked';
+analysisName = 'rsa_sl_box_sw';
 
 %% folders
 fs      = filesep;
@@ -15,7 +15,7 @@ dir.rsa = pwd;
 idcs    = strfind(dir.rsa,'/');
 dir.dre = dir.rsa(1:idcs(end-2)-1);
 dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'stats'];
-dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
+dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas']; % <--- change mask to MNI
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
 dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
@@ -37,7 +37,7 @@ userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
 %% load betas
-nameBeta = ['level1',fs,'rsa_box',fs,'none']; % <------------------------ set here which betas to look for
+nameBeta = ['level1',fs,'rsa_box_sw',fs,'none']; % <------------------------ set here which betas to look for
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 if ~exist([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'file')
@@ -61,7 +61,7 @@ searchlightOptions.nConditions = 240;
 %% run searchlight for value, confidence, familiarity, price
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
-    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+    binaryMask = niftiread([dir.msk,fs,'rgm.nii']); % <--------- change to MNI mask
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
     model_val.name = 'value';

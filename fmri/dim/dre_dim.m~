@@ -33,14 +33,12 @@ load([dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl',fs,'rsa_sl_box_sw',fs,'rsaPatt
 subNames = fieldnames(responsePatterns);
 for s = 1:length(subNames)
     % for every subject, this should be nVox x nCond x nRuns
-    respPatt_2goals{s}(:,:,1) = responsePatterns.(subNames{s})(:,1:60);
-    respPatt_2goals{s}(:,:,2) = responsePatterns.(subNames{s})(:,61:120);
-    respPatt_2goals{s}(:,:,3) = responsePatterns.(subNames{s})(:,121:180);
-    respPatt_2goals{s}(:,:,4) = responsePatterns.(subNames{s})(:,181:240); 
+    respPatt_2goals{s}(:,:,1) = responsePatterns.(subNames{s})(:,1:120);
+    respPatt_2goals{s}(:,:,2) = responsePatterns.(subNames{s})(:,121:end); 
 end
 
 %% load gm mask
 binaryMask = [dir.msk,fs,'rgm.nii'];
 
 %% subjects
-[bestn,r_outer, r_alter, test_tfce] = functional_dimensionality(respPatt_2goals, binaryMask, 'sphere',12);
+[bestn,r_outer, r_alter, test_tfce] = functional_dimensionality(respPatt_2goals, binaryMask, 'sphere',6);

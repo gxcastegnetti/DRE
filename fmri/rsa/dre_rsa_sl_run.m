@@ -1,6 +1,6 @@
 %% dre_rsa_sl_run
 % ~~~
-% GX Castegnetti --- start ~ 17.07.18 --- last ~ 24.08.18
+% GX Castegnetti --- 2018
 
 clear
 close all

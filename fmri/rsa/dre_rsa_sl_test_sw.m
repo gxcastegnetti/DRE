@@ -1,13 +1,13 @@
-%% dre_rsa
+%% dre_rsa_sl_test_sw
 % ~~~
-% GX Castegnetti --- start ~ 17.08.18 --- last ~ 20.08.18
+% GX Castegnetti --- 2018
 
 clear
 close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box_L1_unmasked';
+analysisName = 'rsa_sl_box_w';
 
 %% Folders
 dir.root = pwd;
@@ -63,66 +63,13 @@ mask = niftiread([dir.msk,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% what are we looking at?
-scorP = 'pri';
-
-%% load correlation maps and make them SPM-like
-dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName,fs,scorP];
-for s = 1:length(subs)
-    
-    % load correlations and save as nifti
-    load([dirSl,fs,'sl_',scorP,'_SF',num2str(subs(s),'%03d'),'.mat']);
-    niftiwrite(rs,[dirSl,fs,'rs_SF',num2str(subs(s),'%03d')])
-    
-    % read nifti and modify matrix
-    V = spm_vol([dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']);
-    
-    % load sample EPI from current subject
-    dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
-    d = spm_select('List', dirFun, '^uaf.*\.nii$');
-    d = d(end-1,:);
-    epi_file = {[dirFun fs d]};
-    V_epi = spm_vol(epi_file);
-    
-    % change header
-    V.mat = V_epi{1}.mat;
-    V.descrip = V_epi{1}.descrip;
-    
-    % save modified nifti
-    spm_write_vol(V,rs);
-    
-    fprintf('Loading correlation maps for sub#%d \n',subs(s));
-end
-
-%% normalise to MNI
-for s = 1:length(subs)
-    % select forward deformation images from T1 segmentation step
-    dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
-    d = spm_select('List', dirStruct, '^y_.*\.nii$');
-    y_file = {[dirStruct fs d]};
-    s_file = {[dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']};
-    job{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
-    job{1}.spatial{1}.normalise{1}.write.subj.resample = s_file;
-    job{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
-    job{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
-    job{1}.spatial{1}.normalise{1}.write.woptions.interp = 4; % changed default to 7th degree B-spline
-    
-    % run job
-    disp(['Normalising sub#', num2str(subs(s),'%03d')])
-    d = spm_jobman('run',job);
-    clear job
-end
-
-%% smooth
-for s = 1:length(subs)
-    P = [dirSl,fs,'wrs_SF',num2str(subs(s),'%03d'),'.nii'];
-    Q = [dirSl,fs,'swrs_SF',num2str(subs(s),'%03d'),'.nii'];
-    spm_smooth(P,Q,[6 6 6]);
-end
+scorP = 'val';
 
 %% concatenate across subjects
+dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName,fs,scorP];
 for s = 1:length(subs)
-    thisRs = niftiread([dirSl,fs,'swrs_SF',num2str(subs(s),'%03d'),'.nii']);
-    rMaps(:,:,:,s) = thisRs(:,:,:); %#ok<*SAGROW>
+    thisRs = load([dirSl,fs,'sl_',scorP,'_SF',num2str(subs(s),'%03d'),'.mat']);
+    rMaps(:,:,:,s) = thisRs.rs(:,:,:); %#ok<*SAGROW>
     %     figure,imagesc(squeeze(rMaps(:,:,40,s)))
 end
 

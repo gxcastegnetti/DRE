@@ -1,13 +1,13 @@
-function spmMat_name = dre_level1(dir,analysisName,subs,bData)
-%% function dre_1stLevel(dirSub,sub,runType)
+function spmMat_name = dre_L1_iVw_cSs_opp(dir,analysisName,subs,timing,bData)
+%% function dre_L1_iV_cV(dirSub,sub,runType)
 % ~~~
-% INPUTS:
-%   dir: directories
-%   subj: subject number
-%   analysisName: output folder
-%   bdData: behavioural data struct created in dre_extractData.m
+% First level analysis with conditions:
+%   * imagination
+%       - pmod: value weighed by confidence
+%   * choice
+%       - pmod: value of chosen item minus value of unchosen item
 % ~~~
-% GX Castegnetti --- start ~ 14.07.18 --- last ~ 18.08.18
+% GX Castegnetti --- start ~ 07.09.18 --- last ~ 07.09.18
 
 fs = filesep;
 n_sess = 4;
@@ -41,33 +41,31 @@ for s = 1:length(subs)
         sessType = bData(subs(s)).sessType{r};
         
         %% imagination
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['imagina_',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).duration = 0;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['imagination_',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).duration = timing.iDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).tmod = 0;
         
-        % parametric modulations of value and confidence
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'value';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = bData(subs(s)).imagination(r).(sessType).value;
+        % parametric modulations by value weighed by confidence
+        confNorm = bData(subs(s)).imagination(r).(sessType).confidence/50; % extract confidence and map it onto [0,1]
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'price';
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = bData(subs(s)).imagination(r).(sessType).price;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).poly = 1;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).name = 'confidence';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).param = bData(subs(s)).imagination(r).(sessType).confidence;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).poly = 1;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).name = 'familiarity';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).param = bData(subs(s)).imagination(r).(sessType).familiarity;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).orth = 0;
         
         
         %% choice
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).name = ['choice_',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).choice(r).(sessType).onset;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = 0;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).choice(r).(sessType).onset + timing.cOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.cDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).tmod = 0;
         
-        % parametric modulation of value and confidence difference
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'valueDiff';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).(sessType).valueDiff;
+        % parametric modulation by value of the chosen item minus the
+        % value of the unchosed item
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'value chosen - unchosen OPP';
+        choVal = bData(subs(s)).choice(r).(sessTypeWRONG).valueChosen; % value of chosen item
+        uncVal = bData(subs(s)).choice(r).(sessTypeWRONG).valueUnchosen; % value of unchosen item
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = choVal - uncVal;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).orth = 0;
         

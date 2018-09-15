@@ -1,13 +1,13 @@
 %% dre_rsa_sl_run_sw
 % ~~~
-% GX Castegnetti --- start ~ 17.07.18 --- last ~ 24.08.18
+% GX Castegnetti --- 2018
 
 clear
 close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box_sw';
+analysisName = 'rsa_sl_box_w';
 
 %% folders
 fs      = filesep;
@@ -37,7 +37,7 @@ userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
 %% load betas
-nameBeta = ['level1',fs,'rsa_box_sw',fs,'none']; % <------------------------ set here which betas to look for
+nameBeta = ['level1',fs,'rsa_box_w',fs,'none']; % <------------------------ set here which betas to look for
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 if ~exist([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'file')

@@ -31,7 +31,7 @@ for s = 1:length(subs)
             day1Order = {'1','2','1','2'};
         elseif taskOrd(s) == 2
             day2Order = {'B','F','B','F'};
-            day1Order = {'1','2','1','2'};
+            day1Order = {'2','1','2','1'};
         end
         
         %% subject directories
@@ -57,7 +57,6 @@ for s = 1:length(subs)
         idIma_day2 = Mday2(Mday2(:,3)==0,4);   % imagination
         idCho_day2 = Mday2(Mday2(:,3)==1,4:5); % choice
         chosenChoice_day2 = Mday2(Mday2(:,3)==1,7);
-        latencChoice_day2 = Mday2(Mday2(:,3)==1,8);
         
         % object names
         objSes = objsName(idIma_day2);
@@ -108,17 +107,17 @@ for s = 1:length(subs)
             idxFam_day2(i) = find(Mday1F(:,2)==idIma_day2(i)); %#ok<*AGROW>
         end
         objFam = Mday1F(idxFam_day2,3); % familiarity
-        objMon = Mday1F(idxFam_day2,4); % monetary value
+        objPri = Mday1F(idxFam_day2,4); % monetary value
         
         % remove NaNs
         if excNan == 1
-            objKeep = ~isnan(objVal) & ~isnan(objCon) & ~isnan(objFam) & ~isnan(objMon);
+            objKeep = ~isnan(objVal) & ~isnan(objCon) & ~isnan(objFam) & ~isnan(objPri);
             difKeep = ~isnan(difVal) & ~isnan(choVal) & ~isnan(movCho) & ~isnan(sidCho);
             onsIma = onsIma(objKeep);
             objVal = objVal(objKeep);
             objCon = objCon(objKeep);
             objFam = objFam(objKeep);
-            objMon = objMon(objKeep);
+            objPri = objPri(objKeep);
             objSes = objSes(objKeep);
             onsCho = onsCho(difKeep);
             difVal = difVal(difKeep);
@@ -139,7 +138,7 @@ for s = 1:length(subs)
             bData(subs(s)).imagination(r).fire.value = objVal;
             bData(subs(s)).imagination(r).fire.confidence = objCon;
             bData(subs(s)).imagination(r).fire.familiarity = objFam;
-            bData(subs(s)).imagination(r).fire.econValue = objMon;
+            bData(subs(s)).imagination(r).fire.price = objPri;
             bData(subs(s)).choice(r).fire.onset = onsCho;
             bData(subs(s)).choice(r).fire.valueDiff = difVal;
             bData(subs(s)).choice(r).fire.valueChosen = choVal;
@@ -152,7 +151,7 @@ for s = 1:length(subs)
             bData(subs(s)).imagination(r).boat.value = [];
             bData(subs(s)).imagination(r).boat.confidence = [];
             bData(subs(s)).imagination(r).boat.familiarity = [];
-            bData(subs(s)).imagination(r).boat.econValue = [];
+            bData(subs(s)).imagination(r).boat.price = [];
             bData(subs(s)).choice(r).boat.onset = [];
             bData(subs(s)).choice(r).boat.valueDiff = [];
             bData(subs(s)).choice(r).boat.valueChosen = [];
@@ -169,7 +168,7 @@ for s = 1:length(subs)
             bData(subs(s)).imagination(r).fire.value = [];
             bData(subs(s)).imagination(r).fire.confidence = [];
             bData(subs(s)).imagination(r).fire.familiarity = [];
-            bData(subs(s)).imagination(r).fire.econValue = [];
+            bData(subs(s)).imagination(r).fire.price = [];
             bData(subs(s)).choice(r).fire.onset = [];
             bData(subs(s)).choice(r).fire.valueDiff = [];
             bData(subs(s)).choice(r).fire.valueChosen = [];
@@ -184,7 +183,7 @@ for s = 1:length(subs)
             bData(subs(s)).imagination(r).boat.value = objVal;
             bData(subs(s)).imagination(r).boat.confidence = objCon;
             bData(subs(s)).imagination(r).boat.familiarity = objFam;
-            bData(subs(s)).imagination(r).boat.econValue = objMon;
+            bData(subs(s)).imagination(r).boat.price = objPri;
             bData(subs(s)).choice(r).boat.onset = onsCho;
             bData(subs(s)).choice(r).boat.valueDiff = difVal;
             bData(subs(s)).choice(r).boat.valueChosen = choVal;

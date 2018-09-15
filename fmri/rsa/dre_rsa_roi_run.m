@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_box';
+analysisName = 'rsa_roi_box_w';
 
 %% folders
 dir.root = pwd;

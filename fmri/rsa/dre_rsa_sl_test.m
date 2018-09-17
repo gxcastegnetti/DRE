@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box_L1_unmasked';
+analysisName = 'rsa_sl_box';
 
 %% Folders
 dir.root = pwd;
@@ -63,7 +63,7 @@ mask = niftiread([dir.msk,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% what are we looking at?
-scorP = 'pri';
+scorP = 'oid';
 
 %% load correlation maps and make them SPM-like
 dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName,fs,scorP];
@@ -147,6 +147,10 @@ end
 % apply FDR correction
 pThrsh_t  = FDRthreshold(p1,0.05,mask);
 pThrsh_sr = FDRthreshold(p2,0.05,mask);
+
+for i = 1:79
+    figure,imagesc(p1(:,:,i));
+end
 
 % % mark the suprathreshold voxels in yellow
 supraThreshMarked_t = zeros(size(p1));

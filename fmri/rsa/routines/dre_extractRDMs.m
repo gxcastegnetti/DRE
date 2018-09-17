@@ -25,10 +25,8 @@ for s = 1:length(subs)
         %% extract subject-specific task order
         if taskOrd(s) == 1
             day2Order = {'F','B','F','B'};
-            day1Order = {'1','2','1','2'};
         elseif taskOrd(s) == 2
             day2Order = {'B','F','B','F'};
-            day1Order = {'1','2','1','2'};
         end
         
         %% subject directories

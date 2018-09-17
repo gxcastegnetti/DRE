@@ -41,7 +41,6 @@ localOptions = setIfUnset(localOptions, 'averageSessions', true);
 %% Figure out whether to average over sessions or not
 justThisSession = 1;
 
-
 %% here I need to take three different t_pats: one for each of the first 3 sessions
 t_pats = fullBrainVolumes(:,:,justThisSession)';
 
@@ -173,6 +172,12 @@ for cMappingVoxI=1:nVox_mappingMask_request
     % 		searchlightRDMs(:, :, x, y, z) = squareform(searchlightRDM);
     searchlightRDMs = 0;
     
+    
+    % j = S1; k = S2; h = S3
+    jk_ = corrcoef(S1,S2);
+    
+    t2 = hotellingWilliams(jk, jh, kh, n);
+    
     try
         [rs, ps] = corr(searchlightRDM', modelRDMs_ltv', 'type', 'Spearman', 'rows', 'pairwise');
     catch
@@ -212,10 +217,10 @@ if monitor
     vol2=map2vol(mask);
     
     colors=[1 0 0
-        0 1 0
-        0 1 1
-        1 1 0
-        1 0 1];
+            0 1 0
+            0 1 1
+            1 1 0
+            1 0 1];
     
     for modelRDMI=1:nModelRDMs
         vol=addBinaryMapToVol(vol, smm_significant&(smm_bestModel==modelRDMI), colors(modelRDMI,:));

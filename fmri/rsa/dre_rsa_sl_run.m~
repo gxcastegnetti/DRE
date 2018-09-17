@@ -125,27 +125,27 @@ for ss = 1:length(subs)
     save([dir.out,fs,analysisName,fs,'oid',fs,'sl_oid_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
 end
 
-%% run model for goal - not perfect
-mat_goal = [zeros(120), ones(120);
+%% run model for goal - spurious
+mat_ID = [zeros(120), ones(120);
           ones(120),  zeros(120)];
-model_goal.name = 'goal';
-model_goal.RDM = mat_goal;
-model_goal.color = [0 1 0]; clear mat_goal
+model_ID.name = 'obj ID';
+model_ID.RDM = 1-mat_ID;
+model_ID.color = [0 1 0]; clear mat_ID
 
 for s = 1:length(subs)
-    disp(['Computing correlation (goal) for sub#',num2str(s),' of ',num2str(length(subs))])
+    disp(['Computing correlation (ID) for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
-    [rs_gol{s},ps_gol{s},ns_gol{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_goal, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
+    [rs_oID{s},ps_oID{s},ns_oID{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_ID, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
 end
         
 % save stuff
 for ss = 1:length(subs)
-    rs = rs_gol{ss}; 
-    ps = ps_gol{ss};
-    ns = ns_gol{ss};
-    save([dir.out,fs,analysisName,fs,'gol',fs,'sl_gol_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    rs = rs_oID{ss}; 
+    ps = ps_oID{ss};
+    ns = ns_oID{ss};
+    save([dir.out,fs,analysisName,fs,'oid',fs,'sl_oid_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
 end
 
 %% run searchlight for goal

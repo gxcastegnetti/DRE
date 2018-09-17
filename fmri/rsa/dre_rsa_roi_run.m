@@ -103,11 +103,11 @@ if true
         nameBeta = ['level1',fs,'rsa_box',fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
         timing.iOns = 0;
-        timing.iDur = 0;
+        timing.iDur = 5;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end
 end
-keyboard
+
 %% load betas and build response patterns
 userOptions = dre_rsa_userOptions(dir,subs);
 userOptions.analysisName = analysisName;

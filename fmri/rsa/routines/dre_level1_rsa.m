@@ -10,7 +10,6 @@ function spmMat_name = dre_level1_rsa(dir,anName,subs,bData,timing,maskName)
 % GX Castegnetti --- start ~ 08.08.18 --- last ~ 18.08.18
 
 fs = filesep;
-n_sess = 4;
 
 %% loop subjects
 for s = 1:length(subs)
@@ -30,10 +29,10 @@ for s = 1:length(subs)
     mkdir(dirOut)
     job{1}.spm.stats.fmri_spec.dir = {dirOut};
     
-    for r = 1:n_sess
+    for r = 1:4
         %% select EPI files
         dirFun = [dirSub,'/fun/S',num2str(r)];
-        d = spm_select('List', dirFun, '^uaf.*\.nii$');
+        d = spm_select('List', dirFun, '^wuaf.*\.nii$');
         files = cellstr([repmat([dirFun fs],size(d,1),1) d]);
         job{1}.spm.stats.fmri_spec.sess(r).scans = files;
         

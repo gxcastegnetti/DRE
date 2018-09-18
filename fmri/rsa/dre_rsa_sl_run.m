@@ -125,32 +125,67 @@ for ss = 1:length(subs)
     save([dir.out,fs,analysisName,fs,'oid',fs,'sl_oid_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
 end
 
-%% run model for goal - not perfect
-mat_goal = [zeros(120), ones(120);
-          ones(120),  zeros(120)];
-model_goal.name = 'goal';
-model_goal.RDM = mat_goal;
-model_goal.color = [0 1 0]; clear mat_goal
-
-for s = 1:length(subs)
-    disp(['Computing correlation (goal) for sub#',num2str(s),' of ',num2str(length(subs))])
-    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
-    binaryMask = logical(binaryMask);
-    thisSubject = userOptions.subjectNames{s};
-    [rs_gol{s},ps_gol{s},ns_gol{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_goal, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-end
-        
-% save stuff
-for ss = 1:length(subs)
-    rs = rs_gol{ss}; 
-    ps = ps_gol{ss};
-    ns = ns_gol{ss};
-    save([dir.out,fs,analysisName,fs,'gol',fs,'sl_gol_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
-end
-
 %% run searchlight for goal
+
+% take behavioural data for reordering response patterns
 bData = dre_extractData(dir,subs,taskOrd,0);
 
-% for s = 1:length(subs)
-%     [rs_val{s},ps_val{s},ns_val{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_val, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-% end
+subNames = fieldnames(responsePatterns);
+for s = 1:length(subNames)
+    
+    % update user
+    disp(['Computing correlation (goal) for sub#',num2str(s),' of ',num2str(length(subs))])
+    
+    % define (subjective) mask
+    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+    binaryMask = logical(binaryMask);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % reorder response patterns according to presentation %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % S1
+    sessType1 = bData(subs(s)).sessType{1};
+    idx_s1 = bData(subs(s)).imagination(1).(sessType1).objIdx;
+    if strcmp(sessType1,'boat')
+        idx_s1 = idx_s1 + 120;
+    end
+    
+    % S2
+    sessType2 = bData(subs(s)).sessType{2};
+    idx_s2 = bData(subs(s)).imagination(2).(sessType2).objIdx;
+    if strcmp(sessType2,'boat')
+        idx_s2 = idx_s2 + 120;
+    end
+    
+    % S3
+    sessType3 = bData(subs(s)).sessType{3};
+    idx_s3 = bData(subs(s)).imagination(3).(sessType3).objIdx;
+    if strcmp(sessType3,'boat')
+        idx_s3 = idx_s3 + 120;
+    end
+    
+    % S4
+    sessType4 = bData(subs(s)).sessType{4};
+    idx_s4 = bData(subs(s)).imagination(4).(sessType4).objIdx;
+    if strcmp(sessType4,'boat')
+        idx_s4 = idx_s4 + 120;
+    end
+    
+    % for every subject, this should be nVox x nCond x nRuns
+    respPatt_presentOrder{s}(:,:,1) = responsePatterns.(subNames{s})(:,idx_s1); %#ok<*SAGROW>
+    respPatt_presentOrder{s}(:,:,2) = responsePatterns.(subNames{s})(:,idx_s2);
+    respPatt_presentOrder{s}(:,:,3) = responsePatterns.(subNames{s})(:,idx_s3);
+    respPatt_presentOrder{s}(:,:,4) = responsePatterns.(subNames{s})(:,idx_s4);
+    
+    % run searchlight
+    t2_gol{s} = searchlightGoal(respPatt_presentOrder{s}, binaryMask, userOptions, searchlightOptions);
+    
+end
+
+% save stuff
+for ss = 1:length(subs)
+    rs = t2_gol{ss}; 
+    save([dir.out,fs,analysisName,fs,'gol',fs,'sl_gol_SF',num2str(subs(ss),'%03d')],'rs')
+end
+

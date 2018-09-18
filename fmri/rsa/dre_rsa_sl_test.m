@@ -63,7 +63,7 @@ mask = niftiread([dir.msk,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% what are we looking at?
-scorP = 'oid';
+scorP = 'gol';
 
 %% load correlation maps and make them SPM-like
 dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName,fs,scorP];
@@ -75,7 +75,7 @@ for s = 1:length(subs)
     
     % read nifti and modify matrix
     V = spm_vol([dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']);
-    
+    mri
     % load sample EPI from current subject
     dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
     d = spm_select('List', dirFun, '^uaf.*\.nii$');

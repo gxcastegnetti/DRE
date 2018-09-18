@@ -75,7 +75,7 @@ for s = 1:length(subs)
     
     % read nifti and modify matrix
     V = spm_vol([dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']);
-    mri
+    
     % load sample EPI from current subject
     dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
     d = spm_select('List', dirFun, '^uaf.*\.nii$');
@@ -133,8 +133,8 @@ for x=1:size(rMaps,1)
     for y=1:size(rMaps,2)
         for z=1:size(rMaps,3)
             if mask(x,y,z) == 1
-                [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
+                [h p1(x,y,z)] = ttest(squeeze(-rMaps(x,y,z,:)),0,0.05,'right');
+                [p2(x,y,z)] = signrank_onesided(squeeze(-rMaps(x,y,z,:)));
             else
                 p1(x,y,z) = NaN;
                 p2(x,y,z) = NaN;
@@ -152,7 +152,7 @@ for i = 1:79
     figure,imagesc(p1(:,:,i));
 end
 
-% % mark the suprathreshold voxels in yellow
+% mark the suprathreshold voxels in yellow
 supraThreshMarked_t = zeros(size(p1));
 supraThreshMarked_t(p1 <= pThrsh_t) = 1;
 supraThreshMarked_sr = zeros(size(p2));

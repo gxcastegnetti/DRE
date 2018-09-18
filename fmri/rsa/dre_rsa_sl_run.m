@@ -96,7 +96,7 @@ for ss = 1:length(subs)
     ps = ps_fam{ss};
     ns = ns_fam{ss};
     save([dir.out,fs,analysisName,fs,'fam',fs,'sl_fam_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
-    rs = rs_pri{ss}; 
+    rs = rs_pri{ss};
     ps = ps_pri{ss};
     ns = ns_pri{ss};
     save([dir.out,fs,analysisName,fs,'pri',fs,'sl_pri_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
@@ -104,7 +104,7 @@ end
 
 %% run model for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
-          diag(ones(120,1)), diag(ones(120,1))];
+    diag(ones(120,1)), diag(ones(120,1))];
 model_ID.name = 'obj ID';
 model_ID.RDM = 1-mat_ID;
 model_ID.color = [0 1 0]; clear mat_ID
@@ -116,10 +116,10 @@ for s = 1:length(subs)
     thisSubject = userOptions.subjectNames{s};
     [rs_oID{s},ps_oID{s},ns_oID{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_ID, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
 end
-        
+
 % save stuff
 for ss = 1:length(subs)
-    rs = rs_oID{ss}; 
+    rs = rs_oID{ss};
     ps = ps_oID{ss};
     ns = ns_oID{ss};
     save([dir.out,fs,analysisName,fs,'oid',fs,'sl_oid_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
@@ -185,7 +185,7 @@ end
 
 % save stuff
 for ss = 1:length(subs)
-    rs = t2_gol{ss}; 
+    rs = t2_gol{ss};
     save([dir.out,fs,analysisName,fs,'gol',fs,'sl_gol_SF',num2str(subs(ss),'%03d')],'rs')
 end
 

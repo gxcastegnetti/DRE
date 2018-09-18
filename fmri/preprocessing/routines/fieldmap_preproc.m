@@ -1,4 +1,4 @@
-function fileNames = fieldmap_preprocess(dir,subs,runType)
+function fileNames = fieldmap_preproc(dir,subs,runType)
 %% function fieldmap_preprocess(dirSPM,dirMain,subs,runType)
 % ~~~
 % INPUTS:

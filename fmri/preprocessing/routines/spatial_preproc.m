@@ -1,27 +1,30 @@
-function spatial_preprocess(dir,subs,fmapFiles)
+function spatial_preproc(dir,subs,fmapFiles)
 % function spatialPreprocessing(dirSPM,dirSub,subs,fmapFiles)
 % ~~~
 % This script:
 % a) corrects slice timing
 % b) realigns & unwarps using preprocessed fieldmaps
 % c) coregisters the structural to mean-epi generated in (b)
-% d) segments the coregistered structural
-% e) normalizes all functional runs using forward deformations generated in (d)...
-% f) ...or normalises structural to MNI template and applies warp to functional runs
-% g) smooths functional images
+% d) performs light normalisation useful for RSA
+% e) segments the coregistered structural
+% f) normalizes all functional runs using forward deformations generated in (d)...
+% g) ...or normalises structural to MNI template and applies warp to functional runs
+% h) smooths functional images
+% i) creates physiological regressors
 % ~~~
-% GX Castegnetti --- start ~ 05.06.18 --- last ~ 31.07.18 (adapted from SM Fleming's code)
+% GX Castegnetti --- 2018 (adapted from SM Fleming's code)
 
 fs = filesep;
 
 %% parameters
-slicetiming = 1;
-realign     = 1;
-coregister  = 1;
-smoothNat   = 1;
-segment     = 1;
-normalise   = 1;
-smooth      = 1;
+slicetiming = 0;
+realign     = 0;
+coregister  = 0;
+smoothNat   = 0;
+segment     = 0;
+normalise   = 0;
+smooth      = 0;
+physio      = 1;
 FWHM        = 8;
 resolEPI    = [2 2 2]; %#ok<*NASGU>
 nslices     = 48;
@@ -34,7 +37,7 @@ for s = 1:length(subs)
     n_sess = length(fmapFiles{subs(s)});
     
     % subject directory
-    dirSub = [dir.dre,'data/fmri/scanner/SF',num2str(subs(s),'%03d')];
+    dirSub = [dir.dre,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
     
     %% Slice-timing
     if slicetiming
@@ -237,8 +240,8 @@ for s = 1:length(subs)
     %% Normalise bias-correct structural and slicetime corrected EPIs
     if normalise
         disp(['Normalisation job specification for sub#', num2str(subs(s),'%03d'),'...']);
-                
-        % Loop over sessions for epi's
+        
+        % Loop over EPI sessions
         conCat_files = [];
         for r = 1:n_sess
             dirFun = [dirSub,fs,'fun',fs,'S',num2str(r)];

@@ -14,7 +14,7 @@ dir.dre = foodir(1:idcs(end-2));
 dir.dsk = foodir(1:idcs(end-4));
 dir.scn = [dir.dre,'data',fs,'fmri',fs,'scanner'];
 dir.fmp = [dir.dre,'out',fs,'fmri',fs,'fmap'];
-dir.spm = [dir.dsk,'tools',fs,'matlab',fs,'spm12'];
+dir.spm = [dir.dsk,'tools/matlab/spm12'];
 addpath([pwd,filesep,'routines'])
 
 addpath(genpath(dir.spm))
@@ -83,8 +83,12 @@ if false
 end
 
 %% physiological regressors
-addpath([dir.spm,fs,'toolbox',fs,'physio']);
-addpath([dir.spm,fs,'toolbox',fs,'physio',fs,'son']);
+%% Add necessary folders to path
+[spm_path,name] = fileparts(which('spm'));
+physiopath = sprintf('%s%s%s',spm_path,filesep,'toolbox',filesep,'physio');
+addpath(physiopath);
+sonpath = sprintf('%s%s%s%s%s',spm_path,filesep,'toolbox',filesep,'physio',filesep,'son');
+addpath(sonpath);
 physioRegressors(dir,subs)
 
 %% save movement data on a .pdf

@@ -49,8 +49,12 @@ for s = 1:length(subs)
         
         % Call the main routine for calculating physio regressors
         % NB - currently the cardiacqrs calculation is disabled.
-        [cardiac,~,respire,rvt] = make_physio_regressors(smrFile,nslices,ndummies,TR_sl,...
-            slicenum,nsessions,scanner_channel,cardiacTTL_channel,cardiacQRS_channel,resp_channel);
+        try
+            [cardiac,~,respire,rvt] = make_physio_regressors(smrFile,nslices,ndummies,TR_sl,...
+                slicenum,nsessions,scanner_channel,cardiacTTL_channel,cardiacQRS_channel,resp_channel);
+        catch
+            continue
+        end
         
         for sessnum = 1:nsessions
             R = [];

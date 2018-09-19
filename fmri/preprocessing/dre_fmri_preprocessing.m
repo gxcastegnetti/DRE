@@ -62,6 +62,7 @@ runType{36} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 runType{37} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 runType{38} = {};
 runType{39} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+% runType{40} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 
 %% Import images
 DICOM_import(dir,subs,runType)

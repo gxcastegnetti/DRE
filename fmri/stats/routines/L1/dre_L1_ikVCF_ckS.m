@@ -1,11 +1,11 @@
-function spmMat_name = dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData)
-%% function dre_L1_iVCF_cV(dirSub,sub,runType)
+function spmMat_name = dre_L1_ikVCF_ckS(dir,analysisName,subs,timing,bData)
+%% function dre_L1_ikVCF_ckV(dirSub,sub,runType)
 % ~~~
 % First level analysis with conditions:
-%   * imagination
-%       - pmod: value, familiarity
-%   * choice
-%       - pmod: value difference
+%   * imagination H/L
+%   * confidence  H/L
+%   * familiarity H/L
+%   * choice dv   H/L
 % ~~~
 % GX Castegnetti --- 2018
 

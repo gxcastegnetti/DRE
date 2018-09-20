@@ -20,7 +20,8 @@ addpath([pwd,filesep,'routines'])
 addpath(genpath(dir.spm))
 
 %% subjects
-subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:43];
+
 
 %% input run types (fun: functional; struct: structural; fmapm: fmap magnitude; fmapp: fmap phase; loc: localiser)
 runType{1}  = {'loc','ignore','fun','fun','fmapm','fmapp','struct','fun'};
@@ -62,7 +63,10 @@ runType{36} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 runType{37} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 runType{38} = {};
 runType{39} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
-% runType{40} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{40} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{41} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{42} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{43} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 
 %% Import images
 DICOM_import(dir,subs,runType)

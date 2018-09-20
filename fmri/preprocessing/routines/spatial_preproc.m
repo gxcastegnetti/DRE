@@ -17,14 +17,13 @@ function spatial_preproc(dir,subs,fmapFiles)
 fs = filesep;
 
 %% parameters
-slicetiming = 0;
-realign     = 0;
-coregister  = 0;
+slicetiming = 1;
+realign     = 1;
+coregister  = 1;
 smoothNat   = 0;
-segment     = 0;
-normalise   = 0;
-smooth      = 0;
-physio      = 1;
+segment     = 1;
+normalise   = 1;
+smooth      = 1;
 FWHM        = 8;
 resolEPI    = [2 2 2]; %#ok<*NASGU>
 nslices     = 48;

@@ -27,7 +27,7 @@ taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
 
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,1);
-
+keyboard
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
 % analysisName = 'uni_pulse_iVCF_cS';
 % 

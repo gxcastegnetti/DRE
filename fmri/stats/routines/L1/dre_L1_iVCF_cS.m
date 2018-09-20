@@ -27,9 +27,9 @@ for s = 1:length(subs)
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
     dirOut = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
-    dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
-    dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
-    if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
+%     dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
+%     dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
+%     if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
     if ~exist(dirOut,'dir'), mkdir(dirOut), end
     
     job1LM{1}.spm.stats.fmri_spec.dir = {dirOut};

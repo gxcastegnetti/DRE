@@ -27,9 +27,6 @@ for s = 1:length(subs)
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
     dirOut = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
-    dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
-    dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
-    if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
     if ~exist(dirOut,'dir'), mkdir(dirOut), end
     
     job1LM{1}.spm.stats.fmri_spec.dir = {dirOut};
@@ -44,27 +41,15 @@ for s = 1:length(subs)
         %% extract session type
         sessType = bData(subs(s)).sessType{r};
         
-        %% imagination
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['imagin. ',sessType];
+        %% imagination value
+        
+        % low
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['ima. value L - ',sessType];
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset + timing.iOns;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).duration = timing.iDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).tmod = 0;
         
-        % parametric modulations of value
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'imagin. value';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = bData(subs(s)).imagination(r).(sessType).value;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).poly = 1;
-        
-        % parametric modulations of confidence
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).name = 'imagin. conf.';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).param = bData(subs(s)).imagination(r).(sessType).confidence;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).poly = 1;
-        
-        % parametric modulations of familiarity
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).name = 'imagin. famil.';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).param = bData(subs(s)).imagination(r).(sessType).familiarity;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).poly = 1;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).orth = 0;
+
         
         
         %% choice

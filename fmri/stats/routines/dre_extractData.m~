@@ -77,24 +77,24 @@ for s = 1:length(subs)
         %% choice
         idxCho_day2_L = NaN(length(idCho_day2),1);
         idxCho_day2_R = NaN(length(idCho_day2),1);
-        valCho = NaN(length(idCho_day2),1);
-        valUnc = NaN(length(idCho_day2),1);
+        choVal = NaN(length(idCho_day2),1);
+        uncVal = NaN(length(idCho_day2),1);
         for i = 1:length(idCho_day2)
             idxCho_day2_L(i) = find(Mday1(:,2) == idCho_day2(i,1));
             idxCho_day2_R(i) = find(Mday1(:,2) == idCho_day2(i,2));
             if chosenChoice_day2(i) == -1
-                valCho(i) = Mday1(idxCho_day2_L(i),3);
-                valUnc(i) = Mday1(idxCho_day2_R(i),3);
+                choVal(i) = Mday1(idxCho_day2_L(i),3);
+                uncVal(i) = Mday1(idxCho_day2_R(i),3);
             elseif chosenChoice_day2(i) == 1
-                valCho(i) = Mday1(idxCho_day2_R(i),3);
-                valUnc(i) = Mday1(idxCho_day2_L(i),3);
+                choVal(i) = Mday1(idxCho_day2_R(i),3);
+                uncVal(i) = Mday1(idxCho_day2_L(i),3);
             else
-                valCho(i) = NaN;
-                valUnc(i) = NaN;
+                choVal(i) = NaN;
+                uncVal(i) = NaN;
             end
         end
         difVal = abs(Mday1(idxCho_day2_L,3) - Mday1(idxCho_day2_R,3)); % value difference
-        chMunc = valCho - valUnc; % value chosen - value unchosen
+        chMunc = choVal - uncVal; % value chosen - value unchosen
         
         % movement onset and side
         movCho = Mday2(Mday2(:,3)==1,8);
@@ -124,7 +124,7 @@ for s = 1:length(subs)
         % remove NaNs
         if excNan == 1
             objKeep = ~isnan(objVal) & ~isnan(objCon) & ~isnan(objFam) & ~isnan(objPri);
-            difKeep = ~isnan(difVal) & ~isnan(valCho) & ~isnan(movCho) & ~isnan(sidCho);
+            difKeep = ~isnan(difVal) & ~isnan(choVal) & ~isnan(movCho) & ~isnan(sidCho);
             onsIma = onsIma(objKeep);
             objVal = objVal(objKeep);
             objCon = objCon(objKeep);
@@ -134,8 +134,8 @@ for s = 1:length(subs)
             objIdx = objIdx(objKeep);
             onsCho = onsCho(difKeep);
             difVal = difVal(difKeep);
-            valCho = valCho(difKeep);
-            valUnc = valUnc(difKeep);
+            choVal = choVal(difKeep);
+            uncVal = uncVal(difKeep);
             chMunc = chMunc(difKeep);
             movCho = movCho(difKeep);
             sidCho = sidCho(difKeep);
@@ -156,15 +156,15 @@ for s = 1:length(subs)
         
         medPri = median(objPri);
         idxPri_H = objPri > medPri;
-        idxPri_L = objPri < medPri;
+        idxPri_L = objpri < medPri;
         
         medDV = median(difVal);
         idxDV_H = difVal > medDV;
         idxDV_L = difVal < medDV;
         
-        medCho = median(valCho);
-        idxCho_H = valCho > medCho;
-        idxCho_L = valCho < medCho;
+        medCho = median(choVal);
+        idxCho_H = choVal > medCho;
+        idxCho_L = choVal < medCho;
         
         medCmU = median(chMunc);
         idxCmU_H = chMunc > medCmU;
@@ -187,7 +187,7 @@ for s = 1:length(subs)
         bData(subs(s)).imagination(r).fam = objFam;     % object familiarity
         bData(subs(s)).imagination(r).pri = objPri;     % object price
         
-        % median splits
+        % evaluations H/L (median split)
         bData(subs(s)).imagination(r).k_val.low.onset = objVal(idxVal_L);
         bData(subs(s)).imagination(r).k_val.high.onset = objVal(idxVal_H);
         bData(subs(s)).imagination(r).k_con.low.onset = objCon(idxCon_L);
@@ -203,19 +203,14 @@ for s = 1:length(subs)
         
         bData(subs(s)).choice(r).onset = onsCho;
         bData(subs(s)).choice(r).valDiff = difVal;
-        bData(subs(s)).choice(r).valCho = valCho;
-        bData(subs(s)).choice(r).valUnc = valUnc;
-        bData(subs(s)).choice(r).chMunc = chMunc;
+        bData(subs(s)).choice(r).valCho = choVal;
+        bData(subs(s)).choice(r).valUnc = uncVal;
         bData(subs(s)).choice(r).movOnset = movCho;
         bData(subs(s)).choice(r).movSide = sidCho;
         
         % median splits
-        bData(subs(s)).choice(r).k_valDiff.low.onset = difVal(idxDV_L);
-        bData(subs(s)).choice(r).k_valDiff.high.onset = difVal(idxDV_H);
-        bData(subs(s)).choice(r).k_valCho.low.onset = valCho(idxCho_L);
-        bData(subs(s)).choice(r).k_valCho.high.onset = valCho(idxCho_H);
-        bData(subs(s)).choice(r).k_chMunc.low.onset = chMunc(idxCmU_L);
-        bData(subs(s)).choice(r).k_chMunc.high.onset = chMunc(idxCmU_H);
+        bData(subs(s)).choice(r).k_valDiff.low.onset = difVal;
+        
         
     end
 end

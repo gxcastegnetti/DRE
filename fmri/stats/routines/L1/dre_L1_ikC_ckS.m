@@ -1,13 +1,11 @@
-function spmMat_name = dre_L1_iVw_cSs(dir,analysisName,subs,timing,bData)
-%% function dre_L1_iV_cV(dirSub,sub,runType)
+function spmMat_name = dre_L1_ikC_ckS(dir,analysisName,subs,timing,bData)
+%% function dre_L1_ikVCF_ckV(dirSub,sub,runType)
 % ~~~
 % First level analysis with conditions:
-%   * imagination
-%       - pmod: value weighed by confidence
-%   * choice
-%       - pmod: value of chosen item minus value of unchosen item
+%   * confidence    H/L
+%   * chosen value  H/L
 % ~~~
-% GX Castegnetti --- start ~ 07.09.18 --- last ~ 07.09.18
+% GX Castegnetti --- 2018
 
 fs = filesep;
 n_sess = 4;
@@ -27,7 +25,8 @@ for s = 1:length(subs)
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
     dirOut = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
-    mkdir(dirOut)
+    if ~exist(dirOut,'dir'), mkdir(dirOut), end
+    
     job1LM{1}.spm.stats.fmri_spec.dir = {dirOut};
     
     for r = 1:n_sess
@@ -40,39 +39,38 @@ for s = 1:length(subs)
         %% extract session type
         sessType = bData(subs(s)).sessType{r};
         
-        %% imagination
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['imagination_',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset + timing.iOns;
+        %% imagination confidence
+
+        % low
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['ima. low conf. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).k_con.low.onset + timing.iOns;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).duration = timing.iDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).tmod = 0;
         
-        % parametric modulations by value weighed by confidence
-        confNorm = bData(subs(s)).imagination(r).(sessType).confidence/50; % extract confidence and map it onto [0,1]
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'value weighed by conf.';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = confNorm.*bData(subs(s)).imagination(r).(sessType).value;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).poly = 1;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).orth = 0;
-        
-        
-        %% choice
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).name = ['choice_',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).choice(r).(sessType).onset + timing.cOns;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.cDur;
+        % high
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).name = ['ima. high conf. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).imagination(r).k_con.high.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.iDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).tmod = 0;
+
+        %% value of chosen item
+
+        % low
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).name = ['low chosen val. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).onset = bData(subs(s)).choice(r).k_valCho.low.onset + timing.cOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).duration = timing.cDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).tmod = 0;
         
-        % parametric modulation by value of the chosen item minus the
-        % value of the unchosed item
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'value chosen - unchosen';
-        choVal = bData(subs(s)).choice(r).(sessType).valueChosen; % value of chosen item
-        uncVal = bData(subs(s)).choice(r).(sessType).valueUnchosen; % value of unchosen item
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = choVal - uncVal;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).orth = 0;
+        % high
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).name = ['high chosen val. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).onset = bData(subs(s)).choice(r).k_valCho.high.onset + timing.cOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).duration = timing.cDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).tmod = 0;
         
         
-        %% select movement regressors
-        d = spm_select('List', dirFun, '^rp_af.*\.txt$');
-        rp_file = cellstr([repmat([dirFun fs],size(d,1),1) d]);
+        %% movement regressors
+        d_mov = spm_select('List', dirFun, '^rp_af.*\.txt$');
+        rp_file = cellstr([repmat([dirFun fs],size(d_mov,1),1) d_mov]);
         
         job1LM{1}.spm.stats.fmri_spec.sess(r).multi = {''};
         job1LM{1}.spm.stats.fmri_spec.sess(r).regress = struct('name', {}, 'val', {});

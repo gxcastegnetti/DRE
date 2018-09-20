@@ -188,14 +188,14 @@ for s = 1:length(subs)
         bData(subs(s)).imagination(r).pri = objPri;     % object price
         
         % median splits
-        bData(subs(s)).imagination(r).k_val.low.onset = objVal(idxVal_L);
-        bData(subs(s)).imagination(r).k_val.high.onset = objVal(idxVal_H);
-        bData(subs(s)).imagination(r).k_con.low.onset = objCon(idxCon_L);
-        bData(subs(s)).imagination(r).k_con.high.onset = objCon(idxCon_H);
-        bData(subs(s)).imagination(r).k_fam.low.onset = objFam(idxFam_L);
-        bData(subs(s)).imagination(r).k_fam.high.onset = objFam(idxFam_H);
-        bData(subs(s)).imagination(r).k_fam.low.onset = objPri(idxPri_L);
-        bData(subs(s)).imagination(r).k_fam.high.onset = objPri(idxPri_H);
+        bData(subs(s)).imagination(r).k_val.low.onset = onsIma(idxVal_L);
+        bData(subs(s)).imagination(r).k_val.high.onset = onsIma(idxVal_H);
+        bData(subs(s)).imagination(r).k_con.low.onset = onsIma(idxCon_L);
+        bData(subs(s)).imagination(r).k_con.high.onset = onsIma(idxCon_H);
+        bData(subs(s)).imagination(r).k_fam.low.onset = onsIma(idxFam_L);
+        bData(subs(s)).imagination(r).k_fam.high.onset = onsIma(idxFam_H);
+        bData(subs(s)).imagination(r).k_fam.low.onset = onsIma(idxPri_L);
+        bData(subs(s)).imagination(r).k_fam.high.onset = onsIma(idxPri_H);
         
         %%%%%%%%%%%%%%%%
         % choice stuff %
@@ -210,12 +210,12 @@ for s = 1:length(subs)
         bData(subs(s)).choice(r).movSide = sidCho;
         
         % median splits
-        bData(subs(s)).choice(r).k_valDiff.low.onset = difVal(idxDV_L);
-        bData(subs(s)).choice(r).k_valDiff.high.onset = difVal(idxDV_H);
-        bData(subs(s)).choice(r).k_valCho.low.onset = valCho(idxCho_L);
-        bData(subs(s)).choice(r).k_valCho.high.onset = valCho(idxCho_H);
-        bData(subs(s)).choice(r).k_chMunc.low.onset = chMunc(idxCmU_L);
-        bData(subs(s)).choice(r).k_chMunc.high.onset = chMunc(idxCmU_H);
+        bData(subs(s)).choice(r).k_valDiff.low.onset = onsCho(idxDV_L);
+        bData(subs(s)).choice(r).k_valDiff.high.onset = onsCho(idxDV_H);
+        bData(subs(s)).choice(r).k_valCho.low.onset = onsCho(idxCho_L);
+        bData(subs(s)).choice(r).k_valCho.high.onset = onsCho(idxCho_H);
+        bData(subs(s)).choice(r).k_chMunc.low.onset = onsCho(idxCmU_L);
+        bData(subs(s)).choice(r).k_chMunc.high.onset = onsCho(idxCmU_H);
         
     end
 end

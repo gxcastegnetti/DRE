@@ -41,18 +41,73 @@ for s = 1:length(subs)
         %% extract session type
         sessType = bData(subs(s)).sessType{r};
         
-        %% imagination value
+        %% imagination
         
+        %%%%%%%%%
+        % value %
+        %%%%%%%%%
         % low
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['ima. value L - ',sessType];
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).(sessType).onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['ima. low value - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).onset = bData(subs(s)).imagination(r).k_val.low.onset + timing.iOns;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).duration = timing.iDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).tmod = 0;
         
-
+        % high
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).name = ['ima. high value - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).imagination(r).k_val.high.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).tmod = 0;
         
+        %%%%%%%%%%%%%%
+        % confidence %
+        %%%%%%%%%%%%%%
+        % low
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).name = ['ima. low conf. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).onset = bData(subs(s)).imagination(r).k_con.low.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(3).tmod = 0;
+        
+        % high
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).name = ['ima. high conf. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).onset = bData(subs(s)).imagination(r).k_con.high.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).tmod = 0;
+        
+        %%%%%%%%%%%%%%%
+        % familiarity %
+        %%%%%%%%%%%%%%%
+        % low
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(5).name = ['ima. low famil. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(5).onset = bData(subs(s)).imagination(r).k_fam.low.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(5).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(5).tmod = 0;
+        
+        % high
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(6).name = ['ima. high famil. - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(6).onset = bData(subs(s)).imagination(r).k_fam.high.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(6).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(6).tmod = 0;
+        
+        %%%%%%%%%
+        % price %
+        %%%%%%%%%
+        % low
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(7).name = ['ima. low price - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(7).onset = bData(subs(s)).imagination(r).k_pri.low.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(7).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(7).tmod = 0;
+        
+        % high
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(8).name = ['ima. high price - ',sessType];
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(8).onset = bData(subs(s)).imagination(r).k_pri.high.onset + timing.iOns;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(8).duration = timing.iDur;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(8).tmod = 0;
         
         %% choice
+        
+        %%%%%%%%%%%%%%%%%%%%
+        % value difference %
+        %%%%%%%%%%%%%%%%%%%%
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).name = ['choice ',sessType];
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).onset = bData(subs(s)).choice(r).(sessType).onset + timing.cOns;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.cDur;

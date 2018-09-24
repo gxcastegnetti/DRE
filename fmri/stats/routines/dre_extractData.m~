@@ -142,44 +142,39 @@ for s = 1:length(subs)
         end
         
         % median splits
-        objVal = objVal + 0.00001*[1:length(objVal)]';
+        objVal = objVal+0.0;
         medVal = median(objVal);
         idxVal_H = objVal > medVal;
         idxVal_L = objVal < medVal;
         
-        objCon = objCon + 0.00001*[1:length(objVal)]';
-        medCon = median(objCon);
+        objCon
+        medCon = median(objCon+0.0001*randn(length(objVal),1));
         idxCon_H = objCon > medCon;
         idxCon_L = objCon < medCon;
         
-        objFam = objFam + 0.00001*[1:length(objVal)]';
-        medFam = median(objFam);
+        medFam = median(objFam+0.0001*randn(length(objVal),1));
         idxFam_H = objFam > medFam;
         idxFam_L = objFam < medFam;
         
-        objPri = objPri + 0.00001*[1:length(objVal)]';
-        medPri = median(objPri);
+        medPri = median(objPri+0.0001*randn(length(objVal),1));
         idxPri_H = objPri > medPri;
         idxPri_L = objPri < medPri;
         
-        difVal = difVal + 0.00001*[1:length(difVal)]';
-        medDV = median(difVal);
+        medDV = median(difVal+0.0001*randn(length(difVal),1));
         idxDV_H = difVal > medDV;
         idxDV_L = difVal < medDV;
         
-        valCho = valCho + 0.00001*[1:length(difVal)]';
-        medCho = median(valCho);
+        medCho = median(valCho+0.0001*randn(length(difVal),1));
         idxCho_H = valCho > medCho;
         idxCho_L = valCho < medCho;
         
-        chMunc = chMunc + 0.00001*[1:length(difVal)]';
-        medCmU = median(chMunc);
+        medCmU = median(chMunc+0.0001*randn(length(difVal),1));
         idxCmU_H = chMunc > medCmU;
         idxCmU_L = chMunc < medCmU;
         
         % session type
         bData(subs(s)).sessType{r} = day2Order{r};
-%         if subs(s) == 23, keyboard, end
+        if subs(s) == 23, keyboard, end
         %%%%%%%%%%%%%%%%%%%%%
         % imagination stuff %
         %%%%%%%%%%%%%%%%%%%%%

@@ -67,6 +67,9 @@ for s = 1:length(subs)
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).duration = timing.cDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(4).tmod = 0;
         
+%         if subs(s) == 16,
+%             keyboard
+%         end
         
         %% movement regressors
         d_mov = spm_select('List', dirFun, '^rp_af.*\.txt$');

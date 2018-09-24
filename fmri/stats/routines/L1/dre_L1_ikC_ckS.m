@@ -77,6 +77,8 @@ for s = 1:length(subs)
         job1LM{1}.spm.stats.fmri_spec.sess(r).multi_reg = rp_file;
         job1LM{1}.spm.stats.fmri_spec.sess(r).hpf = 128;
         
+%         if subs(s) == 23, keyboard, end
+        
     end
     
     %% other stuff

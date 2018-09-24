@@ -7,7 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box';
+analysisName = 'rsa_sl_box_deleteMe';
+betaid       = 'rsa_box';
 
 %% folders
 fs      = filesep;
@@ -37,8 +38,7 @@ userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
 %% load betas
-nameBeta = ['level1',fs,'rsa_box',fs,'none']; % <------------------------ set here which betas to look for
-dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 if ~exist([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'file')
     [~, responsePatterns] = fMRIDataPreparation('SPM', userOptions);
@@ -58,134 +58,96 @@ searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
 searchlightOptions.nConditions = 240;
 
-%% run searchlight for value, confidence, familiarity, price
+%% run searchlight for value, confidence, familiarity, price, object ID
+% create matrix for object ID
+mat_ID = [diag(ones(120,1)), diag(ones(120,1));
+          diag(ones(120,1)), diag(ones(120,1))];
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
-    model_val.name = 'value';
-    model_val.RDM = RDMs{s}.val;
-    model_val.color = [0 1 0];
-    model_con.name = 'confidence';
-    model_con.RDM = RDMs{s}.con;
-    model_con.color = [0 1 0];
-    model_fam.name = 'familiarity';
-    model_fam.RDM = RDMs{s}.fam;
-    model_fam.color = [0 1 0];
-    model_pri.name = 'price';
-    model_pri.RDM = RDMs{s}.pri;
-    model_pri.color = [0 1 0];
-    [rs_val{s},ps_val{s},ns_val{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_val, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-    [rs_con{s},ps_con{s},ns_con{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_con, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-    [rs_fam{s},ps_fam{s},ns_fam{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_fam, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-    [rs_pri{s},ps_pri{s},ns_pri{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_pri, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-end
-
-% save stuff
-for ss = 1:length(subs)
-    rs = rs_val{ss}; %#ok<*NASGU>
-    ps = ps_val{ss};
-    ns = ns_val{ss};
-    save([dir.out,fs,analysisName,fs,'val',fs,'sl_val_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
-    rs = rs_con{ss};
-    ps = ps_con{ss};
-    ns = ns_con{ss};
-    save([dir.out,fs,analysisName,fs,'con',fs,'sl_con_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
-    rs = rs_fam{ss};
-    ps = ps_fam{ss};
-    ns = ns_fam{ss};
-    save([dir.out,fs,analysisName,fs,'fam',fs,'sl_fam_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
-    rs = rs_pri{ss};
-    ps = ps_pri{ss};
-    ns = ns_pri{ss};
-    save([dir.out,fs,analysisName,fs,'pri',fs,'sl_pri_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
-end
-
-%% run model for object ID
-mat_ID = [diag(ones(120,1)), diag(ones(120,1));
-    diag(ones(120,1)), diag(ones(120,1))];
-model_ID.name = 'obj ID';
-model_ID.RDM = 1-mat_ID;
-model_ID.color = [0 1 0]; clear mat_ID
-
-for s = 1:length(subs)
-    disp(['Computing correlation (ID) for sub#',num2str(s),' of ',num2str(length(subs))])
-    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
-    binaryMask = logical(binaryMask);
-    thisSubject = userOptions.subjectNames{s};
-    [rs_oID{s},ps_oID{s},ns_oID{s},~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model_ID, binaryMask, userOptions, searchlightOptions); %#ok<SAGROW>
-end
-
-% save stuff
-for ss = 1:length(subs)
-    rs = rs_oID{ss};
-    ps = ps_oID{ss};
-    ns = ns_oID{ss};
-    save([dir.out,fs,analysisName,fs,'oid',fs,'sl_oid_SF',num2str(subs(ss),'%03d')],'rs','ps','ns')
+    model(1).name = 'value';
+    model(1).RDM = RDMs{s}.val;
+    model(1).color = [0 1 0];
+    model(2).name = 'confidence';
+    model(2).RDM = RDMs{s}.con;
+    model(2).color = [0 1 0];
+    model(3).name = 'familiarity';
+    model(3).RDM = RDMs{s}.fam;
+    model(3).color = [0 1 0];
+    model(4).name = 'price';
+    model(4).RDM = RDMs{s}.pri;
+    model(4).color = [0 1 0];
+    model(5).name = 'obj ID';
+    model(5).RDM = 1-mat_ID;
+    model(5).color = [0 1 0];
+    [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
+    save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs')
+    clear model rs binaryMask
 end
 
 %% run searchlight for goal
-
-% take behavioural data for reordering response patterns
-bData = dre_extractData(dir,subs,taskOrd,0);
-
-subNames = fieldnames(responsePatterns);
-for s = 1:length(subNames)
-    
-    % update user
-    disp(['Computing correlation (goal) for sub#',num2str(s),' of ',num2str(length(subs))])
-    
-    % define (subjective) mask
-    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
-    binaryMask = logical(binaryMask);
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % reorder response patterns according to presentation %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % S1
-    sessType1 = bData(subs(s)).sessType{1};
-    idx_s1 = bData(subs(s)).imagination(1).(sessType1).objIdx;
-    if strcmp(sessType1,'boat')
-        idx_s1 = idx_s1 + 120;
-    end
-    
-    % S2
-    sessType2 = bData(subs(s)).sessType{2};
-    idx_s2 = bData(subs(s)).imagination(2).(sessType2).objIdx;
-    if strcmp(sessType2,'boat')
-        idx_s2 = idx_s2 + 120;
-    end
-    
-    % S3
-    sessType3 = bData(subs(s)).sessType{3};
-    idx_s3 = bData(subs(s)).imagination(3).(sessType3).objIdx;
-    if strcmp(sessType3,'boat')
-        idx_s3 = idx_s3 + 120;
-    end
-    
-    % S4
-    sessType4 = bData(subs(s)).sessType{4};
-    idx_s4 = bData(subs(s)).imagination(4).(sessType4).objIdx;
-    if strcmp(sessType4,'boat')
-        idx_s4 = idx_s4 + 120;
-    end
-    
-    % for every subject, this should be nVox x nCond x nRuns
-    respPatt_presentOrder{s}(:,:,1) = responsePatterns.(subNames{s})(:,idx_s1); %#ok<*SAGROW>
-    respPatt_presentOrder{s}(:,:,2) = responsePatterns.(subNames{s})(:,idx_s2);
-    respPatt_presentOrder{s}(:,:,3) = responsePatterns.(subNames{s})(:,idx_s3);
-    respPatt_presentOrder{s}(:,:,4) = responsePatterns.(subNames{s})(:,idx_s4);
-    
-    % run searchlight
-    t2_gol{s} = searchlightGoal(respPatt_presentOrder{s}, binaryMask, userOptions, searchlightOptions);
-    
-end
-
-% save stuff
-for ss = 1:length(subs)
-    rs = t2_gol{ss};
-    save([dir.out,fs,analysisName,fs,'gol',fs,'sl_gol_SF',num2str(subs(ss),'%03d')],'rs')
-end
+% 
+% % take behavioural data for reordering response patterns
+% bData = dre_extractData(dir,subs,taskOrd,0);
+% 
+% subNames = fieldnames(responsePatterns);
+% for s = 1:length(subNames)
+%     
+%     % update user
+%     disp(['Computing correlation (goal) for sub#',num2str(s),' of ',num2str(length(subs))])
+%     
+%     % define (subjective) mask
+%     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+%     binaryMask = logical(binaryMask);
+%     
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     % reorder response patterns according to presentation %
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     
+%     % S1
+%     sessType1 = bData(subs(s)).sessType{1};
+%     idx_s1 = bData(subs(s)).imagination(1).(sessType1).objIdx;
+%     if strcmp(sessType1,'boat')
+%         idx_s1 = idx_s1 + 120;
+%     end
+%     
+%     % S2
+%     sessType2 = bData(subs(s)).sessType{2};
+%     idx_s2 = bData(subs(s)).imagination(2).(sessType2).objIdx;
+%     if strcmp(sessType2,'boat')
+%         idx_s2 = idx_s2 + 120;
+%     end
+%     
+%     % S3
+%     sessType3 = bData(subs(s)).sessType{3};
+%     idx_s3 = bData(subs(s)).imagination(3).(sessType3).objIdx;
+%     if strcmp(sessType3,'boat')
+%         idx_s3 = idx_s3 + 120;
+%     end
+%     
+%     % S4
+%     sessType4 = bData(subs(s)).sessType{4};
+%     idx_s4 = bData(subs(s)).imagination(4).(sessType4).objIdx;
+%     if strcmp(sessType4,'boat')
+%         idx_s4 = idx_s4 + 120;
+%     end
+%     
+%     % for every subject, this should be nVox x nCond x nRuns
+%     respPatt_presentOrder{s}(:,:,1) = responsePatterns.(subNames{s})(:,idx_s1); %#ok<*SAGROW>
+%     respPatt_presentOrder{s}(:,:,2) = responsePatterns.(subNames{s})(:,idx_s2);
+%     respPatt_presentOrder{s}(:,:,3) = responsePatterns.(subNames{s})(:,idx_s3);
+%     respPatt_presentOrder{s}(:,:,4) = responsePatterns.(subNames{s})(:,idx_s4);
+%     
+%     % run searchlight
+%     t2_gol{s} = searchlightGoal(respPatt_presentOrder{s}, binaryMask, userOptions, searchlightOptions);
+%     
+% end
+% 
+% % save stuff
+% for ss = 1:length(subs)
+%     rs = t2_gol{ss};
+%     save([dir.out,fs,analysisName,fs,'gol',fs,'sl_gol_SF',num2str(subs(ss),'%03d')],'rs')
+% end
 

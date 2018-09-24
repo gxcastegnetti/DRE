@@ -28,7 +28,7 @@ searchlightOptions.nConditions = 40;
 load([returnHere,filesep,'sampleMask_org.mat']);
 load([returnHere,filesep,'anatomy.mat']);% load the resliced structural image
 
-models = rsa.constructModelRDMs(modelRDMs_SL_sim, userOptions);
+models = constructModelRDMs(modelRDMs_SL_sim, userOptions);
 
 nCond = searchlightOptions.nConditions;
 Nsubjects = 20;
@@ -50,12 +50,12 @@ for subI = 1:Nsubjects
     maskName = 'mask';
     fprintf(['simulating fullBrain volumes for subject %d \n'],subI)
     
-    [B_true,Mask,Y_true, fMRI_sub] = rsa.sim.simulateClusteredfMRIData_fullBrain(simulationOptions);
+    [B_true,Mask,Y_true, fMRI_sub] = simulateClusteredfMRIData_fullBrain(simulationOptions);
     B_noisy = fMRI_sub.B;
     singleSubjectVols = B_noisy';
     userOptions.searchlightRadius = 9;mask = m;
     fprintf(['computing correlation maps for subject %d \n'],subI)
-    [rs, ps, ns, searchlightRDMs.(subject)] = rsa.fmri.searchlightMapping_fMRI(singleSubjectVols, models, mask, userOptions, searchlightOptions);
+    [rs, ps, ns, searchlightRDMs.(subject)] = searchlightMapping_fMRI(singleSubjectVols, models, mask, userOptions, searchlightOptions);
     rsa.util.gotoDir(userOptions.rootPath, 'Maps');
     save(['rs_',subject,'.mat'],'rs');
     clear rs searchlightRDMs;
@@ -71,18 +71,18 @@ subplot(322);plot(fMRI_sub.X(:,12:14))
 xlabel('scans');title('\bfregressors for 3 example conditions')
 
 subplot(323);
-image(rsa.util.scale01(rsa.util.rankTransform_equalsStayEqual(squareform(pdist(fMRI_sub.groundTruth)),1)),'CDataMapping','scaled','AlphaData',~isnan(squareform(pdist(fMRI_sub.groundTruth))));
+image(rsa.util.scale01(rankTransform_equalsStayEqual(squareform(pdist(fMRI_sub.groundTruth)),1)),'CDataMapping','scaled','AlphaData',~isnan(squareform(pdist(fMRI_sub.groundTruth))));
 axis square off
 title('\bfsimulated ground truth RDM')
 
 subplot(324);
-image(rsa.util.scale01(rsa.util.rankTransform_equalsStayEqual(models(1).RDM,1)),'CDataMapping','scaled','AlphaData',~isnan(models(1).RDM));
+image(rsa.util.scale01(rankTransform_equalsStayEqual(models(1).RDM,1)),'CDataMapping','scaled','AlphaData',~isnan(models(1).RDM));
 axis square off
 colormap(rsa.fig.RDMcolormap)
 title('\bftested model RDM')
 
 
-relRoi = rsa.fmri.sphericalRelativeRoi(userOptions.searchlightRadius,userOptions.voxelSize);
+relRoi = sphericalRelativeRoi(userOptions.searchlightRadius,userOptions.voxelSize);
 nVox_searchlight = size(relRoi,1);
 rsa.fig.showVoxObj(relRoi+repmat(simulationOptions.effectCen,[nVox_searchlight,1]),1,[3 2 5]);
 title(['\bf searchlight with ',num2str(nVox_searchlight),' voxels'])

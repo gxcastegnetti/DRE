@@ -7,7 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box';
+analysisName = 'rsa_sl_box_deleteMe';
+betaid       = 'rsa_box';
 
 %% Folders
 dir.root = pwd;
@@ -37,7 +38,7 @@ userOptions.forcePromptReply = 'r';
 % reslice mask to the size of the correlation maps, if needed
 if ~exist([dir.msk,fs,'rgm.nii'],'file')
     
-    % load sample EPI from current subject for coregistration
+    % load sample EPI from one subject for coregistration
     dirFun = [dir.data,fs,'SF039',fs,'fun',fs,'S4'];
     d = spm_select('List', dirFun, '^wuaf.*\.nii$');
     d = d(end-1,:);
@@ -66,29 +67,88 @@ mask = logical(mask);
 scorP = 'gol';
 
 %% load correlation maps and make them SPM-like
-dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName,fs,scorP];
+
+% some normalisation settings
+warpFlags.interp = 1;
+warpFlags.wrap = [0 0 0];
+warpFlags.vox = userOptions.voxelSize; % [3 3 3.75]
+warpFlags.bb = [-78 -112 -50; 78 76 85];
+warpFlags.preserve = 0;
+
+% directory with searchlight correlation maps
+dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
+
+% directory with betas
+dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
+
 for s = 1:length(subs)
     
+    %%%%%%%%%%%%%%%%%%%%%%%%
+    % make r-maps SPM-like %
+    %%%%%%%%%%%%%%%%%%%%%%%%
+    
+    % load metadata from SPM
+    betaFile = [dirBeta,fs,'SF',num2str(subs(s),'%03d'),fs,'beta_0001.nii'];
+    subjectMetadataStruct = spm_vol(readFile);
+    
     % load correlations and save as nifti
-    load([dirSl,fs,'sl_',scorP,'_SF',num2str(subs(s),'%03d'),'.mat']);
-    niftiwrite(rs,[dirSl,fs,'rs_SF',num2str(subs(s),'%03d')])
+    load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
     
-    % read nifti and modify matrix
-    V = spm_vol([dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']);
+    % Write the native-space r-map to a file
+    rMapMetadataStruct_nS = subjectMetadataStruct;
+    rMapMetadataStruct_nS.fname = fullfile(userOptions.rootPath, 'Maps', [userOptions.analysisName '_rMap_' maskName '_' modelName '_' subject '.img']);
+    rMapMetadataStruct_nS.descrip =  'R-map';
+    rMapMetadataStruct_nS.dim = size(rMaps_nS.(modelName).(subject).(maskName));
     
-    % load sample EPI from current subject
-    dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
-    d = spm_select('List', dirFun, '^uaf.*\.nii$');
-    d = d(end-1,:);
-    epi_file = {[dirFun fs d]};
-    V_epi = spm_vol(epi_file);
+    gotoDir(userOptions.rootPath, 'Maps');
     
-    % change header
-    V.mat = V_epi{1}.mat;
-    V.descrip = V_epi{1}.descrip;
+    spm_write_vol(rMapMetadataStruct_nS, rMaps_nS.(modelName).(subject).(maskName));
     
-    % save modified nifti
-    spm_write_vol(V,rs);
+    %%%%%%%%%%%%%%%%%%%%
+    % normalise to MNI %
+    %%%%%%%%%%%%%%%%%%%%
+    
+    % select forward deformation images from T1 segmentation step
+    dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
+    d = spm_select('List', dirStruct, '^y_.*\.nii$');
+    y_file = {[dirStruct fs d]};
+    s_file = {[dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']};
+    
+    % Warp and write common space r-maps to disk
+    spm_write_sn(rMapMetadataStruct_nS,warpDefFilename,warpFlags);
+    
+    % Write the native-space mask to a file and normalise it as well
+    maskMetadataStruct_nS = subjectMetadataStruct;
+    maskMetadataStruct_nS.fname = fullfile(userOptions.rootPath, 'Maps', [userOptions.analysisName '_nativeSpaceMask_' maskName '_' modelName '_' subject '.img']);
+    maskMetadataStruct_nS.descrip =  'Native space mask';
+    maskMetadataStruct_nS.dim = size(mask);
+    
+    rsa.spm.spm_write_vol(maskMetadataStruct_nS, mask);
+    spm_write_sn(maskMetadataStruct_nS,warpDefFilename,warpFlags);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%% start again from line 210 in fMRISearchlight %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    
+    %     niftiwrite(rs,[dirSl,fs,'rs_SF',num2str(subs(s),'%03d')])
+    %
+    %     % read nifti and modify matrix
+    %     V = spm_vol([dirSl,fs,'rs_SF',num2str(subs(s),'%03d'),'.nii']);
+    %
+    %     % load sample EPI from current subject
+    %     dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
+    %     d = spm_select('List', dirFun, '^uaf.*\.nii$');
+    %     d = d(end-1,:);
+    %     epi_file = {[dirFun fs d]};
+    %     V_epi = spm_vol(epi_file);
+    %
+    %     % change header
+    %     V.mat = V_epi{1}.mat;
+    %     V.descrip = V_epi{1}.descrip;
+    %
+    %     % save modified nifti
+    %     spm_write_vol(V,rs);
     
     fprintf('Loading correlation maps for sub#%d \n',subs(s));
 end

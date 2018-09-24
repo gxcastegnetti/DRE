@@ -179,7 +179,7 @@ for s = 1:length(subs)
         
         % session type
         bData(subs(s)).sessType{r} = day2Order{r};
-%         if subs(s) == 23, keyboard, end
+        
         %%%%%%%%%%%%%%%%%%%%%
         % imagination stuff %
         %%%%%%%%%%%%%%%%%%%%%
@@ -201,8 +201,8 @@ for s = 1:length(subs)
         bData(subs(s)).imagination(r).k_con.high.onset = onsIma(idxCon_H);
         bData(subs(s)).imagination(r).k_fam.low.onset = onsIma(idxFam_L);
         bData(subs(s)).imagination(r).k_fam.high.onset = onsIma(idxFam_H);
-        bData(subs(s)).imagination(r).k_fam.low.onset = onsIma(idxPri_L);
-        bData(subs(s)).imagination(r).k_fam.high.onset = onsIma(idxPri_H);
+        bData(subs(s)).imagination(r).k_pri.low.onset = onsIma(idxPri_L);
+        bData(subs(s)).imagination(r).k_pri.high.onset = onsIma(idxPri_H);
         
         %%%%%%%%%%%%%%%%
         % choice stuff %

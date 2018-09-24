@@ -143,21 +143,21 @@ bData = dre_extractData(dir,subs,taskOrd,1);
 % dre_L2(dir,analysisName,'dV H-L',subs,2);
 
 %% box - value -> imagination; dV -> choice MEDIAN SPLIT
-analysisName = 'uni_box_ikC_ckS';
-
-% 1st level
-timing.iOns = 0; % onset for imagination
-timing.cOns = 0; % onset for choice
-timing.iDur = 5; % duration for imagination
-timing.cDur = 3.5; % duration for choice
-dre_L1_ikC_ckS(dir,analysisName,subs,timing,bData);
-
-% contrasts
-dre_con_ik1_ck1(dir,analysisName,subs);
-
-% 2nd level
-dre_L2(dir,analysisName,'ima. conf. H-L',subs,1);
-dre_L2(dir,analysisName,'chosen val H-L',subs,2);
+% analysisName = 'uni_box_ikC_ckS';
+% 
+% % 1st level
+% timing.iOns = 0; % onset for imagination
+% timing.cOns = 0; % onset for choice
+% timing.iDur = 5; % duration for imagination
+% timing.cDur = 3.5; % duration for choice
+% dre_L1_ikC_ckS(dir,analysisName,subs,timing,bData);
+% 
+% % contrasts
+% dre_con_ik1_ck1(dir,analysisName,subs);
+% 
+% % 2nd level
+% dre_L2(dir,analysisName,'ima. conf. H-L',subs,1);
+% dre_L2(dir,analysisName,'chosen val H-L',subs,2);
 
 %% box - value -> imagination; dV -> choice MEDIAN SPLIT
 analysisName = 'uni_box_ikF_ckU';

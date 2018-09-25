@@ -70,20 +70,18 @@ for s = 1:length(subs)
     model(1).name = 'val';
     model(1).RDM = RDMs{s}.val;
     model(1).color = [0 1 0];
-    model(2).name = 'con';
+    model(2).name = 'confidence';
     model(2).RDM = RDMs{s}.con;
     model(2).color = [0 1 0];
-    model(3).name = 'fam';
+    model(3).name = 'familiarity';
     model(3).RDM = RDMs{s}.fam;
     model(3).color = [0 1 0];
-    model(4).name = 'pri';
+    model(4).name = 'price';
     model(4).RDM = RDMs{s}.pri;
     model(4).color = [0 1 0];
-    model(5).name = 'oid';
+    model(5).name = 'obj ID';
     model(5).RDM = 1-mat_ID;
     model(5).color = [0 1 0];
-    [rs,~,~,~] = fMRISearchlight(responsePatterns, binaryMask, model, 'SPM', userOptions); %#ok<*ASGLU>
-    keyboard
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

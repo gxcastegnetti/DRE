@@ -189,7 +189,7 @@ for s = 1:length(subs)
     
     fprintf('Loading correlation maps for sub#%d \n',subs(s));
 end
-keyboard
+
 %% normalise to MNI
 for s = 1:length(subs)
     % select forward deformation images from T1 segmentation step

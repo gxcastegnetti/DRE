@@ -195,7 +195,7 @@ for s = 1:1
     for m = 1:1
         
         % select file
-        swrMapFile = [dirSl,fs,modelName,fs,'rMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+        swrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));

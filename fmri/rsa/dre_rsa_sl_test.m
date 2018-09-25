@@ -87,7 +87,7 @@ for s = 1:length(subs)
     d = d(end-1,:);
     epi_file = {[dirFun fs d]};
     betaFile = [dirBeta,fs,'SF',num2str(subs(s),'%03d'),fs,'beta_0001.nii'];
-    subjectMetadataStruct = spm_vol(betaFile);
+    subjectMetadataStruct = spm_vol(epi_file);
     
     % load correlation maps
     load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
@@ -102,12 +102,12 @@ for s = 1:length(subs)
         % Write the native-space r-map to a file %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        rMapMetadataStruct_nS = subjectMetadataStruct;
+        rMapMetadataStruct_nS = subjectMetadataStruct{1};
         rMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'rMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
         rMapMetadataStruct_nS.descrip =  'R-map';
         rMapMetadataStruct_nS.dim = size(rs(:,:,:,m));
         gotoDir([dirSl,fs,modelName]);
-        spm_write_vol(rMapMetadataStruct_nS, rs(:,:,:,m));
+        spm_write_vol(rMapMetadataStruct_nS, 100000*rs(:,:,:,m));
         
         %%%%%%%%%%%%%%%%%%%%
         % normalise to MNI %
@@ -138,7 +138,7 @@ for s = 1:length(subs)
         % ------- mask -------
         
         % write the native-space mask to a file
-        maskMetadataStruct_nS = subjectMetadataStruct;
+        maskMetadataStruct_nS = subjectMetadataStruct{1};
         maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
         maskMetadataStruct_nS.descrip =  'Native space mask';
         maskMetadataStruct_nS.dim = size(mask);
@@ -184,34 +184,34 @@ for s = 1:length(subs)
         
     end
 end
-keyboard
+
 %% load and concatenate files
-for s = 1:1
+for s = 1:length(subs)
     
     % current model name
     modelName = modelNames{m};
     
     % loop over models
-    for m = 1:1
+    for m = 1:5
         
         % select file
-        swrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+        swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));
-%         swrMap(mask_sS == 0) = 0;
+        swrMap(mask == 0) = 0;
         
-        for i = 1:79
-            figure,imagesc(swrMap(:,:,i));
-%             figure,imagesc(rs(:,:,i,m));
-        end
+%         for i = 1:79
+%             figure,imagesc(swrMap(:,:,i));
+            %             figure,imagesc(rs(:,:,i,m));
+%         end
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
         
     end
 end
-keyboard
+
 %% statistics
 for m = 1:length(modelNames)
     
@@ -249,13 +249,12 @@ for m = 1:length(modelNames)
     supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
     
     % write p-map
-    %     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    %     pMapMetadataStruct_nS = spm_vol(swrMapFile);
-    %     pMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    %     pMapMetadataStruct_nS.descrip =  'p-map';
-    %     pMapMetadataStruct_nS.dim = size(supraThreshMarked_sr);
-    %     spm_write_vol(rMapMetadataStruct_nS, supraThreshMarked_sr);
-    keyboard
+    swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+    pMapMetadataStruct_nS = spm_vol(swrMapFile);
+    pMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+    pMapMetadataStruct_nS.descrip =  'p-map';
+    pMapMetadataStruct_nS.dim = size(supraThreshMarked_sr);
+    spm_write_vol(rMapMetadataStruct_nS, supraThreshMarked_sr);
 end
 
 

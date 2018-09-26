@@ -7,7 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box';
+analysisName = 'rsa_sl_box_deleteMe';
+% analysisName = 'rsa_sl_box';
 betaid       = 'rsa_box';
 
 %% Folders
@@ -64,6 +65,7 @@ mask = niftiread([dir.msk,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% model names
+modelNames = {'val','con','fam','pri','oid'};
 modelNames = {'oid'};
 
 %% soecify some directories
@@ -91,6 +93,7 @@ for s = 1:length(subs)
     
     % load correlation maps
     load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
+%     load([dirSl,fs,'oid2',fs,'sl_','oid','_SF',num2str(subs(s),'%03d'),'.mat']);
     
     %% loop over models
     for m = 1:1
@@ -138,42 +141,42 @@ for s = 1:length(subs)
         
         % ------- mask -------
         
-        % write the native-space mask to a file
-        maskMetadataStruct_nS = subjectMetadataStruct{1};
-        maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
-        maskMetadataStruct_nS.descrip =  'Native space mask';
-        maskMetadataStruct_nS.dim = size(mask);
-        spm_write_vol(maskMetadataStruct_nS, mask);
-        
-        % select mask file we just saved
-        mask_file = {maskMetadataStruct_nS.fname};
-        
-        % prepare job for mask
-        job_mask{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
-        job_mask{1}.spatial{1}.normalise{1}.write.subj.resample = mask_file;
-        job_mask{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
-        job_mask{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
-        job_mask{1}.spatial{1}.normalise{1}.write.woptions.interp = 1; % changed default to 7th degree B-spline
-        
-        % run job
-        disp(['Normalising sub#', num2str(subs(s),'%03d'),' - MASK ',modelName])
-        d = spm_jobman('run',job_mask);
-        clear job
+        %         % write the native-space mask to a file
+        %         maskMetadataStruct_nS = subjectMetadataStruct{1};
+        %         maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+        %         maskMetadataStruct_nS.descrip =  'Native space mask';
+        %         maskMetadataStruct_nS.dim = size(mask);
+        %         spm_write_vol(maskMetadataStruct_nS, mask);
+        %
+        %         % select mask file we just saved
+        %         mask_file = {maskMetadataStruct_nS.fname};
+        %
+        %         % prepare job for mask
+        %         job_mask{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
+        %         job_mask{1}.spatial{1}.normalise{1}.write.subj.resample = mask_file;
+        %         job_mask{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
+        %         job_mask{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
+        %         job_mask{1}.spatial{1}.normalise{1}.write.woptions.interp = 1; % changed default to 7th degree B-spline
+        %
+        %         % run job
+        %         disp(['Normalising sub#', num2str(subs(s),'%03d'),' - MASK ',modelName])
+        %         d = spm_jobman('run',job_mask);
+        %         clear job
         
         % read them back in
-        wMaskFile = [dirSl,fs,'nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+        %         wMaskFile = [dirSl,fs,'nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
         wrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        mask_sS = spm_read_vols(spm_vol(wMaskFile));
+        %         mask_sS = spm_read_vols(spm_vol(wMaskFile));
         
-        % Fix the normalisation of the mask
-        maskMetadataStruct_sS = spm_vol(wMaskFile);
-        maskMetadataStruct_sS.fname = wMaskFile;
-        maskMetadataStruct_sS.descrip =  'Common space mask';
-        maskThreshold = 0.01;
-        mask_sS(mask_sS < maskThreshold) = 0;
-        mask_sS(isnan(mask_sS)) = 0;
-        maskMetadataStruct_sS.dim = size(mask_sS);
-        spm_write_vol(maskMetadataStruct_sS, mask_sS);
+        %         % Fix the normalisation of the mask
+        %         maskMetadataStruct_sS = spm_vol(wMaskFile);
+        %         maskMetadataStruct_sS.fname = wMaskFile;
+        %         maskMetadataStruct_sS.descrip =  'Common space mask';
+        %         maskThreshold = 0.01;
+        %         mask_sS(mask_sS < maskThreshold) = 0;
+        %         mask_sS(isnan(mask_sS)) = 0;
+        %         maskMetadataStruct_sS.dim = size(mask_sS);
+        %         spm_write_vol(maskMetadataStruct_sS, mask_sS);
         
         %%%%%%%%%%
         % smooth %
@@ -185,7 +188,7 @@ for s = 1:length(subs)
         
     end
 end
-
+keyboard
 %% load and concatenate files
 for s = 1:length(subs)
     
@@ -202,9 +205,9 @@ for s = 1:length(subs)
         swrMap = spm_read_vols(spm_vol(swrMapFile));
         %         swrMap(mask == 0) = 0;
         
-%         for i = 1:1
-%             figure,imagesc(swrMap(:,:,30)); caxis([-0.025 0.025])
-%         end
+        for i = 1:1
+            figure,imagesc(swrMap(:,:,30)); caxis([-0.025 0.025])
+        end
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
@@ -214,7 +217,7 @@ end
 
 %% statistics
 for m = 1:length(modelNames)
-    modelName = modelNames{m};
+    
     % take r-map for current model
     rMaps = rMaps_all.(modelName);
     

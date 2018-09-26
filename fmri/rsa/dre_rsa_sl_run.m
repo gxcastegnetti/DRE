@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box_deleteMe';
+analysisName = 'rsa_sl_box';
 betaid       = 'rsa_box';
 
 %% folders
@@ -82,8 +82,6 @@ for s = 1:length(subs)
     model(5).name = 'oid';
     model(5).RDM = 1-mat_ID;
     model(5).color = [0 1 0];
-    [rs,~,~,~] = fMRISearchlight(responsePatterns, binaryMask, model, 'SPM', userOptions); %#ok<*ASGLU>
-    keyboard
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

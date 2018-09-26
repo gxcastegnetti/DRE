@@ -32,23 +32,18 @@ for s = 1:length(subs)
     for r = 1:4
         %% select EPI files
         dirFun = [dirSub,'/fun/S',num2str(r)];
-        d = spm_select('List', dirFun, '^wuaf.*\.nii$');
+        d = spm_select('List', dirFun, '^uaf.*\.nii$');
         files = cellstr([repmat([dirFun fs],size(d,1),1) d]);
         job{1}.spm.stats.fmri_spec.sess(r).scans = files;
         
         %% extract session type and length
         sessType = bData(subs(s)).sessType{r};
-        if strcmp(sessType,'fire')
-            sessLabel = 'F';
-        else
-            sessLabel = 'B';
-        end
-        numObj = length(bData(subs(s)).imagination(r).(sessType).names);
+        numObj = length(bData(subs(s)).imagination(r).names);
         
         %% loop over trials in the session
         for obj = 1:numObj           
-            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).name = [sessLabel,'-',bData(subs(s)).imagination(r).(sessType).names{obj}];
-            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).onset = bData(subs(s)).imagination(r).(sessType).onset(obj) + timing.iOns;
+            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).name = [sessType,'-',bData(subs(s)).imagination(r).names{obj}];
+            job{1}.spm.stats.fmri_spec.sess(r).cond(obj).onset = bData(subs(s)).imagination(r).onset(obj) + timing.iOns;
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).duration = timing.iDur;
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).tmod = 0;
             job{1}.spm.stats.fmri_spec.sess(r).cond(obj).orth = 0;             

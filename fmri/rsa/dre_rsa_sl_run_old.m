@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box';
+analysisName = 'rsa_sl_box_L1_unmasked';
 
 %% folders
 fs      = filesep;

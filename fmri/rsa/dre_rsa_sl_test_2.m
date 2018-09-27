@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box_deleteMe';
+analysisName = 'rsa_sl_box_L1_unmasked';
 % analysisName = 'rsa_sl_box';
 betaid       = 'rsa_box';
 
@@ -66,7 +66,7 @@ mask = logical(mask);
 
 %% model names
 modelNames = {'val','con','fam','pri','oid'};
-modelNames = {'oid'};
+modelNames = {'val'};
 
 %% soecify some directories
 

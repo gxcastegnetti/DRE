@@ -60,6 +60,8 @@ for s = 1:length(subs)
         
     end
     
+    if s == 12, keyboard, end
+    
     %% other stuff
     job{1}.spm.stats.fmri_spec.fact = struct('name', {}, 'levels', {});
     job{1}.spm.stats.fmri_spec.bases.hrf.derivs = [0 0];

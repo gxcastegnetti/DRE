@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box';
-betaid       = 'rsa_box';
+analysisName = 'rsa_sl_pulse_ons3';
+betaid       = 'rsa_pulse_ons3';
 
 %% folders
 fs      = filesep;

@@ -14,7 +14,7 @@ dir.dre = foodir(1:idcs(end-2)-1);
 dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.phy = [dir.dre,fs,'data',fs,'physio'];
-dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'stats'];
+dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'uni'];
 newdir4 = foodir(1:idcs(end-4));
 dir.spm = [newdir4,'tools/matlab/spm12'];
 

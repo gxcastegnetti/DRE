@@ -100,9 +100,9 @@ end
 roiNames = {'none'};
 if true
     for i = 1:length(roiNames)
-        nameBeta = ['level1',fs,'rsa_pulse_ons5',fs,roiNames{i}];
+        nameBeta = ['level1',fs,'rsa_pulse_ons3',fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = 5;
+        timing.iOns = 3;
         timing.iDur = 0;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end

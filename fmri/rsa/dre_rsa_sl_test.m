@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_box';
-betaid       = 'rsa_box';
+analysisName = 'rsa_sl_pulse_ons3';
+betaid       = 'rsa_pulse_ons3';
 
 %% Folders
 dir.root = pwd;
@@ -202,10 +202,6 @@ for s = 1:length(subs)
         swrMap = spm_read_vols(spm_vol(swrMapFile));
         swrMap(mask == 0) = 0;
         
-%         for i = 1:1
-%             figure,imagesc(swrMap(:,:,30)); caxis([-0.025 0.025])
-%         end
-        
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
         
@@ -213,7 +209,7 @@ for s = 1:length(subs)
 end
 
 %% statistics
-for m = 1:1%length(modelNames)
+for m = 1:length(modelNames)
     modelName = modelNames{m};
     % take r-map for current model
     rMaps = rMaps_all.(modelName);
@@ -226,8 +222,8 @@ for m = 1:1%length(modelNames)
         for y = 1:size(rMaps,2)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
-                    [h p1(x,y,z)] = ttest(-squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    [p2(x,y,z)] = signrank_onesided(-squeeze(rMaps(x,y,z,:)));
+                    [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+                    [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
                 end
             end
         end
@@ -238,9 +234,7 @@ for m = 1:1%length(modelNames)
     pThrsh_t  = FDRthreshold(p1,0.05,mask);
     pThrsh_sr = FDRthreshold(p2,0.05,mask);
     
-        for i = 1:79
-            figure,imagesc(p2(:,:,i));
-        end
+
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));
@@ -249,12 +243,12 @@ for m = 1:1%length(modelNames)
     supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
     
     % write p-map
-%     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-%     pMapMetadataStruct_nS = spm_vol(swrMapFile);
-%     pMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-%     pMapMetadataStruct_nS.descrip =  'p-map';
-%     pMapMetadataStruct_nS.dim = size(supraThreshMarked_sr);
-%     spm_write_vol(pMapMetadataStruct_nS, supraThreshMarked_sr);
+    swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+    pMapMetadataStruct_nS = spm_vol(swrMapFile);
+    pMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
+    pMapMetadataStruct_nS.descrip =  'p-map';
+    pMapMetadataStruct_nS.dim = size(supraThreshMarked_sr);
+    spm_write_vol(pMapMetadataStruct_nS, supraThreshMarked_sr);
     
 end
 

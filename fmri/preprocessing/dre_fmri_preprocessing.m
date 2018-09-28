@@ -92,9 +92,9 @@ if false
 end
 
 %% physiological regressors
-addpath([dir.spm,fs,'toolbox',fs,'physio']);
-addpath([dir.spm,fs,'toolbox',fs,'physio',fs,'son']);
-physioRegressors(dir,subs)
+% addpath([dir.spm,fs,'toolbox',fs,'physio']);
+% addpath([dir.spm,fs,'toolbox',fs,'physio',fs,'son']);
+% physioRegressors(dir,subs)
 
 %% save movement data on a .pdf
 % fmri_plotMovements(dir,subs)

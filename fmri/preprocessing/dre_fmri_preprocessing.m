@@ -20,8 +20,7 @@ addpath([pwd,filesep,'routines'])
 addpath(genpath(dir.spm))
 
 %% subjects
-subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:45 47];
-
+subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 47:49];
 
 %% input run types (fun: functional; struct: structural; fmapm: fmap magnitude; fmapp: fmap phase; loc: localiser)
 runType{1}  = {'loc','ignore','fun','fun','fmapm','fmapp','struct','fun'};
@@ -71,6 +70,9 @@ runType{44} = {'loc','ignore','fmapm','fmapp','ignore','fun','fun','fun','ignore
 runType{45} = {'loc','ignore','fmapm','fmapp','fun','ignore','loc','ignore','fmapm','fmapp','fun','fun','fun','struct'};
 runType{46} = {};
 runType{47} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{48} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{49} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
+runType{50} = {};
 
 %% Import images
 DICOM_import(dir,subs,runType)
@@ -87,7 +89,7 @@ for s = 1:length(subs)
 end
 
 %% spatial preprocessing
-if false
+if true
     spatial_preproc(dir,subs,fmapFiles);
 end
 

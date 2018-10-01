@@ -47,9 +47,9 @@ for s = 1:length(subs)
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).tmod = 0;
         
         % parametric modulations by value weighed by confidence
-        confNorm = bData(subs(s)).imagination(r).(sessType).confidence/50; % extract confidence and map it onto [0,1]
+        confNorm = bData(subs(s)).imagination(r).con/50; % extract confidence and map it onto [0,1]
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'value weighed by conf.';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = confNorm.*bData(subs(s)).imagination(r).value;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = confNorm.*bData(subs(s)).imagination(r).val;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).orth = 0;
         

@@ -23,11 +23,11 @@ dir.beh = [dirNew,fs,'data',fs,'behaviour'];
 dir.psy = [dirNew,fs,'data',fs,'fmri',fs,'psychOut'];
 
 %% subjects and trials
-subs = [4:5 8 9 13:17 19:21 23 25:27 29:32 34:37 39:43];
+subs = [4:5 8 9 13:17 19:21 23 25:27 29:32 34:37 39:45 47:50];
 ntrials = 120;
 
 %% task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
-taskOrd = [ones(1,9),2*ones(1,12),1,1,2,1 ones(1,4)];
+taskOrd = [ones(1,9),2*ones(1,12),1,1,2,1,ones(1,4),2*ones(1,5),1];
 
 %% plots settings
 plot_rda_SS = false;
@@ -104,7 +104,7 @@ for s = 1:length(subs)
     % histogram value fire
     plotTight = 7;
     figure(plotVal)
-    subplot(5,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
+    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
     
     % make label closer to axis
@@ -114,7 +114,7 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % histogram value boat
-    subplot(5,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(val_B(s,:),20,'facecolor',hist_boat_color)
+    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(val_B(s,:),20,'facecolor',hist_boat_color)
     title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
     
     % make label closer to axis
@@ -135,7 +135,7 @@ for s = 1:length(subs)
     
     % histogram value fire
     figure(plotCon)
-    subplot(5,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(con_F(s,:),20,'facecolor',hist_fire_color)
+    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(con_F(s,:),20,'facecolor',hist_fire_color)
     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
     
     % make label closer to axis
@@ -145,7 +145,7 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % histogram value boat
-    subplot(5,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(con_B(s,:),20,'facecolor',hist_boat_color)
+    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(con_B(s,:),20,'facecolor',hist_boat_color)
     title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
     
     % make label closer to axis
@@ -164,7 +164,7 @@ for s = 1:length(subs)
     
     % histogram value fire
     figure(plotFam)
-    subplot(5,6,s),histogram(fam(s,:),20,'facecolor',[0.25 0.25 0.25])
+    subplot(6,6,s),histogram(fam(s,:),20,'facecolor',[0.25 0.25 0.25])
     title(['Sub#',num2str(subs(s))],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',0:10:50), xlabel('famil.')
     
     
@@ -244,6 +244,12 @@ for s = 1:length(subs)
     pVal(s).('BonB') = mdl_BonB.Coefficients.pValue(2);
     pVal(s).('BonF') = mdl_BonF.Coefficients.pValue(2);
     
+    % extract slopes (just better interpretation at this stage)
+    slopes(s).('FonF') = mdl_FonF.Coefficients.Estimate(2);
+    slopes(s).('FonB') = mdl_FonB.Coefficients.Estimate(2);
+    slopes(s).('BonB') = mdl_BonB.Coefficients.Estimate(2);
+    slopes(s).('BonF') = mdl_BonF.Coefficients.Estimate(2);
+    
     %% plot logistic curves of choice vs dV
     
     % draw sigmoids with the fitted parameters
@@ -256,7 +262,7 @@ for s = 1:length(subs)
     
     % choice during fire
     figure(plotCho)
-    subplot(5,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1))
+    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1))
     plot(xspan,sigm_FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
     plot(xspan,sigm_FonB,'linewidth',5,'color',hist_boat_color) % based on value assigned during boat
     plot(ratingDiff_F,(choice_F(:,3)+1)/2,'linestyle','none','marker','.','markersize',15,'color','k')
@@ -271,7 +277,7 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % choice during boat
-    subplot(5,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1))
+    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1))
     plot(xspan,sigm_BonB,'linewidth',5,'color',hist_boat_color),hold on % based on value assigned during boat
     plot(xspan,sigm_BonF,'linewidth',5,'color',hist_fire_color) % based on value assigned during fire
     plot(ratingDiff_B,(choice_B(:,3)+1)/2,'linestyle','none','marker','.','markersize',25,'color','k')
@@ -355,7 +361,7 @@ for s = 1:length(subs)
     cMat(:,:,s) = corr(all{s},'rows','complete');
     
     % plot
-    subplot(5,6,s)
+    subplot(6,6,s)
     imagesc(squeeze(cMat(:,:,s))), title(['sub#',num2str(subs(s))]), caxis([-1 1])
     set(gca,'XTick',1:5,'YTick',1:5,'fontsize',11,'XtickLabel',{'vF','vB','cF','cB','fm'},'YtickLabel',{'vF','vB','cF','cB','fm'})
 end

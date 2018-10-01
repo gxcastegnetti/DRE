@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_';
+analysisName = 'rsa_pulse_ons0';
 
 %% folders
 dir.root = pwd;
@@ -31,8 +31,8 @@ mkdir([dir.out,fs,analysisName])
 roiNames = {'HPC','ACC','infFG','medFG','midFG','supFG','infOcc','supOcc','PCC','AG','Ins','paraHPC'};
 
 %% subjects
-subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40:43 47:49];
+taskOrd = [ones(1,8),2*ones(1,11),1,2,ones(1,5),2*ones(1,3)];
 
 %% reverse normalise mask to subjective space and coregister
 if false
@@ -100,9 +100,9 @@ end
 roiNames = {'none'};
 if true
     for i = 1:length(roiNames)
-        nameBeta = ['level1',fs,'rsa_pulse_ons5',fs,roiNames{i}];
+        nameBeta = ['level1',fs,'rsa_pulse_ons0',fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = 5;
+        timing.iOns = 0;
         timing.iDur = 0;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end

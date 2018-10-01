@@ -1,4 +1,4 @@
-function dre_con_i3_c1(dir,anName,subs)
+function dre_con_i3_c1(dir,anName,subs,taskOrd)
 %% function dre_con_i1_c1(dir,anName,subs)
 % computes contrasts of parametric modulators in the case of ONE parametric
 % modulator for imagination and one for choice
@@ -51,7 +51,6 @@ for s = 1:length(subs)
     job{1}.spm.stats.con.consess{6}.tcon.sessrep = 'none';
     
     %% goal
-    taskOrd = [ones(1,9),2*ones(1,11),1,2,1];
     
     job{1}.spm.stats.con.consess{7}.tcon.name = 'goal';
     if taskOrd(s) == 1

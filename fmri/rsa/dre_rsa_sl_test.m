@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons3';
-betaid       = 'rsa_pulse_ons3';
+analysisName = 'rsa_sl_pulse';
+betaid       = 'rsa_pulse';
 
 %% Folders
 dir.root = pwd;
@@ -233,8 +233,6 @@ for m = 1:length(modelNames)
     % apply FDR correction
     pThrsh_t  = FDRthreshold(p1,0.05,mask);
     pThrsh_sr = FDRthreshold(p2,0.05,mask);
-    
-
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));

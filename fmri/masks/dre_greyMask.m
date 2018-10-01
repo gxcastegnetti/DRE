@@ -1,4 +1,4 @@
-%% dre_makeMask_gm
+%% dre_greyMask
 % Creates individual grey matter masks from thresholding tissue
 % probability from the segmentation.
 % ~~~
@@ -18,7 +18,7 @@ dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% subjects
-subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40:43 47:49];
 
 for s = 1:length(subs)   
     

@@ -73,7 +73,7 @@ for s = 1:length(subs)
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).duration = timing.cDur;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).tmod = 0;
         
-        % parametric modulation by difference in values between two options
+        % parametric modulation by value of the chosen item
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'value chosen item';
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).valCho;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;

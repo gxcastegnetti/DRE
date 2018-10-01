@@ -7,15 +7,15 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons3';
-betaid       = 'rsa_pulse_ons3';
+analysisName = 'rsa_sl_pulse_ons0';
+betaid       = 'rsa_pulse_ons0';
 
 %% folders
 fs      = filesep;
 dir.rsa = pwd;
 idcs    = strfind(dir.rsa,'/');
 dir.dre = dir.rsa(1:idcs(end-2)-1);
-dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'stats'];
+dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
 dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
@@ -27,8 +27,8 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40:43 47:49];
+taskOrd = [ones(1,8),2*ones(1,11),1,2,ones(1,5),2*ones(1,3)];
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);

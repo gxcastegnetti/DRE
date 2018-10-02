@@ -210,7 +210,13 @@ end
 
 %% statistics
 for m = 1:length(modelNames)
+    
     modelName = modelNames{m};
+    
+    %%%%%%%%%%%%%%%%%
+    % compute p-map %
+    %%%%%%%%%%%%%%%%%
+    
     % take r-map for current model
     rMaps = rMaps_all.(modelName);
     
@@ -242,12 +248,38 @@ for m = 1:length(modelNames)
     
     % write p-map
     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    pMapMetadataStruct_nS = spm_vol(swrMapFile);
-    pMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
-    pMapMetadataStruct_nS.descrip =  'p-map';
-    pMapMetadataStruct_nS.dim = size(supraThreshMarked_sr);
-    spm_write_vol(pMapMetadataStruct_nS, supraThreshMarked_sr);
+    pMapMetadataStruct_sS = spm_vol(swrMapFile);
+    pMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
+    pMapMetadataStruct_sS.descrip =  'p-map';
+    pMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);
+    spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_sr);
     
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % find connected clusters %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf
+        
+        % find connected clusters
+        k = 1;
+        cluster = {};
+        L = bwlabeln(supraThreshMarked_sr);
+        for i = 1:max(L(:))
+            cluster_foo{i} = L == i;
+            clusterSize(i) = sum(cluster_foo{i}(:));
+            if clusterSize(i) >= 60
+                cluster{k} = cluster_foo{i};
+                     
+                % create and save mask
+                maskMetadataStruct_sS = pMapMetadataStruct_sS;
+                maskMetadataStruct_sS.fname = [dirSl,fs,'mask_',modelName,'_',num2str(k),'_',num2str(clusterSize(i)),'.nii'];
+                spm_write_vol(maskMetadataStruct_sS, cluster{k});
+                
+                % update index
+                k = k+1;
+            end
+        end, clear cluster_foo i k L
+    end
 end
 
 

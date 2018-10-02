@@ -113,8 +113,8 @@ end
 % dre_L2(dir,analysisName,'choice_valueDiff',subs,4);
 
 %% box - value weighed by conf. pmod of imagination; value chosen - unchosen pmod of choice
-if true
-    analysisName = 'uni_box_iVw_cSs';
+if false
+    analysisName = 'uni_pulse_iVw_cSs';
     
     % 1st level
     timing.iOns = 0; % onset for imagination
@@ -152,53 +152,65 @@ end
 % dre_L2(dir,analysisName,'choice onset',subs,3);
 % dre_L2(dir,analysisName,'choice value ch. - unch. OPP',subs,4);
 
-%% box - value -> imagination; dV -> choice MEDIAN SPLIT
-% analysisName = 'uni_box_ikV_ckV';
-%
-% % 1st level
-% timing.iOns = 0; % onset for imagination
-% timing.cOns = 0; % onset for choice
-% timing.iDur = 5; % duration for imagination
-% timing.cDur = 3.5; % duration for choice
-% dre_L1_ikV_ckV(dir,analysisName,subs,timing,bData);
-%
-% % contrasts
-% dre_con_ik1_ck1(dir,analysisName,subs);
-%
-% % 2nd level
-% dre_L2(dir,analysisName,'ima. val. H-L',subs,1);
-% dre_L2(dir,analysisName,'dV H-L',subs,2);
 
-%% box - value -> imagination; dV -> choice MEDIAN SPLIT
-% analysisName = 'uni_box_ikC_ckS';
-%
-% % 1st level
-% timing.iOns = 0; % onset for imagination
-% timing.cOns = 0; % onset for choice
-% timing.iDur = 5; % duration for imagination
-% timing.cDur = 3.5; % duration for choice
-% dre_L1_ikC_ckS(dir,analysisName,subs,timing,bData);
-%
-% % contrasts
-% dre_con_ik1_ck1(dir,analysisName,subs);
-%
-% % 2nd level
-% dre_L2(dir,analysisName,'ima. conf. H-L',subs,1);
-% dre_L2(dir,analysisName,'chosen val H-L',subs,2);
-
-%% box - value -> imagination; dV -> choice MEDIAN SPLIT
-% analysisName = 'uni_box_ikF_ckU';
-%
-% % 1st level
-% timing.iOns = 0; % onset for imagination
-% timing.cOns = 0; % onset for choice
-% timing.iDur = 5; % duration for imagination
-% timing.cDur = 3.5; % duration for choice
-% dre_L1_ikF_ckU(dir,analysisName,subs,timing,bData);
-%
-% % contrasts
-% dre_con_ik1_ck1(dir,analysisName,subs);
-%
-% % 2nd level
-% dre_L2(dir,analysisName,'ima. fam. H-L',subs,1);
-% dre_L2(dir,analysisName,'cho. - unc. val H-L',subs,2);
+%% median splits
+if true
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%
+    % imagin.: V; choice: dV %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%
+    analysisName = 'uni_pulse_ikV_ckV';
+    
+    % 1st level
+    timing.iOns = 0; % onset for imagination
+    timing.cOns = 0; % onset for choice
+    timing.iDur = 0; % duration for imagination
+    timing.cDur = 0; % duration for choice
+    dre_L1_ikV_ckV(dir,analysisName,subs,timing,bData);
+    
+    % contrasts
+    dre_con_ik1_ck1(dir,analysisName,subs);
+    
+    % 2nd level
+    dre_L2(dir,analysisName,'ima. val. H-L',subs,1);
+    dre_L2(dir,analysisName,'dV H-L',subs,2);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    % imagin.: C; choice: S %
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    analysisName = 'uni_pulse_ikC_ckS';
+    
+    % 1st level
+    timing.iOns = 0; % onset for imagination
+    timing.cOns = 0; % onset for choice
+    timing.iDur = 0; % duration for imagination
+    timing.cDur = 0; % duration for choice
+    dre_L1_ikC_ckS(dir,analysisName,subs,timing,bData);
+    
+    % contrasts
+    dre_con_ik1_ck1(dir,analysisName,subs);
+    
+    % 2nd level
+    dre_L2(dir,analysisName,'ima. conf. H-L',subs,1);
+    dre_L2(dir,analysisName,'chosen val H-L',subs,2);
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    % imagin.: F; choice: U %
+    %%%%%%%%%%%%%%%%%%%%%%%%%
+    analysisName = 'uni_pulse_ikF_ckU';
+    
+    % 1st level
+    timing.iOns = 0; % onset for imagination
+    timing.cOns = 0; % onset for choice
+    timing.iDur = 0; % duration for imagination
+    timing.cDur = 0; % duration for choice
+    dre_L1_ikF_ckU(dir,analysisName,subs,timing,bData);
+    
+    % contrasts
+    dre_con_ik1_ck1(dir,analysisName,subs);
+    
+    % 2nd level
+    dre_L2(dir,analysisName,'ima. fam. H-L',subs,1);
+    dre_L2(dir,analysisName,'cho. - unc. val H-L',subs,2);
+    
+end

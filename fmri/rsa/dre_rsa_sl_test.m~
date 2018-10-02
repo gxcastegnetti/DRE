@@ -181,7 +181,7 @@ for s = 1:length(subs)
         
         disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
         swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        spm_smooth(wrMapFile,swrMapFile,[9 9 9]);
+        spm_smooth(wrMapFile,swrMapFile,[8 8 8]);
         
     end
 end
@@ -209,7 +209,7 @@ for s = 1:length(subs)
 end
 
 %% statistics
-for m = 1:length(modelNames)
+for m = 1:1%length(modelNames)
     modelName = modelNames{m};
     % take r-map for current model
     rMaps = rMaps_all.(modelName);

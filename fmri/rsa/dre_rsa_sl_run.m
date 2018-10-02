@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons0_med';
 betaid       = 'rsa_pulse_ons0';
 
 %% folders
@@ -58,7 +58,7 @@ searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
 searchlightOptions.nConditions = 240;
 
-%% run searchlight for value, confidence, familiarity, price, object ID
+%% run searchlight for conitnuous value, confidence, familiarity, price, object ID
 % create matrix for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
           diag(ones(120,1)), diag(ones(120,1))];
@@ -68,20 +68,20 @@ for s = 1:length(subs)
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
     model(1).name = 'val';
-    model(1).RDM = RDMs{s}.val;
+    model(1).RDM = RDMs{s}.valMed;
     model(1).color = [0 1 0];
     model(2).name = 'con';
-    model(2).RDM = RDMs{s}.con;
+    model(2).RDM = RDMs{s}.conMed;
     model(2).color = [0 1 0];
     model(3).name = 'fam';
-    model(3).RDM = RDMs{s}.fam;
+    model(3).RDM = RDMs{s}.famMed;
     model(3).color = [0 1 0];
     model(4).name = 'pri';
-    model(4).RDM = RDMs{s}.pri;
+    model(4).RDM = RDMs{s}.priMed;
     model(4).color = [0 1 0];
-    model(5).name = 'oid';
-    model(5).RDM = 1-mat_ID;
-    model(5).color = [0 1 0];
+%     model(5).name = 'oid';
+%     model(5).RDM = 1-mat_ID;
+%     model(5).color = [0 1 0];
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

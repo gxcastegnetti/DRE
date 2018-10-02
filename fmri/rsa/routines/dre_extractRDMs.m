@@ -62,7 +62,7 @@ for s = 1:length(subs)
     %% value and confidence
     Mday1_F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B1_DRE.csv']);
     Mday1_B = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B2_DRE.csv']);
-
+    
     % object names
     name_F = objsName(id_F);
     name_B = objsName(id_B);
@@ -76,7 +76,7 @@ for s = 1:length(subs)
     end
     
     % value
-    val_F = Mday1_F(idx_day1_F,3); 
+    val_F = Mday1_F(idx_day1_F,3);
     val_B = Mday1_B(idx_day1_B,3);
     val_all = [val_F(sort_F); val_B(sort_B)];
     
@@ -103,11 +103,37 @@ for s = 1:length(subs)
     pri_B = Mday1_FP(idx_day1_B_FP,4);
     pri_all = [pri_F(sort_F); pri_B(sort_B)];
     
+    % create continuous RDMs
     for i = 1:length(val_all)
         RDMs{s}.val(:,i) = abs(val_all(i) - val_all)/50;
         RDMs{s}.con(:,i) = abs(con_all(i) - con_all)/50;
         RDMs{s}.fam(:,i) = abs(fam_all(i) - fam_all)/50;
         RDMs{s}.pri(:,i) = abs(pri_all(i) - pri_all);
     end
-        
+    
+    % median splits
+    val_all_pert = val_all + 0.00001*[1:length(val_all)]';
+    medVal = median(val_all_pert);
+    idxVal_H = val_all_pert > medVal;
+    
+    con_all_pert = con_all + 0.00001*[1:length(con_all)]';
+    medCon = median(con_all_pert);
+    idxCon_H = con_all_pert > medCon;
+    
+    fam_all_pert = fam_all + 0.00001*[1:length(fam_all)]';
+    medFam = median(fam_all_pert);
+    idxFam_H = fam_all_pert > medFam;
+    
+    pri_all_pert = pri_all + 0.00001*[1:length(pri_all)]';
+    medPri = median(pri_all_pert);
+    idxPri_H = pri_all_pert > medPri;
+    
+    % create medain split RDMs
+    for i = 1:length(val_all)
+        RDMs{s}.valMed(:,i) = abs(idxVal_H(i) - idxVal_H);
+        RDMs{s}.conMed(:,i) = abs(idxCon_H(i) - idxCon_H);
+        RDMs{s}.famMed(:,i) = abs(idxFam_H(i) - idxFam_H);
+        RDMs{s}.priMed(:,i) = abs(idxPri_H(i) - idxPri_H);
+    end
+    
 end

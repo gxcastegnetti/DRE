@@ -142,40 +142,40 @@ for s = 1:length(subs)
         end
         
         % median splits
-        objVal = objVal + 0.00001*[1:length(objVal)]';
-        medVal = median(objVal);
-        idxVal_H = objVal > medVal;
-        idxVal_L = objVal < medVal;
+        objVal_pert = objVal + 0.00001*[1:length(objVal)]';
+        medVal = median(objVal_pert);
+        idxVal_H = objVal_pert > medVal;
+        idxVal_L = objVal_pert < medVal;
         
-        objCon = objCon + 0.00001*[1:length(objVal)]';
-        medCon = median(objCon);
-        idxCon_H = objCon > medCon;
-        idxCon_L = objCon < medCon;
+        objCon_pert = objCon + 0.00001*[1:length(objVal)]';
+        medCon = median(objCon_pert);
+        idxCon_H = objCon_pert > medCon;
+        idxCon_L = objCon_pert < medCon;
         
-        objFam = objFam + 0.00001*[1:length(objVal)]';
-        medFam = median(objFam);
-        idxFam_H = objFam > medFam;
-        idxFam_L = objFam < medFam;
+        objFam_pert = objFam + 0.00001*[1:length(objVal)]';
+        medFam = median(objFam_pert);
+        idxFam_H = objFam_pert > medFam;
+        idxFam_L = objFam_pert < medFam;
         
-        objPri = objPri + 0.00001*[1:length(objVal)]';
-        medPri = median(objPri);
-        idxPri_H = objPri > medPri;
-        idxPri_L = objPri < medPri;
+        objPri_pert = objPri + 0.00001*[1:length(objVal)]';
+        medPri = median(objPri_pert);
+        idxPri_H = objPri_pert > medPri;
+        idxPri_L = objPri_pert < medPri;
         
-        difVal = difVal + 0.00001*[1:length(difVal)]';
-        medDV = median(difVal);
-        idxDV_H = difVal > medDV;
-        idxDV_L = difVal < medDV;
+        difVal_pert = difVal + 0.00001*[1:length(difVal)]';
+        medDV = median(difVal_pert);
+        idxDV_H = difVal_pert > medDV;
+        idxDV_L = difVal_pert < medDV;
         
-        valCho = valCho + 0.00001*[1:length(difVal)]';
-        medCho = median(valCho);
-        idxCho_H = valCho > medCho;
-        idxCho_L = valCho < medCho;
+        valCho_pert = valCho + 0.00001*[1:length(difVal)]';
+        medCho = median(valCho_pert);
+        idxCho_H = valCho_pert > medCho;
+        idxCho_L = valCho_pert < medCho;
         
-        chMunc = chMunc + 0.00001*[1:length(difVal)]';
-        medCmU = median(chMunc);
-        idxCmU_H = chMunc > medCmU;
-        idxCmU_L = chMunc < medCmU;
+        chMunc_pert = chMunc + 0.00001*[1:length(difVal)]';
+        medCmU = median(chMunc_pert);
+        idxCmU_H = chMunc_pert > medCmU;
+        idxCmU_L = chMunc_pert < medCmU;
         
         % session type
         bData(subs(s)).sessType{r} = day2Order{r};

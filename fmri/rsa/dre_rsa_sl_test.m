@@ -64,7 +64,8 @@ mask = niftiread([dir.msk,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% model names
-modelNames = {'val','con','fam','pri','oid'};
+modelNames = {'val','con','fam','pri'};
+modelNames = {'cxt'};
 
 %% soecify some directories
 
@@ -90,10 +91,10 @@ for s = 1:length(subs)
     subjectMetadataStruct = spm_vol(epi_file);
     
     % load correlation maps
-    load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
+    load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
     
     %% loop over models
-    for m = 1:5
+    for m = 1:length(modelNames)
         
         % current model name
         modelName = modelNames{m};
@@ -190,7 +191,7 @@ end
 for s = 1:length(subs)
     
     % loop over models
-    for m = 1:5
+    for m = 1:length(modelNames)
         
         % current model name
         modelName = modelNames{m};
@@ -200,10 +201,12 @@ for s = 1:length(subs)
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));
-        swrMap(mask == 0) = 0;
+        swrMap(mask == 0) = NaN;
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
+        
+        figure,imagesc(swrMap(:,:,40))
         
     end
 end
@@ -254,25 +257,29 @@ for m = 1:length(modelNames)
     pMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);
     spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_sr);
     
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % find connected clusters %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % create cluster-specific masks %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf
+    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false
         
         % find connected clusters
         k = 1;
         cluster = {};
         L = bwlabeln(supraThreshMarked_sr);
+        
+        % loop over such clusters
         for i = 1:max(L(:))
-            cluster_foo{i} = L == i;
+            cluster_foo{i} = L == i; %#ok<*SAGROW>
             clusterSize(i) = sum(cluster_foo{i}(:));
+            
+            % take only clusters with size > number of conditions per session (60)
             if clusterSize(i) >= 60
                 cluster{k} = cluster_foo{i};
                      
                 % create and save mask
                 maskMetadataStruct_sS = pMapMetadataStruct_sS;
-                maskMetadataStruct_sS.fname = [dirSl,fs,'mask_',modelName,'_',num2str(k),'_',num2str(clusterSize(i)),'.nii'];
+                maskMetadataStruct_sS.fname = [dirSl,fs,'mask_sl',modelName,'_',num2str(k),'.nii'];
                 spm_write_vol(maskMetadataStruct_sS, cluster{k});
                 
                 % update index

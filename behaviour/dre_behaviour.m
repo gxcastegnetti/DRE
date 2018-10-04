@@ -23,11 +23,11 @@ dir.beh = [dirNew,fs,'data',fs,'behaviour'];
 dir.psy = [dirNew,fs,'data',fs,'fmri',fs,'psychOut'];
 
 %% subjects and trials
-subs = [4:5 8 9 13:17 19:21 23 25:27 29:32 34:37 39:45 47:50];
+subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34:35 37 39:41 43 47:49];
 ntrials = 120;
 
 %% task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
-taskOrd = [ones(1,9),2*ones(1,12),1,1,2,1,ones(1,4),2*ones(1,5),1];
+taskOrd = [ones(1,9),2*ones(1,11),1,2,ones(1,4),2*ones(1,3)];
 
 %% plots settings
 plot_rda_SS = false;
@@ -61,6 +61,7 @@ plotVal = figure('color',[1 1 1]);
 plotCon = figure('color',[1 1 1]);
 plotFam = figure('color',[1 1 1]);
 plotCho = figure('color',[1 1 1]);
+plotCrr = figure('color',[1 1 1]);
 
 %% loop over subs
 for s = 1:length(subs)
@@ -104,7 +105,7 @@ for s = 1:length(subs)
     % histogram value fire
     plotTight = 7;
     figure(plotVal)
-    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
+    subplot(5,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
     
     % make label closer to axis
@@ -114,7 +115,7 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % histogram value boat
-    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(val_B(s,:),20,'facecolor',hist_boat_color)
+    subplot(5,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(val_B(s,:),20,'facecolor',hist_boat_color)
     title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
     
     % make label closer to axis
@@ -135,7 +136,7 @@ for s = 1:length(subs)
     
     % histogram value fire
     figure(plotCon)
-    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(con_F(s,:),20,'facecolor',hist_fire_color)
+    subplot(5,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(con_F(s,:),20,'facecolor',hist_fire_color)
     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
     
     % make label closer to axis
@@ -145,7 +146,7 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % histogram value boat
-    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(con_B(s,:),20,'facecolor',hist_boat_color)
+    subplot(5,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(con_B(s,:),20,'facecolor',hist_boat_color)
     title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
     
     % make label closer to axis
@@ -164,7 +165,7 @@ for s = 1:length(subs)
     
     % histogram value fire
     figure(plotFam)
-    subplot(6,6,s),histogram(fam(s,:),20,'facecolor',[0.25 0.25 0.25])
+    subplot(5,6,s),histogram(fam(s,:),20,'facecolor',[0.25 0.25 0.25])
     title(['Sub#',num2str(subs(s))],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',0:10:50), xlabel('famil.')
     
     
@@ -199,10 +200,114 @@ for s = 1:length(subs)
     idxCho_B = data_mri_B(:,3) == 1;
     
     % vector with 3 columns: L obj, R obj, choice
-    choice_F = [data_mri_F(idxCho_F,4:5) data_mri_F(idxCho_F,7)];
-    choice_B = [data_mri_B(idxCho_B,4:5) data_mri_B(idxCho_B,7)];
+    choice_F = [data_mri_F(idxCho_F,4:5) data_mri_F(idxCho_F,7:8)];
+    choice_B = [data_mri_B(idxCho_B,4:5) data_mri_B(idxCho_B,7:8)];
     
     clear data_mri_1 data_mri_2 data_mri_3 data_mri_4 idxCho_F idxCho_B goal 1 goal2
+    
+    %% val, con, fam vs RT
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % find val, con, fam of the objects %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    for i = 1:length(choice_F)
+        
+        % --- find when they were presented on day 1 ---
+        
+        % fire
+        idxCho_F_L(i) = find(data_F(:,2) == choice_F(i,1));
+        idxCho_F_R(i) = find(data_F(:,2) == choice_F(i,2));
+        
+        % boat
+        idxCho_B_L(i) = find(data_B(:,2) == choice_B(i,1));
+        idxCho_B_R(i) = find(data_B(:,2) == choice_B(i,2));
+        
+        % --- find val, fam, con assigned on day 1 ---
+        
+        % fire
+        if choice_F(i,3) == -1
+            valCho_F(i) = data_F(idxCho_F_L(i),3);
+            valUnc_F(i) = data_F(idxCho_F_R(i),3);
+            conCho_F(i) = data_F(idxCho_F_L(i),4);
+            conUnc_F(i) = data_F(idxCho_F_R(i),4);
+            famCho_F(i) = data_p(idxCho_F_L(i),3);
+            famUnc_F(i) = data_p(idxCho_F_R(i),3);
+        elseif choice_F(i,3) == 1
+            valCho_F(i) = data_F(idxCho_F_R(i),3);
+            valUnc_F(i) = data_F(idxCho_F_L(i),3);
+            conCho_F(i) = data_F(idxCho_F_R(i),4);
+            conUnc_F(i) = data_F(idxCho_F_L(i),4);
+            famCho_F(i) = data_p(idxCho_F_R(i),3);
+            famUnc_F(i) = data_p(idxCho_F_L(i),3);
+        end
+        
+        % boat
+        if choice_B(i,3) == -1
+            valCho_B(i) = data_B(idxCho_B_L(i),3);
+            valUnc_B(i) = data_B(idxCho_B_R(i),3);
+            conCho_B(i) = data_B(idxCho_B_L(i),4);
+            conUnc_B(i) = data_B(idxCho_B_R(i),4);
+            famCho_B(i) = data_p(idxCho_B_L(i),3);
+            famUnc_B(i) = data_p(idxCho_B_R(i),3);
+        elseif choice_B(i,3) == 1
+            valCho_B(i) = data_B(idxCho_B_R(i),3);
+            valUnc_B(i) = data_B(idxCho_B_L(i),3);
+            conCho_B(i) = data_B(idxCho_B_R(i),4);
+            conUnc_B(i) = data_B(idxCho_B_L(i),4);
+            famCho_B(i) = data_p(idxCho_B_R(i),3);
+            famUnc_B(i) = data_p(idxCho_B_L(i),3);
+        end
+        
+    end
+    
+    % put conditions together
+    valCho = [valCho_F'; valCho_B'];
+    valUnc = [valUnc_F'; valUnc_B'];
+    conCho = [conCho_F'; conCho_B'];
+    conUnc = [conUnc_F'; conUnc_B'];
+    famCho = [famCho_F'; famCho_B'];
+    famUnc = [famUnc_F'; famUnc_B'];
+    
+    % take absolute difference
+    valDif = abs(valCho - valUnc);
+    conDif = abs(conCho - conUnc);
+    famDif = abs(famCho - famUnc);
+    
+    % take chosen - unchosen
+    valChMUnc = valCho - valUnc;
+    conChMUnc = conCho - conUnc;
+    famChMUnc = famCho - famUnc;
+    
+    %%%%%%%%%%%%
+    % take RTs %
+    %%%%%%%%%%%%
+    
+    rt_F = choice_F(:,4);
+    rt_B = choice_B(:,4);
+    rt = [rt_F;rt_B];
+    
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    % correlations scores/RTs %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
+    r_valDif = corr(rt,valDif,'rows','complete');
+    r_conDif = corr(rt,conDif,'rows','complete');
+    r_famDif = corr(rt,famDif,'rows','complete');
+    r_valChMUnc = corr(rt,valChMUnc,'rows','complete');
+    r_conChMUnc = corr(rt,conChMUnc,'rows','complete');
+    r_famChMUnc = corr(rt,famChMUnc,'rows','complete');
+    
+    fooPlot_ChMUnc(s,:) = [r_valChMUnc r_conChMUnc r_famChMUnc];
+    fooPlot_Chosen(s,:) = [r_valChMUnc r_conChMUnc r_famChMUnc];
+    
+    % plot
+    figure(plotCrr)
+    subplot(5,6,s)
+    bar(fooPlot_Chosen(s,:))
+    set(gca,'fontsize',12,'xticklabel',{'v','c','f'}),ylabel('r')
+    title(['Sub#',num2str(subs(s))],'fontsize',14)
+    
     
     %% logistic regression of choice on day 2 from rating on day 1
     
@@ -262,7 +367,7 @@ for s = 1:length(subs)
     
     % choice during fire
     figure(plotCho)
-    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1))
+    subplot(5,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1))
     plot(xspan,sigm_FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
     plot(xspan,sigm_FonB,'linewidth',5,'color',hist_boat_color) % based on value assigned during boat
     plot(ratingDiff_F,(choice_F(:,3)+1)/2,'linestyle','none','marker','.','markersize',15,'color','k')
@@ -277,7 +382,7 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % choice during boat
-    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1))
+    subplot(5,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1))
     plot(xspan,sigm_BonB,'linewidth',5,'color',hist_boat_color),hold on % based on value assigned during boat
     plot(xspan,sigm_BonF,'linewidth',5,'color',hist_fire_color) % based on value assigned during fire
     plot(ratingDiff_B,(choice_B(:,3)+1)/2,'linestyle','none','marker','.','markersize',25,'color','k')
@@ -361,7 +466,7 @@ for s = 1:length(subs)
     cMat(:,:,s) = corr(all{s},'rows','complete');
     
     % plot
-    subplot(6,6,s)
+    subplot(5,6,s)
     imagesc(squeeze(cMat(:,:,s))), title(['sub#',num2str(subs(s))]), caxis([-1 1])
     set(gca,'XTick',1:5,'YTick',1:5,'fontsize',11,'XtickLabel',{'vF','vB','cF','cB','fm'},'YtickLabel',{'vF','vB','cF','cB','fm'})
 end
@@ -371,6 +476,10 @@ figure('color',[1 1 1])
 imagesc(squeeze(mean(cMat,3))), title('average','fontsize',16), caxis([-1 1])
 set(gca,'XTick',1:5,'YTick',1:5,'fontsize',16,'XtickLabel',{'vF','vB','cF','cB','fm'},'YtickLabel',{'vF','vB','cF','cB','fm'})
 
+%% plot average correlation between scores and RT
+figure
+bar(mean(fooPlot_ChMUnc,1))
+set(gca,'fontsize',12,'xticklabel',{'v','c','f'}),ylabel('r')
 
 keyboard
 %% table with single subject results

@@ -9,14 +9,14 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'dim_sl_box';
+analysisName = 'dim_test_1';
 
 %% folders
 fs      = filesep;
 dir.dim = pwd;
 idcs    = strfind(dir.dim,'/');
 dir.dre = dir.dim(1:idcs(end-2)-1);
-dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'stats'];
+dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
 dir.rsa = [dir.dre,fs,'codes',fs,'fmri',fs,'rsa'];
 dir.beh  = [dir.dre,fs,'data',fs,'behaviour'];
 dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas'];
@@ -29,11 +29,19 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39];
-taskOrd = [ones(1,8),2*ones(1,11),1,2,1];
+subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+taskOrd = [ones(1,8),2*ones(1,11),1,2,ones(1,4),2*ones(1,3)];
 
 %% behaviour
 bData = dre_extractData(dir,subs,taskOrd,0);
+
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%% native space masks and L1 are created in dre_rsa_roi_run %%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% load betas from RSA folder (because they are nicely extracted)
 % in this initial analysis we use normalised and smoothed data, just to see

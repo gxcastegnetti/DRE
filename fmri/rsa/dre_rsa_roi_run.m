@@ -7,7 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_pulse_ons0';
+analysisName = 'rsa_roi_test_1';
+dirBeta = 'rsa_pulse_ons0';
 
 %% folders
 dir.root = pwd;
@@ -26,36 +27,35 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% load masks
-% roiNames = {'hpc','ba8','ba9','ba10','ba11','ba25','ba32','ba33','ba34','ba44','ba45','ba46','ba47'};
-% roiNames = {'gm'};
-roiNames = {'HPC','ACC','infFG','medFG','midFG','supFG','infOcc','supOcc','PCC','AG','Ins','paraHPC'};
+% roiNames = {'none'};
+roiNames = {'HPC','mPFC_cS_pulse','verm_iV_pulse'};
 
 %% subjects
-subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40:43 47:49];
-taskOrd = [ones(1,8),2*ones(1,11),1,2,ones(1,5),2*ones(1,3)];
+subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% reverse normalise mask to subjective space and coregister
-if false
+if true
     for i = 1:length(roiNames)
         for s = 1:length(subs)
             
             % create folder for subjective masks
-            dirSub = [dir.msk,fs,roiNames{i},'_subj',fs,'SF',num2str(subs(s),'%03d')];
-            if ~exist(dirSub,'dir'),mkdir(dirSub),end
-            cd(dirSub)
+            dirSubjMask = [dir.msk,fs,roiNames{i},'_subj',fs,'SF',num2str(subs(s),'%03d')];
+            if ~exist(dirSubjMask,'dir'),mkdir(dirSubjMask),end
+            cd(dirSubjMask)
             
             % copy atlas mask to subject's folder
-            fileSource = [dir.msk,fs,'atlas',fs,roiNames{i},'.nii'];
+            fileSource = [dir.msk,fs,'_useNow',fs,roiNames{i},'.nii'];
             copyfile(fileSource)
             
             % select inverse deformation images from T1 segmentation step
             dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
             d = spm_select('List', dirStruct, '^iy_.*\.nii$');
-            y_file = {[dirStruct fs d]};
+            y_file = {[dirStruct fs d]}; clear d dirStruct
             job1{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
             
             % select mask
-            msk_file = {[dirSub,fs,roiNames{i},'.nii']};
+            msk_file = {[dirSubjMask,fs,roiNames{i},'.nii']};
             job1{1}.spatial{1}.normalise{1}.write.subj.resample = msk_file;
             
             % defaults
@@ -65,11 +65,11 @@ if false
             
             % run job
             disp(['Normalising sub#', num2str(subs(s),'%03d')])
-            d = spm_jobman('run',job1);
-            clear job1 d
+            spm_jobman('run',job1);
+            clear job1 msk_file y_file
             
             % delete unwarped file
-            delete([dirSub,fs,roiNames{i},'.nii'])
+            delete([dirSubjMask,fs,roiNames{i},'.nii'])
             
             % load sample EPI from current subject for coregistration
             dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
@@ -79,7 +79,7 @@ if false
             job2{1}.spm.spatial.coreg.write.ref = {epi_file};
             
             % select mask to coregister 
-            job2{1}.spm.spatial.coreg.write.source = {[dirSub,fs,'w',roiNames{i},'.nii']};
+            job2{1}.spm.spatial.coreg.write.source = {[dirSubjMask,fs,'w',roiNames{i},'.nii']};
             
             % defaults
             job2{1}.spm.spatial.coreg.write.roptions.interp = 4;
@@ -97,10 +97,9 @@ if false
 end
 
 %% 1st level
-roiNames = {'none'};
 if true
     for i = 1:length(roiNames)
-        nameBeta = ['level1',fs,'rsa_pulse_ons0',fs,roiNames{i}];
+        nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
         timing.iOns = 0;
         timing.iDur = 0;

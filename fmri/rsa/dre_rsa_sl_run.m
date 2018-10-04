@@ -12,23 +12,24 @@ betaid       = 'rsa_pulse_ons0';
 
 %% folders
 fs      = filesep;
-dir.rsa = pwd;
-idcs    = strfind(dir.rsa,'/');
-dir.dre = dir.rsa(1:idcs(end-2)-1);
+dir.here = pwd;
+idcs    = strfind(dir.here,'/');
+dir.dre = dir.here(1:idcs(end-2)-1);
 dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
 dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
+dir.rsa = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-addpath([dir.rsa,fs,'routines'])
+addpath([dir.here,fs,'routines'])
 addpath([dir.sta,fs,'routines'])
-addpath(genpath([dir.rsa,fs,'rsatoolbox']))
+addpath(genpath([dir.here,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
-taskOrd = [ones(1,8),2*ones(1,11),1,2,ones(1,4),2*ones(1,3)];
+subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -39,7 +40,7 @@ userOptions.overwriteflag = 'r';
 
 %% 1st level
 roiNames = {'none'};
-if false
+if true
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,'rsa_pulse_ons0',fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);

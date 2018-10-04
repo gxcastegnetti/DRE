@@ -22,14 +22,14 @@ addpath(genpath(dir.spm))
 addpath(genpath([foodir,fs,'routines'])), clear foodir idcs newdir4 dirSPM
 
 %% Subjects
-subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40:43 47:49];
-taskOrd = [ones(1,9),2*ones(1,11),1,2,ones(1,5),2*ones(1,3)];
+subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
-if false
+if true
     analysisName = 'uni_pulse_iVCF_cS';
     
     % 1st level
@@ -52,7 +52,7 @@ if false
 end
 
 %% box - value, confid, famil, pmod of imagination; value selected pmod of choice
-if false
+if true
     analysisName = 'uni_box_iVCF_cS';
     
     % 1st level
@@ -92,7 +92,7 @@ if true
     dre_L2(dir,analysisName,'imagination_onset',subs,1);
     dre_L2(dir,analysisName,'imagination_value',subs,2);
     dre_L2(dir,analysisName,'choice_onset',subs,3);
-    dre_L2(dir,analysisName,'choice_valueDiff',subs,4);
+    dre_L2(dir,analysisName,'choice_dV',subs,4);
 end
 
 %% box - value, confid, famil, pmod of imagination; value selected pmod of choice
@@ -114,8 +114,8 @@ end
 % dre_L2(dir,analysisName,'choice_onset',subs,3);
 % dre_L2(dir,analysisName,'choice_valueDiff',subs,4);
 
-%% box - value weighed by conf. pmod of imagination; value chosen - unchosen pmod of choice
-if false
+%% pulse - value weighed by conf. pmod of imagination; value chosen - unchosen pmod of choice
+if true
     analysisName = 'uni_pulse_iVw_cSs';
     
     % 1st level
@@ -156,7 +156,7 @@ end
 
 
 %% median splits
-if false
+if true
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%
     % imagin.: V; choice: dV %

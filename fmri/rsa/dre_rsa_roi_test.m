@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_box';
+analysisName = 'rsa_roi_test_1';
 
 %% folders
 dir.root = pwd;
@@ -55,7 +55,8 @@ RDMs_data = constructRDMs(responsePatterns, 'SPM', userOptions);
 
 %% extract models of value, confidence, familiarity, price
 RDMs_models = dre_extractRDMs(dir,subs,taskOrd);
-
+mat_ID = [diag(ones(120,1)), diag(ones(120,1));
+          diag(ones(120,1)), diag(ones(120,1))];
 for s = 1:length(subs)
     RDMs_val{s}.name = 'value';
     RDMs_val{s}.RDM = RDMs_models{s}.val; %#ok<*SAGROW>
@@ -69,6 +70,10 @@ for s = 1:length(subs)
     RDMs_pri{s}.name = 'price';
     RDMs_pri{s}.RDM = RDMs_models{s}.pri;
     RDMs_pri{s}.color = [0 1 0];
+    RDMs_oid{s}.name = 'obj ID';
+    RDMs_oid{s}.RDM = mat_ID;
+    RDMs_oid{s}.color = [0 1 0];
+    
 end
 
 for m = 1:size(RDMs_data,1)

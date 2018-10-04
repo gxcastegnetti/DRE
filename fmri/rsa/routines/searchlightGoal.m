@@ -145,23 +145,7 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     searchlightRDM_s2s4 = corr(t_s2(:,cIllValidVox_YspaceINDs)', t_s4(:,cIllValidVox_YspaceINDs)');
     searchlightRDM_s3s4 = corr(t_s3(:,cIllValidVox_YspaceINDs)', t_s4(:,cIllValidVox_YspaceINDs)');
     
-%     searchlightRDM_s1s2 = corr(t_s1(:,cIllValidVox_YspaceINDs)');   
-%     searchlightRDM_s1s3 = corr(t_s1(:,cIllValidVox_YspaceINDs)');   
-%     searchlightRDM_s2s4 = corr(t_s2(:,cIllValidVox_YspaceINDs)');
-%     searchlightRDM_s3s4 = corr(t_s3(:,cIllValidVox_YspaceINDs)');
-    
-%     c_s1s2 = corrcoef(t_s1(:,cIllValidVox_YspaceINDs), t_s2(:,cIllValidVox_YspaceINDs));
-%     c_s1s3 = corrcoef(t_s1(:,cIllValidVox_YspaceINDs), t_s3(:,cIllValidVox_YspaceINDs));
-%     c_s2s3 = corrcoef(t_s2(:,cIllValidVox_YspaceINDs), t_s3(:,cIllValidVox_YspaceINDs));
-%     c_s1s2 = c_s1s2(2,1);
-%     c_s1s3 = c_s1s3(2,1);
-%     c_s2s3 = c_s2s3(2,1);
-
-%     foo = t_s1(:,cIllValidVox_YspaceINDs);
-%     n_corr = length(foo(:));
-    
-%     t2 = hotellingWilliams(c_s1s2, c_s1s3, c_s2s3, n_corr);
-    
+    % take difference of correlations across context and within context
     smm_t2(x,y,z) = -(mean(searchlightRDM_s1s3(:)) + mean(searchlightRDM_s2s4(:)) - mean(searchlightRDM_s1s2(:)) - mean(searchlightRDM_s3s4(:)));
     
 end

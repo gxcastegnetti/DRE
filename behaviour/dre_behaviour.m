@@ -287,6 +287,10 @@ for s = 1:length(subs)
     rt_B = choice_B(:,4);
     rt = [rt_F;rt_B];
     
+    % take means
+    rt_F_mean(s) = nanmean(rt_F);
+    rt_B_mean(s) = nanmean(rt_B);
+    
     %%%%%%%%%%%%%%%%%%%%%%%%%%%
     % correlations scores/RTs %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%

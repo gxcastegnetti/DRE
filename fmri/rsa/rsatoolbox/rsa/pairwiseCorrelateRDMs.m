@@ -91,8 +91,8 @@ corrMat = RDMCorrMat(RDMs, localOptions.figureNumber, userOptions.RDMcorrelation
 % end%if
 anchorCols=[0 0 1
             .5 .5 .5 
-            1 0 0
-            ];
+            1 0 0];
+        
 cols=colorScale(anchorCols,256);
 set(gcf,'Colormap', cols);
 thisFileName = [userOptions.analysisName '_' localOptions.fileName 'secondOrderSM'];

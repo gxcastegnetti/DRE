@@ -128,7 +128,7 @@ for s = 1:length(subs)
     medPri = median(pri_all_pert);
     idxPri_H = pri_all_pert > medPri;
     
-    % create medain split RDMs
+    % create median split RDMs
     for i = 1:length(val_all)
         RDMs{s}.valMed(:,i) = abs(idxVal_H(i) - idxVal_H);
         RDMs{s}.conMed(:,i) = abs(idxCon_H(i) - idxCon_H);

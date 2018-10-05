@@ -485,6 +485,9 @@ figure
 bar(mean(fooPlot_ChMUnc,1))
 set(gca,'fontsize',12,'xticklabel',{'v','c','f'}),ylabel('r')
 
+%% lme
+% lme = fitlme(tbl,'ChoiceR ~ 1 + val + con + fam + (1 + val + con + fam | sub)');
+
 keyboard
 %% table with single subject results
 TableCorr = table(subs',R_rating',p_rating',R_confid',p_confid');

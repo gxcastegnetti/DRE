@@ -25,7 +25,7 @@ addpath(genpath([dir.root,fs,'rsatoolbox']))
 addpath(genpath([dir.spm]))
 
 %% Subjects
-subs = [5 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+subs = [5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 
 %% Set options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -183,7 +183,7 @@ for s = 1:length(subs)
         
         disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
         swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        spm_smooth(wrMapFile,swrMapFile,[8 8 8]);
+        spm_smooth(wrMapFile,swrMapFile,[9 9 9]);
         
     end
 end
@@ -202,7 +202,7 @@ for s = 1:length(subs)
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));
-        swrMap(mask == 0) = 0;
+        swrMap(mask == 0) = NaN;
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
@@ -232,8 +232,8 @@ for m = 1:1%length(modelNames)
         for y = 1:size(rMaps,2)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
-                    [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
+                    [h p1(x,y,z)] = ttest(-squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+                    [p2(x,y,z)] = signrank_onesided(-squeeze(rMaps(x,y,z,:)));
                 end
             end
         end
@@ -241,8 +241,8 @@ for m = 1:1%length(modelNames)
     end
     
     % apply FDR correction
-    pThrsh_t  = FDRthreshold(p1,0.1,mask);
-    pThrsh_sr = FDRthreshold(p2,0.1,mask);
+    pThrsh_t  = FDRthreshold(p1,0.25,mask);
+    pThrsh_sr = FDRthreshold(p2,0.25,mask);
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));
@@ -262,7 +262,7 @@ for m = 1:1%length(modelNames)
     % create cluster-specific masks %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false % <------- false
+    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false
         
         % find connected clusters
         k = 1;

@@ -35,7 +35,7 @@ subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% reverse normalise mask to subjective space and coregister
-if true
+if false
     for i = 1:length(roiNames)
         for s = 1:length(subs)
             
@@ -97,7 +97,7 @@ if true
 end
 
 %% 1st level
-if true
+if false
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
@@ -106,7 +106,7 @@ if true
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end
 end
-keyboard
+
 %% load betas and build response patterns
 userOptions = dre_rsa_userOptions(dir,subs);
 userOptions.analysisName = analysisName;
@@ -114,7 +114,7 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
 for i = 1:length(roiNames)
-    nameBeta = ['level1',fs,'rsa_box',fs,roiNames{i}];
+    nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
     dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
     userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
     [fullBrainVols, ~] = fMRIDataPreparation('SPM', userOptions);

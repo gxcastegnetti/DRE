@@ -92,7 +92,7 @@ for s = 1:length(subs)
     subjectMetadataStruct = spm_vol(epi_file);
     
     % load correlation maps
-%     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
+    %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
     load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
     
     %% loop over models
@@ -184,7 +184,7 @@ for s = 1:length(subs)
         
         disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
         swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        spm_smooth(wrMapFile,swrMapFile,[8 8 8]);
+        spm_smooth(wrMapFile,swrMapFile,[3 3 3]);
         
     end
 end
@@ -207,9 +207,7 @@ for s = 1:length(subs)
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
-        
-        figure,imagesc(swrMap(:,:,60))
-        
+                
     end
 end
 
@@ -239,6 +237,10 @@ for m = 1:length(modelNames)
             end
         end
         disp(x);
+    end
+    
+    for i = 1:79
+        figure,imagesc(p1(:,:,i))
     end
     
     % apply FDR correction
@@ -278,7 +280,7 @@ for m = 1:length(modelNames)
             % take only clusters with size > number of conditions per session (60)
             if clusterSize(i) >= 60
                 cluster{k} = cluster_foo{i};
-                     
+                
                 % create and save mask
                 maskMetadataStruct_sS = pMapMetadataStruct_sS;
                 maskMetadataStruct_sS.fname = [dirSl,fs,'mask_sl',modelName,'_',num2str(k),'.nii'];
@@ -289,6 +291,7 @@ for m = 1:length(modelNames)
             end
         end, clear cluster_foo i k L
     end
+    
 end
 
 

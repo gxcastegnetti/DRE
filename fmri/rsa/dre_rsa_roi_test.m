@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_test_1';
+analysisName = 'rsa_roi_test_2';
 
 %% folders
 dir.root = pwd;
@@ -29,7 +29,7 @@ taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
-ordData = dre_rearrange(dir,subs,taskOrd,bData);
+ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 
 %% some options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -46,21 +46,29 @@ roiNames = fieldnames(respPatt);
 
 %% create structures of rearranged response patterns
 respPatt_acc2sessions = respPatt;
+respPatt_acc2val = respPatt;
+respPatt_acc2fam = respPatt;
 
 for i = 1:length(roiNames)
     for s = 1:length(subs)
         subjName = ['SF',num2str(subs(s),'%03d')];
-        respPatt_acc2sessions.(roiNames{i}).(subjName) = respPatt_acc2sessions.(roiNames{i}).(subjName)(:,ordData(subs(s)).acc2sessions);
+        respPatt_acc2sessions.(roiNames{i}).(subjName) = respPatt_acc2sessions.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2sessions);
+        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val);
+%         respPatt_acc2val.verm_iV_pulse.(subjName) = respPatt_acc2val.verm_iV_pulse.(subjName)(:,ordData(subs(s)).norm2val);
+        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam);
     end
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2sessions, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt_acc2fam, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs
 % matrices
-figureRDMs(RDM_average,userOptions)
+% for i = 1:28
+    figureRDMs(RDM_average,userOptions)
+%     keyboard
+% end
 keyboard
 % dendrograms
 % dendrogramConditions(RDM_average,userOptions)

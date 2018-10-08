@@ -87,6 +87,10 @@ end
 
 RDMs = interleaveRDMs(RDMs); % Pull the RDMs into a 1-d structured array
 
+% for i = 1:length(RDMs)
+%     RDMs(i).RDM = imgaussfilt(RDMs(i).RDM);
+% end
+
 %% Now display
 
 % This is not available on mac, it causes an error in Matlab 2014

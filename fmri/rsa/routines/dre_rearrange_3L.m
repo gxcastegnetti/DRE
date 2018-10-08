@@ -1,4 +1,4 @@
-function arrData = dre_rearrange(dir,subs,taskOrd,bData)
+function arrData = dre_rearrange_3L(dir,subs,taskOrd,bData)
 %% function dre_rearrange(dirSub,sub,runType)
 % ~~~
 % INPUTS:
@@ -62,15 +62,17 @@ for s = 1:length(subs)
     arrData(subs(s)).norm2sessions = norm2sessions(:);
     
     %% arrange according to value (3 levels)
-    % replace obj ID with obj idx in a vector
     
     sessIdx = norm2sessions(:);
-    [~,sess2norm] = sort(sessIdx);
     
-    valAll = [bData(subs(s)).imagination(1).val; 
-              bData(subs(s)).imagination(2).val; 
-              bData(subs(s)).imagination(3).val; 
-              bData(subs(s)).imagination(4).val];
+    %%%%%%%%%
+    % value %
+    %%%%%%%%%
+    
+    valAll = [bData(subs(s)).imagination(1).val;
+        bData(subs(s)).imagination(2).val;
+        bData(subs(s)).imagination(3).val;
+        bData(subs(s)).imagination(4).val];
     
     valAll(isnan(valAll)) = 1;
     
@@ -81,12 +83,44 @@ for s = 1:length(subs)
     val_L = find(valAll < prctile33);
     val_M = find(valAll > prctile33 & valAll < prctile66);
     val_H = find(valAll > prctile66);
+    val_L = val_L(randperm(length(val_L)));
+    val_M = val_M(randperm(length(val_M)));
+    val_H = val_H(randperm(length(val_H)));
     valAll_3L = [val_L; val_M; val_H];
     
     [~,valSort] = sort(valAll);
     
     % put in output struct
     arrData(subs(s)).norm2val = sessIdx(valAll_3L);
-%     arrData(subs(s)).norm2val = objIdx(valSort);   
+%     arrData(subs(s)).norm2val = sessIdx(valSort);
+    
+    %%%%%%%%%%%%%%%
+    % familiarity %
+    %%%%%%%%%%%%%%%
+    
+    famAll = [bData(subs(s)).imagination(1).fam;
+        bData(subs(s)).imagination(2).fam;
+        bData(subs(s)).imagination(3).fam;
+        bData(subs(s)).imagination(4).fam];
+    
+    famAll(isnan(famAll)) = 1;
+    
+    % perturb familiarity for univoque percentiles calculation
+    famAll = famAll + 0.00000001*(1:length(famAll))';
+    prctile33 = prctile(famAll,100/3);
+    prctile66 = prctile(famAll,200/3);
+    fam_L = find(famAll < prctile33);
+    fam_M = find(famAll > prctile33 & famAll < prctile66);
+    fam_H = find(famAll > prctile66);
+    fam_L = fam_L(randperm(length(fam_L)));
+    fam_M = fam_M(randperm(length(fam_M)));
+    fam_H = fam_H(randperm(length(fam_H)));
+    famAll_3L = [fam_L; fam_M; fam_H];
+    
+    [~,famSort] = sort(famAll);
+    
+    % put in output struct
+    arrData(subs(s)).norm2fam = sessIdx(famAll_3L);
+%     arrData(subs(s)).norm2fam = sessIdx(famSort);
     
 end

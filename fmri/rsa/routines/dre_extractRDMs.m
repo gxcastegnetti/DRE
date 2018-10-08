@@ -165,12 +165,11 @@ for s = 1:length(subs)
                 cxt_model(120+i,120+j) = 0;
             end
             
-            if i == j
-                cxt_model(i,j) = 0;
-                cxt_model(120+i,120+j) = 0;
-            end 
         end
     end
     RDMs{s}.cxt = cxt_model;
+    
+    cxt_model(isnan(cxt_model)) = -1;
+    figure,imagesc(cxt_model)
     
 end

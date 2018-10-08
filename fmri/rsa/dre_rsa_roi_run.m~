@@ -36,7 +36,7 @@ subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% reverse normalise mask to subjective space and coregister
-if true
+if false
     for i = 1:length(roiNames)
         for s = 1:length(subs)
             
@@ -98,7 +98,7 @@ if true
 end
 
 %% 1st level
-if true
+if false
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);

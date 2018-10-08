@@ -76,8 +76,6 @@ searchlightOptions.nConditions = 240;
 % create matrix for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
           diag(ones(120,1)), diag(ones(120,1))];
-mat_cxt = [zeros(120), ones(120);
-           ones(120), zeros(120)];
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);

@@ -25,7 +25,7 @@ addpath(genpath([dir.root,fs,'rsatoolbox']))
 addpath(genpath([dir.spm]))
 
 %% Subjects
-subs = [5 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 
 %% Set options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -64,7 +64,7 @@ mask = niftiread([dir.msk,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% model names
-modelNames = {'val','fam','oid'};
+modelNames = {'val','fam','oid','cxt'};
 % modelNames = {'cxt'};
 
 %% soecify some directories
@@ -192,7 +192,7 @@ end
 for s = 1:length(subs)
     
     % loop over models
-    for m = 1:1%length(modelNames)
+    for m = 1:length(modelNames)
         
         % current model name
         modelName = modelNames{m};
@@ -202,18 +202,18 @@ for s = 1:length(subs)
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));
-        swrMap(mask == 0) = 0;
+        swrMap(mask == 0) = NaN;
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
         
-        figure,imagesc(swrMap(:,:,40))
+%         figure,imagesc(swrMap(:,:,40))
         
     end
 end
 
 %% statistics
-for m = 1:1%length(modelNames)
+for m = 1:length(modelNames)
     
     modelName = modelNames{m};
     
@@ -241,8 +241,8 @@ for m = 1:1%length(modelNames)
     end
     
     % apply FDR correction
-    pThrsh_t  = FDRthreshold(p1,0.1,mask);
-    pThrsh_sr = FDRthreshold(p2,0.1,mask);
+    pThrsh_t  = FDRthreshold(p1,0.05,mask);
+    pThrsh_sr = FDRthreshold(p2,0.05,mask);
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));

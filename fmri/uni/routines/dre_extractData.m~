@@ -174,11 +174,11 @@ for s = 1:length(subs)
         medCmU = median(chMunc_pert);
         idxCmU_H = chMunc_pert > medCmU;
         idxCmU_L = chMunc_pert < medCmU;
-                
+        
         %% session type
         bData(subs(s)).sessType{r} = day2Order{r};
         
-        %% create output struct
+        %% fill output struct
         
         %%%%%%%%%%%%%%%%%%%%%
         % imagination stuff %

@@ -208,7 +208,7 @@ for s = 1:length(subs)
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
         
-        figure,imagesc(swrMap(:,:,60))
+        figure,imagesc(swrMap(:,:,40))
         
     end
 end
@@ -242,8 +242,8 @@ for m = 1:length(modelNames)
     end
     
     % apply FDR correction
-    pThrsh_t  = FDRthreshold(p1,0.05,mask);
-    pThrsh_sr = FDRthreshold(p2,0.05,mask);
+    pThrsh_t  = FDRthreshold(p1,0.25,mask);
+    pThrsh_sr = FDRthreshold(p2,0.25,mask);
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));

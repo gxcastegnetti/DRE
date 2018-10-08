@@ -50,8 +50,8 @@ for s = 1:length(subs)
     end
     
     % sort them
-    [obj_F_sort,idx_sort_F] = sort(obj_F);
-    [obj_B_sort,idx_sort_B] = sort(obj_B);
+    [obj_F_sort,sort_F] = sort(obj_F);
+    [obj_F_sort,sort_B] = sort(obj_B);
     
     %% day 1 - load behavioural data
     dirBeha = [dir.data,fs,'behaviour',fs,'SF',num2str(subs(s),'%03d')];
@@ -76,10 +76,10 @@ for s = 1:length(subs)
     % extract value, confidence
     val_F = Mday1_F(idx_day1_F,3);
     val_B = Mday1_B(idx_day1_B,3);
-    val_all = [val_F(idx_sort_F); val_B(idx_sort_B)];
+    val_all = [val_F(sort_F); val_B(sort_B)];
     con_F = Mday1_F(idx_day1_F,4);
     con_B = Mday1_B(idx_day1_B,4);
-    con_all = [con_F(idx_sort_F); con_B(idx_sort_B)];
+    con_all = [con_F(sort_F); con_B(sort_B)];
     
     %%%%%%%%%%%%%%%%%%%%%%%%%
     % familiarity and price %
@@ -93,10 +93,10 @@ for s = 1:length(subs)
     % extract familiarity, price
     fam_F = Mday1_p(idx_day1_F_FP,3);
     fam_B = Mday1_p(idx_day1_B_FP,3);
-    fam_all = [fam_F(idx_sort_F); fam_B(idx_sort_B)];
+    fam_all = [fam_F(sort_F); fam_B(sort_B)];
     pri_F = Mday1_p(idx_day1_F_FP,4);
     pri_B = Mday1_p(idx_day1_B_FP,4);
-    pri_all = [pri_F(idx_sort_F); pri_B(idx_sort_B)];
+    pri_all = [pri_F(sort_F); pri_B(sort_B)];
     
     %% create continuous RDMs
     for i = 1:length(val_all)
@@ -152,25 +152,21 @@ for s = 1:length(subs)
         for j = 1:120
             
             % fire
-            [~,sess_F_i] = find(sessions_F == obj_F_sort(i));
-            [~,sess_F_j] = find(sessions_F == obj_F_sort(j));
+            [~,sess_F_i] = find(sessions_F == obj_F(i));
+            [~,sess_F_j] = find(sessions_F == obj_F(j));
             if sess_F_i ~= sess_F_j
                 cxt_model(i,j) = 0;
             end
             
             % boat
-            [~,sess_B_i] = find(sessions_B == obj_B_sort(i));
-            [~,sess_B_j] = find(sessions_B == obj_B_sort(j));
+            [~,sess_B_i] = find(sessions_B == obj_B(i));
+            [~,sess_B_j] = find(sessions_B == obj_B(j));
             if sess_B_i ~= sess_B_j
                 cxt_model(120+i,120+j) = 0;
             end
-            
-            if i == j
-                cxt_model(i,j) = 0;
-                cxt_model(120+i,120+j) = 0;
-            end 
+            keyboard
         end
     end
-    RDMs{s}.cxt = cxt_model;
+    
     
 end

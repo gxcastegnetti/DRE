@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons0_cxt';
 betaid       = 'rsa_pulse_ons0';
 
 %% folders
@@ -53,11 +53,12 @@ end
 %% load betas
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-if ~exist([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'file')
+filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
+if ~exist(filePatterns,'file')
     [~, responsePatterns] = fMRIDataPreparation('SPM', userOptions);
-    save([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'responsePatterns','-v7.3')
+    save(filePatterns,'responsePatterns','-v7.3')
 else
-    load([dir.out,fs,analysisName,fs,'rsaPatterns_sl.mat'],'responsePatterns')
+    load(filePatterns,'responsePatterns')
 end
 
 %% extract models of value, confidence, familiarity, price
@@ -82,18 +83,23 @@ for s = 1:length(subs)
     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
-    model(1).name = 'val';
-    model(1).RDM = RDMs{s}.val;
+%     model(1).name = 'valMed';
+%     model(1).RDM = RDMs{s}.valMed;
+%     model(1).color = [0 1 0];
+%     model(2).name = 'famMed';
+%     model(2).RDM = RDMs{s}.famMed;
+%     model(2).color = [0 1 0];
+%     model(3).name = 'oid';
+%     model(3).RDM = 1-mat_ID;
+%     model(3).color = [0 1 0];
+%     model(4).name = 'cxt';
+%     model(4).RDM = mat_cxt;
+%     model(4).color = [0 1 0];
+    
+    model(1).name = 'cxt_new';
+    model(1).RDM = RDMs{s}.cxt;
     model(1).color = [0 1 0];
-    model(2).name = 'fam';
-    model(2).RDM = RDMs{s}.fam;
-    model(2).color = [0 1 0];
-    model(3).name = 'oid';
-    model(3).RDM = 1-mat_ID;
-    model(3).color = [0 1 0];
-    model(4).name = 'cxt';
-    model(4).RDM = mat_cxt;
-    model(4).color = [0 1 0];
+    
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

@@ -60,7 +60,7 @@ for i = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2fam, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt_acc2sessions, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs
@@ -69,7 +69,7 @@ RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
     figureRDMs(RDM_average,userOptions)
 %     keyboard
 % end
-keyboard
+
 % dendrograms
 % dendrogramConditions(RDM_average,userOptions)
 
@@ -80,36 +80,27 @@ keyboard
 RDMs_models = dre_extractRDMs(dir,subs,taskOrd);
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
     diag(ones(120,1)), diag(ones(120,1))];
-mat_cxt = [zeros(120), ones(120);
-    ones(120), zeros(120)];
 for s = 1:length(subs)
-    RDMs_model(1,s).name = 'value';
+    RDMs_model(1,s).name = 'val';
     RDMs_model(1,s).RDM = RDMs_models{s}.val; %#ok<*SAGROW>
     RDMs_model(1,s).color = [0 1 0];
-    RDMs_model(2,s).name = 'confidence';
-    RDMs_model(2,s).RDM = RDMs_models{s}.con;
+    RDMs_model(2,s).name = 'fam';
+    RDMs_model(2,s).RDM = RDMs_models{s}.fam;
     RDMs_model(2,s).color = [0 1 0];
-    RDMs_model(3,s).name = 'familiarity';
-    RDMs_model(3,s).RDM = RDMs_models{s}.fam;
+    RDMs_model(3,s).name = 'oid';
+    RDMs_model(3,s).RDM = 1-mat_ID;
     RDMs_model(3,s).color = [0 1 0];
-    RDMs_model(4,s).name = 'price';
-    RDMs_model(4,s).RDM = RDMs_models{s}.pri;
+    RDMs_model(4,s).name = 'con';
+    RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
     RDMs_model(4,s).color = [0 1 0];
-    RDMs_model(5,s).name = 'obj ID';
-    RDMs_model(5,s).RDM = 1-mat_ID;
-    RDMs_model(5,s).color = [0 1 0];
-    RDMs_model(6,s).name = 'context';
-    RDMs_model(6,s).RDM = mat_cxt;
-    RDMs_model(6,s).color = [0 1 0];
 end
 
-
 %% for every region and sub, correlate RDM and model
-regionNames = {'hpc','mpfc','lingual'};
-scoreNames = {'val','con','fam','pri','ID','cxt'};
+scoreNames = {'val','fam','ID','cxt'};
 h{1} = figure('color',[1 1 1]);
 h{2} = figure('color',[1 1 1]);
 h{3} = figure('color',[1 1 1]);
+h{4} = figure('color',[1 1 1]);
 for r = 1:size(RDMs_data,1)
     for s = 1:size(RDMs_data,2)
         for m = 1:size(RDMs_model,1)
@@ -119,12 +110,12 @@ for r = 1:size(RDMs_data,1)
         end
         figure(h{r})
         subplot(5,6,s),bar(rL2(:,s)),set(gca,'xticklabel',scoreNames)
-        title([regionNames{r},' - sub#',num2str(subs(s),'%03d')])
+        title([roiNames{r},' - sub#',num2str(subs(s),'%03d')])
     end
-    figure('color',[1 1 1]),bar(mean(rL2,2)),set(gca,'xticklabel',scoreNames),title(regionNames{r})
+    figure('color',[1 1 1]),bar(mean(rL2,2)),set(gca,'xticklabel',scoreNames),title(roiNames{r})
 end
 
-
+%%
 
 
 

@@ -207,6 +207,8 @@ for s = 1:length(subs)
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
+        
+        figure,imagesc(swrMap(:,:,40))
                 
     end
 end
@@ -231,8 +233,8 @@ for m = 1:length(modelNames)
         for y = 1:size(rMaps,2)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
-                    [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
+                    [h p1(x,y,z)] = ttest(-squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+                    [p2(x,y,z)] = signrank_onesided(-squeeze(rMaps(x,y,z,:)));
                 end
             end
         end

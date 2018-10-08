@@ -169,7 +169,7 @@ for s = 1:length(subs)
     end
     RDMs{s}.cxt = cxt_model;
     
-    cxt_model(isnan(cxt_model)) = -1;
-    figure,imagesc(cxt_model)
+%     cxt_model(isnan(cxt_model)) = -1;
+%     figure,imagesc(cxt_model)
     
 end

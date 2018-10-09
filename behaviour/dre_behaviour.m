@@ -23,11 +23,11 @@ dir.beh = [dirNew,fs,'data',fs,'behaviour'];
 dir.psy = [dirNew,fs,'data',fs,'fmri',fs,'psychOut'];
 
 %% subjects and trials
-subs = [4:5 8 9 13:17 19:21 23 25:26 29:32 34:35 37 39:41 43 47:49];
+subs = [4:5 8 9 13:17 19 21 23 25:26 29:32 34:35 37 39:41 43 47:49];
 ntrials = 120;
 
 %% task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
-taskOrd = [ones(1,9),2*ones(1,11),1,2,ones(1,4),2*ones(1,3)];
+taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% plots settings
 plot_rda_SS = false;

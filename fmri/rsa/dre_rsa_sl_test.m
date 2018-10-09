@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_cxt';
+analysisName = 'rsa_sl_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
 
 %% Folders
@@ -65,8 +65,8 @@ mask = logical(mask);
 
 %% model names
 modelNames = {'val','fam','oid','cxt'};
-modelNames = {'valMed','famMed'};
-modelNames = {'cxt'};
+% modelNames = {'valMed','famMed'};
+% modelNames = {'cxt'};
 
 %% soecify some directories
 
@@ -208,7 +208,7 @@ for s = 1:length(subs)
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
         
-        figure,imagesc(swrMap(:,:,40))
+%         figure,imagesc(swrMap(:,:,40))
                 
     end
 end
@@ -233,17 +233,17 @@ for m = 1:length(modelNames)
         for y = 1:size(rMaps,2)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
-                    [h p1(x,y,z)] = ttest(-squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    [p2(x,y,z)] = signrank_onesided(-squeeze(rMaps(x,y,z,:)));
+                    [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+                    [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
                 end
             end
         end
         disp(x);
     end
     
-    for i = 1:79
-        figure,imagesc(p1(:,:,i))
-    end
+%     for i = 1:79
+%         figure,imagesc(p1(:,:,i))
+%     end
     
     % apply FDR correction
     pThrsh_t  = FDRthreshold(p1,0.05,mask);

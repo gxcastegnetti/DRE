@@ -91,7 +91,11 @@ for s = 1:length(subs)
     RDMs_model(3,s).color = [0 1 0];
     RDMs_model(4,s).name = 'con';
     RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
-    RDMs_model(4,s).color = [0 1 0];    
+    RDMs_model(4,s).color = [0 1 0];
+    
+    %     RDMs_model(4,s).RDM = [zeros(120), ones(120);
+    %                            ones(120), zeros(120)];
+    
 end
 
 %% for every region and sub, correlate RDM and model
@@ -117,27 +121,22 @@ end
 %% differences between best and worse performing subs
 % where performance is the mean slope of the logisitc regression of choice
 % during fMRI session based on scores given on day 1
-
 subsBest = [23 18 5 3 21 11 10 20 17 28 24  1 15 22];
 subsWors = [2  14 6 4  7  9 27 26 12 16 19 13  8 25];
 
 bestVsWorsePlot = figure('color',[1 1 1]);
 x_err = [0.85 1.15 1.85 2.15 2.85 3.15 3.85 4.15];
 for r = 1:size(RDMs_data,1)
-    
-    % compute mean and sem for best and worse subs
     meanBest = mean(rL2(:,subsBest,r),2);
     meanWors = mean(rL2(:,subsWors,r),2);
     semBest = std(rL2(:,subsBest,r)')/sqrt(length(subs));
     semWors = std(rL2(:,subsWors,r)')/sqrt(length(subs));
     
-    % plot bars
     figure(bestVsWorsePlot)
     subplot(4,3,r)
     bar([meanBest,meanWors]),legend('best','worse','location','southeast')
     set(gca,'xticklabel',scoreNames),title(roiNames{r}),hold on
     
-    % plot error bars
     foo_mean = [meanBest';meanWors'];
     foo_mean = foo_mean(:);
     foo_err = [semBest',semWors'];

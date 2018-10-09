@@ -53,8 +53,8 @@ for i = 1:length(roiNames)
     for s = 1:length(subs)
         subjName = ['SF',num2str(subs(s),'%03d')];
         respPatt_acc2sessions.(roiNames{i}).(subjName) = respPatt_acc2sessions.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2sessions);
-        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val);
-        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam);
+        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val_disc);
+        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam_disc);
     end
 end
 
@@ -93,16 +93,17 @@ for s = 1:length(subs)
     RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
     RDMs_model(4,s).color = [0 1 0];
     
-%     RDMs_model(4,s).RDM = [zeros(120), ones(120);
-%                            ones(120), zeros(120)];
+    %     RDMs_model(4,s).RDM = [zeros(120), ones(120);
+    %                            ones(120), zeros(120)];
     
 end
 
 %% for every region and sub, correlate RDM and model
 scoreNames = {'val','fam','ID','cxt'};
-h{1} = figure('color',[1 1 1]);
-h{2} = figure('color',[1 1 1]);
-h{3} = figure('color',[1 1 1]);
+for i = 1:size(RDMs_data,1)
+    h{i} = figure('color',[1 1 1]);
+end
+
 % h{4} = figure('color',[1 1 1]);
 for r = 1:size(RDMs_data,1)
     for s = 1:size(RDMs_data,2)

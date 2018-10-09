@@ -1,6 +1,6 @@
-function arrIdx = dre_rearrange_3L(dir,subs,taskOrd,bData)
-%% function dre_rearrange_3L(dirSub,sub,runType)
-% finds indices to arrange response patterns according to three levels of
+function arrIdx = dre_rearrange_2L(dir,subs,taskOrd,bData)
+%% function dre_rearrange_2L(dirSub,sub,runType)
+% finds indices to arrange response patterns according to two levels of
 % value and familiarity, or in order of presentation
 % ~~~
 % INPUTS:
@@ -77,26 +77,24 @@ for s = 1:length(subs)
         bData(subs(s)).imagination(3).val;
         bData(subs(s)).imagination(4).val];
         
-    valAll(isnan(valAll)) = floor(50*rand(1,sum(isnan(valAll))));
+    valAll(isnan(valAll)) = floor(50*rand(sum(isnan()))
     
     % perturb value for univoque percentiles calculation
     valAll = valAll + 0.00000001*(1:length(valAll))';
     
     % computes percentiles
-    prctile33 = prctile(valAll,100/3);
-    prctile66 = prctile(valAll,200/3);
+    prctile50 = prctile(valAll,50);
     
-    % divide into three levels and stack them
-    val_L = find(valAll < prctile33);
-    val_M = find(valAll > prctile33 & valAll < prctile66);
-    val_H = find(valAll > prctile66);
-    valAll_3L = [val_L; val_M; val_H];
+    % divide into two levels and stack them
+    val_L = find(valAll <= prctile50);
+    val_H = find(valAll > prctile50);
+    valAll_2L = [val_L; val_H];
     
     % sort value for the continuous arrangement
     [~,valSort] = sort(valAll);
     
     % put in output struct
-    arrIdx(subs(s)).norm2val_disc = sessIdx(valAll_3L);
+    arrIdx(subs(s)).norm2val_disc = sessIdx(valAll_2L);
     arrIdx(subs(s)).norm2val_cont = sessIdx(valSort);
     
     %%%%%%%%%%%%%%%
@@ -109,26 +107,22 @@ for s = 1:length(subs)
         bData(subs(s)).imagination(3).fam;
         bData(subs(s)).imagination(4).fam];
     
-    famAll(isnan(famAll)) = floor(50*rand(1,sum(isnan(famAll))));
-    
     % perturb familiarity for univoque percentiles calculation
     famAll = famAll + 0.00000001*(1:length(famAll))';
     
     % find percentiles
-    prctile33 = prctile(famAll,100/3);
-    prctile66 = prctile(famAll,200/3);
+    prctile50 = prctile(famAll,50);
     
-    % divide into three levels and stack them
-    fam_L = find(famAll < prctile33);
-    fam_M = find(famAll > prctile33 & famAll < prctile66);
-    fam_H = find(famAll > prctile66);
-    famAll_3L = [fam_L; fam_M; fam_H];
+    % divide into two levels and stack them
+    fam_L = find(famAll < prctile50);
+    fam_H = find(famAll > prctile50);
+    famAll_2L = [fam_L; fam_H];
     
     % sort familiarity for the continuous arrangement
     [~,famSort] = sort(famAll);
     
     % put in output struct
-    arrIdx(subs(s)).norm2fam_disc = sessIdx(famAll_3L);
+    arrIdx(subs(s)).norm2fam_disc = sessIdx(famAll_2L);
     arrIdx(subs(s)).norm2fam_cont = sessIdx(famSort);
     
 end

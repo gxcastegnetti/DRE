@@ -26,7 +26,7 @@ subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% extract behavioural data
-bData = dre_extractData(dir,subs,taskOrd,0);
+bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
 if false
@@ -136,7 +136,7 @@ end
 % dre_L2(dir,analysisName,'choice_valueDiff',subs,4);
 
 %% pulse - value weighed by conf. pmod of imagination; value chosen - unchosen pmod of choice
-if true
+if false
     analysisName = 'uni_pulse_iVw_cSs';
     
     % 1st level
@@ -177,7 +177,7 @@ end
 
 
 %% median splits
-if true
+if false
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%
     % imagin.: V; choice: dV %

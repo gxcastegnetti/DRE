@@ -60,7 +60,7 @@ for i = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2sessions, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs
@@ -93,6 +93,10 @@ for s = 1:length(subs)
     RDMs_model(4,s).name = 'con';
     RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
     RDMs_model(4,s).color = [0 1 0];
+    
+%     RDMs_model(4,s).RDM = [zeros(120), ones(120);
+%                            ones(120), zeros(120)];
+    
 end
 
 %% for every region and sub, correlate RDM and model

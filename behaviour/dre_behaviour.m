@@ -486,78 +486,10 @@ bar(mean(fooPlot_ChMUnc,1))
 set(gca,'fontsize',12,'xticklabel',{'v','c','f'}),ylabel('r')
 
 %% lme
-% lme = fitlme(tbl,'ChoiceR ~ 1 + val + con + fam + (1 + val + con + fam | sub)');
 
-keyboard
-%% table with single subject results
+% create table
 TableCorr = table(subs',R_rating',p_rating',R_confid',p_confid');
 TableCorr.Properties.VariableNames = {'Subject' 'R_rating' 'p_rating' 'R_confid','p_confid'};
-clear R_rating p_rating R_confid p_confid rda_SS hist_SS i blk rda_SS hist_SS zzScore
 
-%% table with single subject results
-TableCorr = table(subs',rViv_F',pViv_F',rViv_B',pViv_B');
-TableCorr.Properties.VariableNames = {'Subject' 'rVivFire' 'pVivFire' 'rVivDoor','pVivDoor'};
-clear R_rating p_rating R_confid p_confid rda_SS hist_SS i blk rda_SS hist_SS zzScore
+lme = fitlme(tbl,'ChoiceR ~ 1 + val + con + fam + (1 + val + con + fam | sub)');
 
-%% compute pairwise correlation
-ratRDA_all = cat(1,rsmStack_F,rsmStack_B);
-j = 1;
-for s1 = 1:2*length(subs)
-    if j < length(subs) + 1
-        sessNames{j} = ['sub#',num2str(subs(j))];
-        sessNames{j+length(subs)} = ['sub#',num2str(subs(j))];
-        j = j + 1;
-    end
-    for s2 = 1:2*length(subs)
-        rda1 = squeeze(ratRDA_all(s1,:,:));
-        rda2 = squeeze(ratRDA_all(s2,:,:));
-        fooNaN = isnan(rda1) | isnan(rda2);
-        [r,p] = corrcoef(rda1(~fooNaN),rda2(~fooNaN));
-        r_xxx(s1,s2) = r(2,1); %#ok<*SAGROW>
-        p_xxx(s1,s2) = p(2,1);
-    end
-end
-figure('color',[1 1 1])
-imagesc(r_xxx),caxis([0 1])
-set(gca,'XTick',1:2*length(subs),'YTick',1:2*length(subs),'fontsize',12,...
-    'XtickLabel',sessNames,'YtickLabel',sessNames), xtickangle(45)
-clear s1 s2 j sessNames rda1 rda2 fooNaN r p
-
-%% plot RDA
-ratingsFire_mean = (val_F);
-[~,idx] = sort(val_F,'descend');
-ratingsDoor_mean = nanmean(val_B);
-ratRDA_fire_mean = squeeze(nanmean(rsmStack_F,1));
-ratRDA_door_mean = squeeze(nanmean(rsmStack_B,1));
-figure('color',[1 1 1])
-imagesc(RSM_fire_ss),set(gca,'XTick',1:100,'YTick',1:100,'fontsize',10,...
-    'XtickLabel',objsName,'YtickLabel',objsName)
-xtickangle(45),caxis([0 1])
-figure('color',[1 1 1])
-imagesc(RSM_door_ss),set(gca,'XTick',1:100,'YTick',1:100,'fontsize',10,...
-    'XtickLabel',objsName,'YtickLabel',objsName)
-xtickangle(45),caxis([0 1])
-
-%% apply real RDA (from toolbox)
-userOptions.analysisName = 'DRE_test'; % string prepended to the saved files
-userOptions.rootPath = '/Users/gcastegnetti/Dropbox/DRE/analysis'; % string describing the root path where files will be
-userOptions.rankTransform = false;
-userOptions.conditionLabels = objsName;
-if plot_den_SS
-    for s = 1:length(subs)
-        dendrogramConditions(RDM_fire_struct{s}, userOptions)
-        dendrogramConditions(RDM_door_struct{s}, userOptions)
-    end
-end
-
-% plot dendogram of averaged RDMs
-meanRatRDM_fire.RDM = ratRDA_fire_mean;
-meanRatRDM_fire.name = 'Fire';
-meanRatRDM_fire.color = [0 0 1];
-
-meanRatRDM_door.RDM = ratRDA_door_mean;
-meanRatRDM_door.name = 'Boat';
-meanRatRDM_door.color = [0 0 1];
-
-dendrogramConditions(meanRatRDM_fire, userOptions)
-dendrogramConditions(meanRatRDM_door, userOptions)

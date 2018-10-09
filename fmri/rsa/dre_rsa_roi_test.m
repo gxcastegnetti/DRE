@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_test_2';
+analysisName = 'rsa_roi_test_1';
 
 %% folders
 dir.root = pwd;
@@ -100,13 +100,13 @@ scoreNames = {'val','fam','ID','cxt'};
 h{1} = figure('color',[1 1 1]);
 h{2} = figure('color',[1 1 1]);
 h{3} = figure('color',[1 1 1]);
-h{4} = figure('color',[1 1 1]);
+% h{4} = figure('color',[1 1 1]);
 for r = 1:size(RDMs_data,1)
     for s = 1:size(RDMs_data,2)
         for m = 1:size(RDMs_model,1)
             a = vectorizeRDM(RDMs_data(r,s).RDM);
             b = vectorizeRDM(RDMs_model(m,s).RDM);
-            rL2(m,s) = corr(a',b','rows','complete','type','Spearman');
+            rL2(m,s) = corr(a',b','rows','pairwise','type','Spearman');
         end
         figure(h{r})
         subplot(5,6,s),bar(rL2(:,s)),set(gca,'xticklabel',scoreNames)
@@ -116,8 +116,6 @@ for r = 1:size(RDMs_data,1)
 end
 
 %%
-
-
 
 
 keyboard

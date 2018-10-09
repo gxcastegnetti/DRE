@@ -97,7 +97,7 @@ for s = 1:length(subs)
     
     % put in output struct
     arrData(subs(s)).norm2val = sessIdx(valAll_4L);
-    arrData(subs(s)).norm2val = sessIdx(valSort);
+%     arrData(subs(s)).norm2val = sessIdx(valSort);
     
     %%%%%%%%%%%%%%%
     % familiarity %

@@ -104,10 +104,10 @@ if true
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-    dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
+    dre_L1_rfx_iV_cS(dir,analysisName,subs,timing,bData);
     
     % contrasts
-    dre_L1_rfx_iV_cS(dir,analysisName,subs);
+    dre_con_i1_c1(dir,analysisName,subs);
     
     % 2nd level
     dre_L2(dir,analysisName,'imagination_onset',subs,1);

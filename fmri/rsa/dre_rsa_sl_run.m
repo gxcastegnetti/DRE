@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
-betaid       = 'rsa_pulse_ons0';
+analysisName = 'rsa_sl_box_ons0';
+betaid       = 'rsa_box_ons0';
 
 %% folders
 fs      = filesep;
@@ -42,10 +42,10 @@ userOptions.overwriteflag = 'r';
 roiNames = {'none'};
 if false
     for i = 1:length(roiNames)
-        nameBeta = ['level1',fs,'rsa_pulse_ons0',fs,roiNames{i}];
+        nameBeta = ['level1',fs,betaid,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
         timing.iOns = 0;
-        timing.iDur = 0;
+        timing.iDur = 5;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end
 end
@@ -66,7 +66,7 @@ RDMs = dre_extractRDMs(dir,subs,taskOrd);
 
 %% searchlight options
 userOptions.voxelSize = [3 3 3];
-userOptions.searchlightRadius = 9;
+userOptions.searchlightRadius = 6;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;

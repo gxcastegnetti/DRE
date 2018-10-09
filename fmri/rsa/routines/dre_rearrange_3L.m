@@ -92,7 +92,7 @@ for s = 1:length(subs)
     
     % put in output struct
     arrData(subs(s)).norm2val = sessIdx(valAll_3L);
-%     arrData(subs(s)).norm2val = sessIdx(valSort);
+    arrData(subs(s)).norm2val = sessIdx(valSort);
     
     %%%%%%%%%%%%%%%
     % familiarity %
@@ -121,6 +121,6 @@ for s = 1:length(subs)
     
     % put in output struct
     arrData(subs(s)).norm2fam = sessIdx(famAll_3L);
-%     arrData(subs(s)).norm2fam = sessIdx(famSort);
+    arrData(subs(s)).norm2fam = sessIdx(famSort);
     
 end

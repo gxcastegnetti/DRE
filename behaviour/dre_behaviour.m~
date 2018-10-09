@@ -527,17 +527,10 @@ lmeChoice = fitlme(tblChoice,'choice ~ 1 + dV + cond + dF + (1 + dV + cond + dF 
 k_cond = lmeChoice.Coefficients(2,2).Estimate;
 k_dV =   lmeChoice.Coefficients(3,2).Estimate;
 k_dF =   lmeChoice.Coefficients(4,2).Estimate;
-ce_cond = lmeChoice.Coefficients(2,3).SE;
-ce_dV = lmeChoice.Coefficients(3,3).SE;
-ce_dF = lmeChoice.Coefficients(4,3).SE;
-
 figure('color',[1 1 1])
-errorbar([1 2 3],[k_cond k_dV k_dF],[ce_cond ce_dV ce_dF],'linestyle','none',...
-    'color','k','linewidth',1.5,'capsize',0),hold on
 scatter([1 2 3],[k_cond k_dV k_dF],90,'MarkerEdgeColor',[0 .5 .5],...
-    'MarkerFaceColor',[0 .7 .7]), 
-
+    'MarkerFaceColor',[0 .7 .7],'linewidth',1.5), hold on
 xspan = -10:0.1:10;
 plot(xspan,zeros(length(xspan)),'linestyle',':','color',[0.5 0.5 0.5],'linewidth',2)
-set(gca,'fontsize',14,'xtick',[1 2 3],'xticklabel',{'Goal','dV','dF'}),xlim([0 4]),ylim([-1.5 2])
+set(gca,'fontsize',14,'x'),xlim([0 4]),ylim([-1.5 2])
 ylabel('Coefficient')

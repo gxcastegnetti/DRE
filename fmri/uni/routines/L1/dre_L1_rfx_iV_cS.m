@@ -48,7 +48,7 @@ for s = 1:length(subs)
         
         % parametric modulations by value
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'value';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = bData(subs(s)).imagination(r).value;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = bData(subs(s)).imagination(r).val;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).orth = 0;
         
@@ -61,7 +61,7 @@ for s = 1:length(subs)
         
         % parametric modulation by value of the chosen item
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'valueChosen';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).valueChosen;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).valCho;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).orth = 0;
         

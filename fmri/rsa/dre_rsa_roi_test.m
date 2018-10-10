@@ -45,21 +45,21 @@ respPatt = responsePatterns; clear responsePatterns
 roiNames = fieldnames(respPatt);
 
 %% create structures of rearranged response patterns
-respPatt_acc2sessions = respPatt;
+respPatt_acc2ses = respPatt;
 respPatt_acc2val = respPatt;
 respPatt_acc2fam = respPatt;
 
 for i = 1:length(roiNames)
     for s = 1:length(subs)
         subjName = ['SF',num2str(subs(s),'%03d')];
-        respPatt_acc2sessions.(roiNames{i}).(subjName) = respPatt_acc2sessions.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2sessions);
-        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val_cont);
-        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam_cont);
+        respPatt_acc2ses.(roiNames{i}).(subjName) = respPatt_acc2ses.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2sessions);
+        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val_disc);
+        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam_disc);
     end
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2fam, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt_acc2val, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs

@@ -92,6 +92,15 @@ for s = 1:length(subs)
     val_m = find(valAll > prctile25 & valAll < prctile50);
     val_M = find(valAll > prctile50 & valAll < prctile75);
     val_H = find(valAll > prctile75);
+    
+    % repeatable random permutation
+    rng(1)
+    val_L = val_L(randperm(length(val_L)));
+    val_m = val_m(randperm(length(val_m)));
+    val_M = val_M(randperm(length(val_M)));
+    val_H = val_H(randperm(length(val_H)));
+    
+    % put them together 
     valAll_4L = [val_L; val_m; val_M; val_H];
     
     % sort value for the continuous arrangement
@@ -126,6 +135,15 @@ for s = 1:length(subs)
     fam_m = find(famAll > prctile25 & famAll < prctile50);
     fam_M = find(famAll > prctile50 & famAll < prctile75);
     fam_H = find(famAll > prctile75);
+    
+    % repeatable random permutation
+    rng(1)
+    fam_L = fam_L(randperm(length(fam_L)));
+    fam_m = fam_m(randperm(length(fam_m)));    
+    fam_M = fam_M(randperm(length(fam_M)));
+    fam_H = fam_H(randperm(length(fam_H)));
+    
+    % put them together
     famAll_4L = [fam_L; fam_m; fam_M; fam_H];
     
     % sort familiarity for the continuous arrangement

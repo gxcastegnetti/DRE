@@ -86,10 +86,18 @@ for s = 1:length(subs)
     prctile33 = prctile(valAll,100/3);
     prctile66 = prctile(valAll,200/3);
     
-    % divide into three levels and stack them
+    % divide into three levels
     val_L = find(valAll < prctile33);
     val_M = find(valAll > prctile33 & valAll < prctile66);
     val_H = find(valAll > prctile66);
+    
+    % repeatable random permutation
+    rng(1)
+    val_L = val_L(randperm(length(val_L)));
+    val_M = val_M(randperm(length(val_M)));
+    val_H = val_H(randperm(length(val_H)));
+    
+    % put them together
     valAll_3L = [val_L; val_M; val_H];
     
     % sort value for the continuous arrangement
@@ -122,6 +130,14 @@ for s = 1:length(subs)
     fam_L = find(famAll < prctile33);
     fam_M = find(famAll > prctile33 & famAll < prctile66);
     fam_H = find(famAll > prctile66);
+    
+    % repeatable random permutation
+    rng(1)
+    fam_L = fam_L(randperm(length(fam_L)));
+    fam_M = fam_M(randperm(length(fam_M)));
+    fam_H = fam_H(randperm(length(fam_H)));
+    
+    % put htme together
     famAll_3L = [fam_L; fam_M; fam_H];
     
     % sort familiarity for the continuous arrangement

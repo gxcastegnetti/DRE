@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_ons0';
+analysisName = 'rsa_roi_pulse_ons-1';
 
 %% folders
 dir.root = pwd;
@@ -53,8 +53,8 @@ for i = 1:length(roiNames)
     for s = 1:length(subs)
         subjName = ['SF',num2str(subs(s),'%03d')];
         respPatt_acc2sessions.(roiNames{i}).(subjName) = respPatt_acc2sessions.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2sessions);
-        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val_disc);
-        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam_disc);
+        respPatt_acc2val.(roiNames{i}).(subjName) = respPatt_acc2val.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2val_cont);
+        respPatt_acc2fam.(roiNames{i}).(subjName) = respPatt_acc2fam.(roiNames{i}).(subjName)(:,ordData(subs(s)).norm2fam_cont);
     end
 end
 
@@ -66,7 +66,7 @@ RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 % matrices
 % for i = 1:28
 figureRDMs(RDM_average,userOptions)
-% keyboard
+keyboard
 % end
 
 % dendrograms
@@ -125,7 +125,7 @@ bestVsWorsePlot = figure('color',[1 1 1]);
 x_err = [0.85 1.15 1.85 2.15 2.85 3.15 3.85 4.15];
 for r = 1:size(RDMs_data,1)
     
-    % compute mean and sem for best and worse subs
+    % compute mean and sem for best and worse perf subs
     meanBest = mean(rL2(:,subsBest,r),2);
     meanWors = mean(rL2(:,subsWors,r),2);
     semBest = std(rL2(:,subsBest,r)')/sqrt(length(subs));

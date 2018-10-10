@@ -88,6 +88,13 @@ for s = 1:length(subs)
     % divide into two levels and stack them
     val_L = find(valAll <= prctile50);
     val_H = find(valAll > prctile50);
+    
+    % repeatable random permutation
+    rng(1)
+    val_L = val_L(randperm(length(val_L)));
+    val_H = val_H(randperm(length(val_H)));
+    
+    % stack together
     valAll_2L = [val_L; val_H];
     
     % sort value for the continuous arrangement
@@ -118,6 +125,13 @@ for s = 1:length(subs)
     % divide into two levels and stack them
     fam_L = find(famAll < prctile50);
     fam_H = find(famAll > prctile50);
+    
+    % repeatable random permutation
+    rng(1)
+    fam_L = fam_L(randperm(length(fam_L)));
+    fam_H = fam_H(randperm(length(fam_H)));
+    
+    % stack together
     famAll_2L = [fam_L; fam_H];
     
     % sort familiarity for the continuous arrangement

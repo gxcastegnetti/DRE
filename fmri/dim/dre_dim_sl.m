@@ -1,6 +1,6 @@
-%% dre_dim
+%% dre_dim_sl
 % ~~~
-% analyses dimensionality in brain activity
+% performs dimensionality searchlight
 % ~~~
 % GX Castegnetti --- 2018
 

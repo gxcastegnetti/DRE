@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_ons0';
-dirBeta = 'rsa_pulse_ons0';
+analysisName = 'rsa_roi_pulse_ons-1';
+dirBeta = 'rsa_pulse_ons-1';
 
 %% folders
 dir.root = pwd;
@@ -97,11 +97,11 @@ if false
 end
 
 %% 1st level
-if false
+if true
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = 0;
+        timing.iOns = -1;
         timing.iDur = 0;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end

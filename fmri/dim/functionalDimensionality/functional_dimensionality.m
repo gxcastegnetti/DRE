@@ -42,10 +42,10 @@ if ~(spm_path == "")
     end
 end
     
-mask_vol = spm_vol(mask);
-mask_mat = spm_read_vols(mask_vol);
+% mask_vol = spm_vol(mask);
+% mask_mat = spm_read_vols(mask_vol);
 
-n_voxel   = sum(mask_mat(:));
+% n_voxel   = sum(mask_mat(:));
 n_subject = length(wholebrain_all);
 
 for i_subject = 1:n_subject
@@ -53,7 +53,7 @@ for i_subject = 1:n_subject
     disp(['sub#',num2str(i_subject),' of ',num2str(n_subject)])
     
     data = wholebrain_all{i_subject}; 
-    data = data(logical(mask_mat(:)),:,:);
+%     data = data(logical(mask_mat(:)),:,:);
     n_sessions = size(data,3);
     
     if prewhiten

@@ -8,7 +8,7 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'rsa_sl_pulse_ons-1';
-betaid       = 'rsa_pulse_ons-1';
+betaid       = 'rsa_pulse_ons0';
 
 %% folders
 fs      = filesep;
@@ -30,8 +30,10 @@ mkdir([dir.out,fs,analysisName])
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
-% subsBest = [23 18 5 3 21 11 10 20 17 28 24  1 15 22];
-% subsWors = [2  14 6 4  7  9 27 26 12 16 19 13  8 25];
+subsBest = sort([23 18 5 3 21 11 10 20 17 28 24  1 15 22]);
+subsWors = sort([2  14 6 4  7  9 27 26 12 16 19 13  8 25]);
+subs = subs(subsWors);
+taskOrd = taskOrd(subsWors);
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -42,11 +44,11 @@ userOptions.overwriteflag = 'r';
 
 %% 1st level
 roiNames = {'none'};
-if true
+if false
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,betaid,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = -1;
+        timing.iOns = 0;
         timing.iDur = 0;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end

@@ -141,8 +141,11 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     
     % note how many voxels contributed to this locally multivariate stat
     n(x,y,z) = length(cIllValidVox_YspaceINDs);
-    
     if n(x,y,z) < 60, continue; end%if % This stops the function crashing if it accidentally encounters an out-of-brain floating voxel (these can occur if, for example, skull stripping fails)
+    
+    % retain only 60 random voxels int he sphere
+    foo = randperm(length(cIllValidVox_YspaceINDs));
+    cIllValidVox_YspaceINDs = sort(cIllValidVox_YspaceINDs(foo(1:60)));
     
     [~,~,~,~,explVar_vec_s1,~] = pca(t_s1(:,cIllValidVox_YspaceINDs)');
     [~,~,~,~,explVar_vec_s2,~] = pca(t_s2(:,cIllValidVox_YspaceINDs)');

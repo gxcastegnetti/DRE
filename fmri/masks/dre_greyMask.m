@@ -18,7 +18,7 @@ dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% subjects
-subs = [5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40:43 47:49];
+subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 
 for s = 1:length(subs)   
     
@@ -58,7 +58,7 @@ for s = 1:length(subs)
     job{1}.spm.util.imcalc.outdir = {dir.out};
     
     % probability threshold
-    job{1}.spm.util.imcalc.expression = 'i1>0.3';
+    job{1}.spm.util.imcalc.expression = 'i1>0.1';
     
     % defaults
     job{1}.spm.util.imcalc.var = struct('name', {}, 'value', {});

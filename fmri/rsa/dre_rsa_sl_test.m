@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons-1';
-betaid       = 'rsa_box_ons-1';
+analysisName = 'rsa_sl_pulse_ons0_cxt';
+betaid       = 'rsa_pulse_ons0';
 
 %% Folders
 dir.root = pwd;
@@ -69,7 +69,8 @@ mask = logical(mask);
 %% model names
 modelNames = {'val','fam','oid','cxt'};
 % modelNames = {'valMed','famMed'};
-% modelNames = {'cxt'};
+modelNames = {'cxt'};
+% modelNames = {'dim'};
 
 %% soecify some directories
 
@@ -80,115 +81,117 @@ dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-for s = 1:length(subs)
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%
-    % make r-maps SPM-like %
-    %%%%%%%%%%%%%%%%%%%%%%%%
-    
-    % load metadata from SPM
-    dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
-    d = spm_select('List', dirFun, '^uaf.*\.nii$');
-    d = d(end-1,:);
-    epi_file = {[dirFun fs d]};
-    betaFile = [dirBeta,fs,'SF',num2str(subs(s),'%03d'),fs,'beta_0001.nii'];
-    subjectMetadataStruct = spm_vol(epi_file);
-    
-    % load correlation maps
-    %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
-    load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
-    
-    %% loop over models
-    for m = 1:length(modelNames)
+if true
+    for s = 1:length(subs)
         
-        % current model name
-        modelName = modelNames{m};
+        %%%%%%%%%%%%%%%%%%%%%%%%
+        % make r-maps SPM-like %
+        %%%%%%%%%%%%%%%%%%%%%%%%
         
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        % Write the native-space r-map to a file %
-        %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+        % load metadata from SPM
+        dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
+        d = spm_select('List', dirFun, '^uaf.*\.nii$');
+        d = d(end-1,:);
+        epi_file = {[dirFun fs d]};
+        betaFile = [dirBeta,fs,'SF',num2str(subs(s),'%03d'),fs,'beta_0001.nii'];
+        subjectMetadataStruct = spm_vol(epi_file);
         
-        rMapMetadataStruct_nS = subjectMetadataStruct{1};
-        rMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'rMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        rMapMetadataStruct_nS.descrip =  'R-map';
-        rMapMetadataStruct_nS.dim = size(rs(:,:,:,m));
-        rMapMetadataStruct_nS.dt = [16 0];
-        gotoDir([dirSl,fs,modelName]);
-        spm_write_vol(rMapMetadataStruct_nS, rs(:,:,:,m));
+        % load correlation maps
+        %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
+        load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
         
-        %%%%%%%%%%%%%%%%%%%%
-        % normalise to MNI %
-        %%%%%%%%%%%%%%%%%%%%
-        
-        % select forward deformation images from T1 segmentation step
-        dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
-        d = spm_select('List', dirStruct, '^y_.*\.nii$');
-        y_file = {[dirStruct fs d]};
-        
-        % ------- r-map -------
-        
-        % select correlation map
-        rs_file = {rMapMetadataStruct_nS.fname};
-        
-        % prepare job for correlation map
-        job_rs{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
-        job_rs{1}.spatial{1}.normalise{1}.write.subj.resample = rs_file;
-        job_rs{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
-        job_rs{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
-        job_rs{1}.spatial{1}.normalise{1}.write.woptions.interp = 1; % changed default to 7th degree B-spline
-        
-        % run job
-        disp(['Normalising sub#', num2str(subs(s),'%03d'),' - R-map ',modelName])
-        d = spm_jobman('run',job_rs);
-        clear job
-        
-        % ------- mask -------
-        
-        % write the native-space mask to a file
-        maskMetadataStruct_nS = subjectMetadataStruct{1};
-        maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
-        maskMetadataStruct_nS.descrip =  'Native space mask';
-        maskMetadataStruct_nS.dim = size(mask);
-        spm_write_vol(maskMetadataStruct_nS, mask);
-        
-        % select mask file we just saved
-        mask_file = {maskMetadataStruct_nS.fname};
-        
-        % prepare job for mask
-        job_mask{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
-        job_mask{1}.spatial{1}.normalise{1}.write.subj.resample = mask_file;
-        job_mask{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
-        job_mask{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
-        job_mask{1}.spatial{1}.normalise{1}.write.woptions.interp = 1; % changed default to 7th degree B-spline
-        
-        % run job
-        disp(['Normalising sub#', num2str(subs(s),'%03d'),' - MASK ',modelName])
-        d = spm_jobman('run',job_mask);
-        clear job
-        
-        % read them back in
-        wMaskFile = [dirSl,fs,'nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
-        wrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        mask_sS = spm_read_vols(spm_vol(wMaskFile));
-        
-        % Fix the normalisation of the mask
-        maskMetadataStruct_sS = spm_vol(wMaskFile);
-        maskMetadataStruct_sS.fname = wMaskFile;
-        maskMetadataStruct_sS.descrip =  'Common space mask';
-        maskThreshold = 0.01;
-        mask_sS(mask_sS < maskThreshold) = 0;
-        mask_sS(isnan(mask_sS)) = 0;
-        maskMetadataStruct_sS.dim = size(mask_sS);
-        spm_write_vol(maskMetadataStruct_sS, mask_sS);
-        
-        %%%%%%%%%%
-        % smooth %
-        %%%%%%%%%%
-        
-        disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
-        swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-        spm_smooth(wrMapFile,swrMapFile,[9 9 9]);
-        
+        %% loop over models
+        for m = 1:length(modelNames)
+            
+            % current model name
+            modelName = modelNames{m};
+            
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            % Write the native-space r-map to a file %
+            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+            
+            rMapMetadataStruct_nS = subjectMetadataStruct{1};
+            rMapMetadataStruct_nS.fname = [dirSl,fs,modelName,fs,'rMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+            rMapMetadataStruct_nS.descrip =  'R-map';
+            rMapMetadataStruct_nS.dim = size(rs(:,:,:,m));
+            rMapMetadataStruct_nS.dt = [16 0];
+            gotoDir([dirSl,fs,modelName]);
+            spm_write_vol(rMapMetadataStruct_nS, rs(:,:,:,m));
+            
+            %%%%%%%%%%%%%%%%%%%%
+            % normalise to MNI %
+            %%%%%%%%%%%%%%%%%%%%
+            
+            % select forward deformation images from T1 segmentation step
+            dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
+            d = spm_select('List', dirStruct, '^y_.*\.nii$');
+            y_file = {[dirStruct fs d]};
+            
+            % ------- r-map -------
+            
+            % select correlation map
+            rs_file = {rMapMetadataStruct_nS.fname};
+            
+            % prepare job for correlation map
+            job_rs{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
+            job_rs{1}.spatial{1}.normalise{1}.write.subj.resample = rs_file;
+            job_rs{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
+            job_rs{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
+            job_rs{1}.spatial{1}.normalise{1}.write.woptions.interp = 1; % changed default to 7th degree B-spline
+            
+            % run job
+            disp(['Normalising sub#', num2str(subs(s),'%03d'),' - R-map ',modelName])
+            d = spm_jobman('run',job_rs);
+            clear job
+            
+            % ------- mask -------
+            
+            % write the native-space mask to a file
+            maskMetadataStruct_nS = subjectMetadataStruct{1};
+            maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            maskMetadataStruct_nS.descrip =  'Native space mask';
+            maskMetadataStruct_nS.dim = size(mask);
+            spm_write_vol(maskMetadataStruct_nS, mask);
+            
+            % select mask file we just saved
+            mask_file = {maskMetadataStruct_nS.fname};
+            
+            % prepare job for mask
+            job_mask{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
+            job_mask{1}.spatial{1}.normalise{1}.write.subj.resample = mask_file;
+            job_mask{1}.spatial{1}.normalise{1}.write.woptions.bb = [-78 -112 -70; 78 76 85]; % bounding box of volume
+            job_mask{1}.spatial{1}.normalise{1}.write.woptions.vox = [2 2 2]; % voxel size of normalised images; DEFAULT = 2x2x2 (CHANGED to acquisition resolution)
+            job_mask{1}.spatial{1}.normalise{1}.write.woptions.interp = 1; % changed default to 7th degree B-spline
+            
+            % run job
+            disp(['Normalising sub#', num2str(subs(s),'%03d'),' - MASK ',modelName])
+            d = spm_jobman('run',job_mask);
+            clear job
+            
+            % read them back in
+            wMaskFile = [dirSl,fs,'nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            wrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+            mask_sS = spm_read_vols(spm_vol(wMaskFile));
+            
+            % Fix the normalisation of the mask
+            maskMetadataStruct_sS = spm_vol(wMaskFile);
+            maskMetadataStruct_sS.fname = wMaskFile;
+            maskMetadataStruct_sS.descrip =  'Common space mask';
+            maskThreshold = 0.01;
+            mask_sS(mask_sS < maskThreshold) = 0;
+            mask_sS(isnan(mask_sS)) = 0;
+            maskMetadataStruct_sS.dim = size(mask_sS);
+            spm_write_vol(maskMetadataStruct_sS, mask_sS);
+            
+            %%%%%%%%%%
+            % smooth %
+            %%%%%%%%%%
+            
+            disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
+            swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+            spm_smooth(wrMapFile,swrMapFile,[1 1 1]);
+            
+        end
     end
 end
 
@@ -211,10 +214,13 @@ for s = 1:length(subs)
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
         
-%         figure,imagesc(swrMap(:,:,40))
-                
     end
 end
+
+% aaa = mean(rMaps_all.dim,4);
+% for i = 1:79
+%     figure,imagesc(aaa(:,:,i)),colorbar
+% end
 
 %% statistics
 for m = 1:length(modelNames)
@@ -244,13 +250,9 @@ for m = 1:length(modelNames)
         disp(x);
     end
     
-%     for i = 1:79
-%         figure,imagesc(p1(:,:,i))
-%     end
-    
     % apply FDR correction
-    pThrsh_t  = FDRthreshold(p1,0.05,mask);
-    pThrsh_sr = FDRthreshold(p2,0.05,mask);
+    pThrsh_t  = FDRthreshold(p1,0.15,mask);
+    pThrsh_sr = FDRthreshold(p2,0.15,mask);
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));

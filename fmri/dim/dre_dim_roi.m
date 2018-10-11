@@ -9,7 +9,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'dim_roi_test_1';
+analysisName = 'dim_roi_ons0';
 roiAnalysisName = 'rsa_roi_pulse_ons0';
 slAnalysisName = 'rsa_pulse_ons0';
 
@@ -20,7 +20,7 @@ idcs    = strfind(dir.dim,'/');
 dir.dre = dir.dim(1:idcs(end-2)-1);
 dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
 dir.rsa = [dir.dre,fs,'codes',fs,'fmri',fs,'rsa'];
-dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi'];
+dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
 dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
 dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'dim',fs,'roi'];

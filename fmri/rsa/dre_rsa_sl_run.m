@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons-1';
+analysisName = 'rsa_sl_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
 
 %% folders
@@ -30,10 +30,10 @@ mkdir([dir.out,fs,analysisName])
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
-subsBest = sort([23 18 5 3 21 11 10 20 17 28 24  1 15 22]);
-subsWors = sort([2  14 6 4  7  9 27 26 12 16 19 13  8 25]);
-subs = subs(subsWors);
-taskOrd = taskOrd(subsWors);
+% subsBest = sort([23 18 5 3 21 11 10 20 17 28 24  1 15 22]);
+% subsWors = sort([2  14 6 4  7  9 27 26 12 16 19 13  8 25]);
+% subs = subs(subsWors);
+% taskOrd = taskOrd(subsWors);
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);

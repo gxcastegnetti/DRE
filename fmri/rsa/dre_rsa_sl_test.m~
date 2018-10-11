@@ -19,7 +19,6 @@ idcs       = strfind(dir.rsaCod,'/');
 dir.dre    = dir.rsaCod(1:idcs(end-2)-1); clear idcs
 dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
 dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas'];
-dir.dimOut = [dir.dre,fs,'out',fs,'fmri',fs,'dim',fs,'atlas'];
 dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 
@@ -83,11 +82,6 @@ end
 
 % directory with searchlight correlation maps
 dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
-
-if thisIsDim
-    % directory with searchlight correlation maps
-    dirDim = [dir.dimOut,fs,'sl',fs,analysisName];
-end
 
 % directory with betas
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];

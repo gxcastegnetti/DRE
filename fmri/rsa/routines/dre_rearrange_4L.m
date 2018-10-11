@@ -16,10 +16,10 @@ function arrIdx = dre_rearrange_4L(dir,subs,taskOrd,bData)
 fs = filesep;
 n_sess = 4;
 
-dir.data = [dir.dre,fs,'data'];
+dirData = [dir.dre,fs,'data'];
 
 %% read objects
-objs        = readtable([dir.beh,fs,'Objects.csv']);
+objs        = readtable([dir.behDat,fs,'Objects.csv']);
 objsIdxCorr = [(1:120)',find(table2array(objs(:,7)))]; clear objs
 
 %% loop over subjects and sessions
@@ -34,7 +34,7 @@ for s = 1:length(subs)
         end
         
         %% load behavioural data day 2
-        dirPsyO = [dir.data,fs,'fmri',fs,'psychOut',fs,'SF',num2str(subs(s),'%03d')];
+        dirPsyO = [dirData,fs,'fmri',fs,'psychOut',fs,'SF',num2str(subs(s),'%03d')];
         Mday2 = csvread([dirPsyO,fs,'DRE_mri_S',num2str(subs(s),'%03d'),'_B',num2str(r),day2Order{r},'.csv']);
         
         %% object IDs

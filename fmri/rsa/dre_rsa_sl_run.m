@@ -10,20 +10,22 @@ restoredefaultpath
 analysisName = 'rsa_sl_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
 
-%% folders
-fs      = filesep;
-dir.here = pwd;
-idcs    = strfind(dir.here,'/');
-dir.dre = dir.here(1:idcs(end-2)-1);
-dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
-dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
-dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
-dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
-dir.rsa = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
-dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-addpath([dir.here,fs,'routines'])
-addpath([dir.sta,fs,'routines'])
-addpath(genpath([dir.here,fs,'rsatoolbox']))
+%% directories
+fs         = filesep;
+dir.rsaCod = pwd;
+idcs       = strfind(dir.rsaCod,'/');
+dir.dre    = dir.rsaCod(1:idcs(end-2)-1); clear idcs
+dir.uniCod = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
+dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
+dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
+dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
+dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
+
+% paths
+addpath([dir.rsaCod,fs,'routines'])
+addpath([dir.uniCod,fs,'routines'])
+addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
@@ -82,7 +84,7 @@ mat_ID = [diag(ones(120,1)), diag(ones(120,1));
           diag(ones(120,1)), diag(ones(120,1))];
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
-    binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+    binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
     model(1).name = 'val';
@@ -115,7 +117,7 @@ end
 %     disp(['Computing correlation (context) for sub#',num2str(s),' of ',num2str(length(subs))])
 %     
 %     % define (subjective) mask
-%     binaryMask = niftiread([dir.msk,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+%     binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
 %     binaryMask = logical(binaryMask);
 %     
 %     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

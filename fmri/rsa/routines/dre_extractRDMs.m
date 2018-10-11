@@ -12,10 +12,10 @@ function RDMs = dre_extractRDMs(dir,subs,taskOrd)
 fs = filesep;
 n_sess = 4;
 
-dir.data = [dir.dre,fs,'data'];
+dirData = [dir.dre,fs,'data'];
 
 %% read objects
-objs        = readtable([dir.beh,fs,'Objects.csv']);
+objs        = readtable([dir.behDat,fs,'Objects.csv']);
 objsName    = table2cell(objs(:,2)); clear foo objs
 
 %% loop over subjects and sessions
@@ -30,7 +30,7 @@ for s = 1:length(subs)
         end
         
         %% load behavioural data day 2
-        dirPsyO = [dir.data,fs,'fmri',fs,'psychOut',fs,'SF',num2str(subs(s),'%03d')];
+        dirPsyO = [dirData,fs,'fmri',fs,'psychOut',fs,'SF',num2str(subs(s),'%03d')];
         Mday2 = csvread([dirPsyO,fs,'DRE_mri_S',num2str(subs(s),'%03d'),'_B',num2str(r),day2Order{r},'.csv']);
         
         %% object IDs
@@ -54,7 +54,7 @@ for s = 1:length(subs)
     [obj_B_sort,idx_sort_B] = sort(obj_B);
     
     %% day 1 - load behavioural data
-    dirBeha = [dir.data,fs,'behaviour',fs,'SF',num2str(subs(s),'%03d')];
+    dirBeha = [dirData,fs,'behaviour',fs,'SF',num2str(subs(s),'%03d')];
     Mday1_F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B1_DRE.csv']);
     Mday1_B = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B2_DRE.csv']);
     Mday1_p = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);

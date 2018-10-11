@@ -7,20 +7,22 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_ons-1';
+analysisName = 'rsa_roi_pulse_ons0';
 
-%% folders
-dir.root = pwd;
-fs       = filesep;
-idcs     = strfind(dir.root,'/');
-dir.dre  = dir.root(1:idcs(end-2)-1);
-dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-dir.msk  = [dir.dre,fs,'out',fs,'fmri',fs,'masks'];
-dir.beh  = [dir.dre,fs,'data',fs,'behaviour'];
+%% directories
+dir.rsaCod = pwd;
+fs         = filesep;
+idcs       = strfind(dir.rsaCod,'/');
+dir.dre    = dir.rsaCod(1:idcs(end-2)-1); clear idcs
+dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
+dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks'];
+dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out  = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi'];
-addpath([dir.root,fs,'routines'])
+
+% paths
+addpath([dir.rsaCod,fs,'routines'])
 addpath([dir.dre,fs,'codes',fs,'fmri',fs,'uni',fs,'routines'])
-addpath(genpath([dir.root,fs,'rsatoolbox']))
+addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% subjects
@@ -66,7 +68,7 @@ RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 % matrices
 % for i = 1:28
 figureRDMs(RDM_average,userOptions)
-keyboard
+% keyboard
 % end
 
 % dendrograms
@@ -91,7 +93,7 @@ for s = 1:length(subs)
     RDMs_model(3,s).color = [0 1 0];
     RDMs_model(4,s).name = 'con';
     RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
-    RDMs_model(4,s).color = [0 1 0];    
+    RDMs_model(4,s).color = [0 1 0];
 end
 
 %% for every region and sub, correlate RDM and model
@@ -99,7 +101,8 @@ scoreNames = {'val','fam','ID','cxt'};
 % for i = 1:size(RDMs_data,1)
 %     h{i} = figure('color',[1 1 1]);
 % end
-
+h = figure('color',[1 1 1]);
+roiTitles = {'HPC','mPFC (from ch.)','lingual g. (from im.)','rANG','paraHPC','left midFC','insula','ACC','PCC','supOCC'};
 for r = 1:size(RDMs_data,1)
     for s = 1:size(RDMs_data,2)
         for m = 1:size(RDMs_model,1)
@@ -111,8 +114,13 @@ for r = 1:size(RDMs_data,1)
 %         subplot(5,6,s),bar(rL2(:,s)),set(gca,'xticklabel',scoreNames)
 %         title([roiNames{r},' - sub#',num2str(subs(s),'%03d')])
     end
-%     figure('color',[1 1 1]),bar(mean(rL2,2)),set(gca,'xticklabel',scoreNames),title(roiNames{r})
+    figure(h)
+    subplot(4,3,r)
+    bar(mean(rL2(:,:,r),2)),set(gca,'xticklabel',scoreNames),title(roiTitles{r})
+    set(gca,'fontsize',16)
+    ylim([-0.0035 0.0065])
 end
+keyboard
 
 %% differences between best and worse performing subs
 % where performance is the mean slope of the logisitc regression of choice
@@ -134,8 +142,10 @@ for r = 1:size(RDMs_data,1)
     % plot bars
     figure(bestVsWorsePlot)
     subplot(4,3,r)
-    bar([meanBest,meanWors]),legend('best','worse','location','southeast')
-    set(gca,'xticklabel',scoreNames),title(roiNames{r}),hold on
+    bar([meanBest,meanWors])
+    if r == 1,legend('best','worse','location','northwest'),end
+    ylim([-0.008 0.009])
+    set(gca,'xticklabel',scoreNames,'fontsize',14),title(roiTitles{r}),hold on
     
     % plot error bars
     foo_mean = [meanBest';meanWors'];
@@ -170,43 +180,43 @@ end
 
 %% test goal
 % find ROIs considered in this analysis
-roiNames = fieldnames(respPatt);
-
-for i = 1:length(roiNames)
-    % for each subject take the vector of presented items
-    for s = 1:length(subs)
-        
-        % find indices of items presented in each session. Add 120 to the boat
-        % conditions because in responsePatters the 120 boat activity
-        % patterns are stacked after the 120 fire patterns.
-        if taskOrd(s) == 1
-            idx_S1 = bData(subs(s)).imagination(1).fire.objIdx;
-            idx_S2 = bData(subs(s)).imagination(2).boat.objIdx + 120;
-            idx_S3 = bData(subs(s)).imagination(3).fire.objIdx;
-            idx_S4 = bData(subs(s)).imagination(4).boat.objIdx + 120;
-        else
-            idx_S1 = bData(subs(s)).imagination(1).boat.objIdx + 120;
-            idx_S2 = bData(subs(s)).imagination(2).fire.objIdx;
-            idx_S3 = bData(subs(s)).imagination(3).boat.objIdx + 120;
-            idx_S4 = bData(subs(s)).imagination(4).fire.objIdx;
-        end
-        
-        subjName = ['SF',num2str(subs(s),'%03d')];
-        
-        % fetch activation patterns
-        actPatt_S1 = respPatt.(roiNames{i}).(subjName)(:,idx_S1);
-        actPatt_S2 = respPatt.(roiNames{i}).(subjName)(:,idx_S2);
-        actPatt_S3 = respPatt.(roiNames{i}).(subjName)(:,idx_S3);
-        actPatt_S4 = respPatt.(roiNames{i}).(subjName)(:,idx_S4);
-        
-        corr_S1S2 = corr(actPatt_S1,actPatt_S2);
-        corr_S1S3 = corr(actPatt_S1,actPatt_S3);
-        foo(s) = mean(mean(corr_S1S3)) - mean(mean(corr_S1S2));
-        
-    end
-    
-    roiNames{i}
-    [h,p,~,~] = ttest(foo)
-    
-end
+% roiNames = fieldnames(respPatt);
+%
+% for i = 1:length(roiNames)
+%     % for each subject take the vector of presented items
+%     for s = 1:length(subs)
+%
+%         % find indices of items presented in each session. Add 120 to the boat
+%         % conditions because in responsePatters the 120 boat activity
+%         % patterns are stacked after the 120 fire patterns.
+%         if taskOrd(s) == 1
+%             idx_S1 = bData(subs(s)).imagination(1).fire.objIdx;
+%             idx_S2 = bData(subs(s)).imagination(2).boat.objIdx + 120;
+%             idx_S3 = bData(subs(s)).imagination(3).fire.objIdx;
+%             idx_S4 = bData(subs(s)).imagination(4).boat.objIdx + 120;
+%         else
+%             idx_S1 = bData(subs(s)).imagination(1).boat.objIdx + 120;
+%             idx_S2 = bData(subs(s)).imagination(2).fire.objIdx;
+%             idx_S3 = bData(subs(s)).imagination(3).boat.objIdx + 120;
+%             idx_S4 = bData(subs(s)).imagination(4).fire.objIdx;
+%         end
+%
+%         subjName = ['SF',num2str(subs(s),'%03d')];
+%
+%         % fetch activation patterns
+%         actPatt_S1 = respPatt.(roiNames{i}).(subjName)(:,idx_S1);
+%         actPatt_S2 = respPatt.(roiNames{i}).(subjName)(:,idx_S2);
+%         actPatt_S3 = respPatt.(roiNames{i}).(subjName)(:,idx_S3);
+%         actPatt_S4 = respPatt.(roiNames{i}).(subjName)(:,idx_S4);
+%
+%         corr_S1S2 = corr(actPatt_S1,actPatt_S2);
+%         corr_S1S3 = corr(actPatt_S1,actPatt_S3);
+%         foo(s) = mean(mean(corr_S1S3)) - mean(mean(corr_S1S2));
+%
+%     end
+%
+%     roiNames{i}
+%     [h,p,~,~] = ttest(foo)
+%
+% end
 

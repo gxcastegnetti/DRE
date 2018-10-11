@@ -18,7 +18,7 @@ n_sess = 4;
 dirData = [dir.dre,fs,'data'];
 
 %% read objects
-objs        = readtable([dir.beh,fs,'Objects.csv']);
+objs        = readtable([dir.behDat,fs,'Objects.csv']);
 objsNameAll = table2cell(objs(:,2)); clear foo objs
 
 %% loop over subjects and sessions
@@ -111,7 +111,7 @@ for s = 1:length(subs)
         objPri = Mday1F(idxFam_day2,4); % monetary value
         
         %% find indices of objects within the 120 used ones
-        objs        = readtable([dir.beh,fs,'Objects.csv']);
+        objs        = readtable([dir.behDat,fs,'Objects.csv']);
         foo         = logical(table2array(objs(:,7)));
         objsName    = table2cell(objs(foo,2)); clear foo objs
         

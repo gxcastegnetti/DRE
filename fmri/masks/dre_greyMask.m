@@ -58,7 +58,7 @@ for s = 1:length(subs)
     job{1}.spm.util.imcalc.outdir = {dir.out};
     
     % probability threshold
-    job{1}.spm.util.imcalc.expression = 'i1>0.1';
+    job{1}.spm.util.imcalc.expression = 'i1>0.3';
     
     % defaults
     job{1}.spm.util.imcalc.var = struct('name', {}, 'value', {});

@@ -1,6 +1,6 @@
-%% dre_rsa
+%% dre_rsa_sl_test
 % ~~~
-% GX Castegnetti --- start ~ 17.08.18 --- last ~ 20.08.18
+% GX Castegnetti --- 2018
 
 clear
 close all
@@ -8,21 +8,25 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'rsa_sl_pulse_ons0_cxt';
+% analysisName = 'dim_roi_test_2';
 betaid       = 'rsa_pulse_ons0';
+thisIsDim    = false;
 
-%% Folders
-dir.root = pwd;
-fs       = filesep;
-idcs     = strfind(dir.root,'/');
-dir.dre  = dir.root(1:idcs(end-2)-1);
-dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-dir.msk  = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas'];
-dir.beh  = [dir.dre,fs,'data',fs,'behaviour'];
-dir.out  = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+%% directories
+dir.rsaCod = pwd;
+fs         = filesep;
+idcs       = strfind(dir.rsaCod,'/');
+dir.dre    = dir.rsaCod(1:idcs(end-2)-1); clear idcs
+dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
+dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas'];
+dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
+dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+
+% paths
 dir.spm  = '/Users/gcastegnetti/Desktop/tools/matlab/spm12';
-addpath([dir.root,fs,'routines'])
-addpath(genpath([dir.root,fs,'rsatoolbox']))
-addpath(genpath([dir.spm]))
+addpath([dir.rsaCod,fs,'routines'])
+addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
+addpath(genpath(dir.spm))
 
 %% Subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
@@ -39,17 +43,17 @@ userOptions.forcePromptReply = 'r';
 %% mask <- should be 79x95x79 because we put correlation map in MNI
 
 % reslice mask to the size of the correlation maps, if needed
-if ~exist([dir.msk,fs,'rgm.nii'],'file')
+if ~exist([dir.mskOut,fs,'rgm.nii'],'file')
     
     % load sample EPI from one subject for coregistration
-    dirFun = [dir.data,fs,'SF039',fs,'fun',fs,'S4'];
+    dirFun = [dir.datScn,fs,'SF039',fs,'fun',fs,'S4'];
     d = spm_select('List', dirFun, '^wuaf.*\.nii$');
     d = d(end-1,:);
     epi_file = [dirFun fs d];
     job_rs{1}.spm.spatial.coreg.write.ref = {epi_file};
     
     % select mask to coregister
-    job_rs{1}.spm.spatial.coreg.write.source = {[dir.msk,fs,'gm.nii']};
+    job_rs{1}.spm.spatial.coreg.write.source = {[dir.mskOut,fs,'gm.nii']};
     
     % defaults
     job_rs{1}.spm.spatial.coreg.write.roptions.interp = 4;
@@ -63,15 +67,17 @@ if ~exist([dir.msk,fs,'rgm.nii'],'file')
     clear job d epi_file
 end
 
-mask = niftiread([dir.msk,fs,'rgm.nii']);
+mask = niftiread([dir.mskOut,fs,'rgm.nii']);
 mask = logical(mask);
 
 %% model names
 modelNames = {'val','fam','oid','cxt'};
 % modelNames = {'valMed','famMed'};
 modelNames = {'cxt'};
-% modelNames = {'dim'};
 
+if thisIsDim
+    modelNames = {'dim'};
+end
 %% soecify some directories
 
 % directory with searchlight correlation maps
@@ -81,7 +87,7 @@ dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if true
+if false
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,7 +95,7 @@ if true
         %%%%%%%%%%%%%%%%%%%%%%%%
         
         % load metadata from SPM
-        dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
+        dirFun = [dir.datScn,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
         d = spm_select('List', dirFun, '^uaf.*\.nii$');
         d = d(end-1,:);
         epi_file = {[dirFun fs d]};
@@ -98,7 +104,11 @@ if true
         
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
-        load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
+        if ~thisIsDim
+            load([dirSl,fs,'sl_SF',num2str(subs(s),'%03d'),'.mat']);
+        else
+            load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
+        end
         
         %% loop over models
         for m = 1:length(modelNames)
@@ -123,7 +133,7 @@ if true
             %%%%%%%%%%%%%%%%%%%%
             
             % select forward deformation images from T1 segmentation step
-            dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
+            dirStruct = [dir.datScn,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
             d = spm_select('List', dirStruct, '^y_.*\.nii$');
             y_file = {[dirStruct fs d]};
             
@@ -213,14 +223,19 @@ for s = 1:length(subs)
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
+        %         figure,imagesc(swrMap(:,:,40)),colorbar
         
     end
 end
 
-% aaa = mean(rMaps_all.dim,4);
-% for i = 1:79
-%     figure,imagesc(aaa(:,:,i)),colorbar
-% end
+%% if it's a dimensionality searchlight, plot and stop here
+if thisIsDim
+    meanDim = mean(rMaps_all.dim,4);
+    for i = 1:79
+        figure,imagesc(meanDim(:,:,i)),colorbar
+    end
+    return
+end
 
 %% statistics
 for m = 1:length(modelNames)
@@ -250,9 +265,18 @@ for m = 1:length(modelNames)
         disp(x);
     end
     
+    % plot p-values
+    if true
+        for i = 1:79
+            figure,
+            subplot(1,2,1),imagesc(p1(:,:,i))
+            subplot(1,2,2),imagesc(p1(:,:,i)<0.05)
+        end
+    end
+    
     % apply FDR correction
-    pThrsh_t  = FDRthreshold(p1,0.15,mask);
-    pThrsh_sr = FDRthreshold(p2,0.15,mask);
+    pThrsh_t  = FDRthreshold(p1,0.05,mask);
+    pThrsh_sr = FDRthreshold(p2,0.05,mask);
     
     % mark the suprathreshold voxels in yellow
     supraThreshMarked_t = zeros(size(p1));

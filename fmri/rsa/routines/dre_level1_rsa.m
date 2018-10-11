@@ -25,7 +25,7 @@ for s = 1:length(subs)
     
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
-    dirOut = [dir.rsa,fs,anName,fs,'SF',num2str(subs(s),'%03d')];
+    dirOut = [dir.rsaOut,fs,anName,fs,'SF',num2str(subs(s),'%03d')];
     mkdir(dirOut)
     job{1}.spm.stats.fmri_spec.dir = {dirOut};
     
@@ -71,9 +71,9 @@ for s = 1:length(subs)
     if strcmp(maskName,'none')
         mask = '';
     elseif strcmp(maskName,'gm')
-        mask = [dir.msk,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
+        mask = [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     else
-        mask = [dir.msk,fs,maskName,'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];      
+        mask = [dir.mskOut,fs,maskName,'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];      
     end    
     job{1}.spm.stats.fmri_spec.mask = {mask};
     job{1}.spm.stats.fmri_spec.cvi = 'AR(1)';

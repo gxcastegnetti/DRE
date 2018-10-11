@@ -13,7 +13,7 @@ userOptions.ModelColor = [0 1 0];
 
 % read object names
 objVersion  = 7; % set which column to read according to the object set version
-objs        = readtable([dir.beh,filesep,'Objects.csv']);
+objs        = readtable([dir.behDat,filesep,'Objects.csv']);
 foo         = logical(table2array(objs(:,objVersion))); 
 objsName    = table2cell(objs(foo,2)); clear foo objs
 

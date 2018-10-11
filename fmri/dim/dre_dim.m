@@ -1,6 +1,6 @@
-%% dre_dim_roi
+%% dre_dim
 % ~~~
-% performs roi dimensionality analysis
+% performs roi and sl dimensionality analysis
 % ~~~
 % GX Castegnetti --- 2018
 
@@ -8,39 +8,41 @@ clear
 close all
 restoredefaultpath
 
-%% analysisName
+%% analysis name
 analysisName = 'dim_roi_ons0';
 roiAnalysisName = 'rsa_roi_pulse_ons0';
 slAnalysisName = 'rsa_pulse_ons0';
 
-%% folders
-fs      = filesep;
-dir.dim = pwd;
-idcs    = strfind(dir.dim,'/');
-dir.dre = dir.dim(1:idcs(end-2)-1);
-dir.sta = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
-dir.rsa = [dir.dre,fs,'codes',fs,'fmri',fs,'rsa'];
-dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
-dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
-dir.msk = [dir.dre,fs,'out',fs,'fmri',fs,'masks'];
-dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'dim',fs,'roi'];
-dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-addpath(genpath([dir.rsa,fs,'rsatoolbox']))
-addpath(genpath([dir.sta,fs,'routines']))
-addpath([pwd,fs,'routines'])
+%% directories
+fs         = filesep;
+dir.dimCod = pwd;
+idcs       = strfind(dir.dimCod,'/');
+dir.dre    = dir.dimCod(1:idcs(end-2)-1); clear idcs
+dir.uniCod = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
+dir.rsaCod = [dir.dre,fs,'codes',fs,'fmri',fs,'rsa'];
+dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
+dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks'];
+dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
+dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'dim',fs,'roi'];
+
+% paths
+addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
+addpath(genpath([dir.uniCod,fs,'routines']))
+addpath([dir.dimCod,fs,'routines'])
 addpath(genpath('functionalDimensionality'))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
-taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
+taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)]; % order (1: FBFB; 2: BFBF)
 
 %% extract behaviour
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns computed in dre_rsa_roi_run
-load([dir.rsaOut,fs,roiAnalysisName,fs,'rsaPatterns_roi.mat'])
+load([dir.rsaOut,fs,'roi',fs,roiAnalysisName,fs,'rsaPatterns_roi.mat'])
 respPatt_roi = responsePatterns; clear responsePatterns
 
 %% find roi and sub names
@@ -86,20 +88,19 @@ for sub = 1:length(subNames)
 end
 
 %% PCA
+% threshold of variance to be accounted for
 explVar_threshold = 75;
+
+% loop over ROIs, subjects, sessions
 for roi = 1:length(roiNames)
     for sub = 1:length(subNames)
         for sess = 1:4
             [~,~,~,~,explVar_vec,~] = pca(respPatt_presentOrder_roi{roi}{sub}{sess});
-            for i = 1:length(explVar_vec)
-                explVar_soFar = sum(explVar_vec(1:i));
-                if explVar_soFar > explVar_threshold
-                    break
-                end
-            end
-            explVar_sess{roi}(sub,sess) = i;
+            explVar_soFar = cumsum(explVar_vec);
+            explVar_sess{roi}(sub,sess) = find(explVar_soFar > explVar_threshold,1);
         end
     end
+    % average over sessions
     explVar_sub{roi} = mean(explVar_sess{roi},2);
 end
 
@@ -117,9 +118,8 @@ end
 %% run searchlight for dimensionality
 
 % load response patterns computed in dre_rsa_sl_run
-load(['/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/',slAnalysisName,fs,'rsaPatterns_sl.mat'])
+load([dir.rsaOut,fs,'sl',fs,'_responsePatterns',fs,slAnalysisName,fs,'rsaPatterns_sl.mat'])
 respPatt_sl = responsePatterns; clear responsePatterns
-
 
 % searchlight options
 userOptions.voxelSize = [3 3 3];
@@ -134,7 +134,7 @@ for sub = 1:length(subNames)
     
     disp(['Computing correlation for sub#',num2str(sub),' of ',num2str(length(subs))])
     
-    binaryMask = niftiread([dir.msk,fs,'gm_subj',fs,'gm_SF',num2str(subs(sub),'%03d'),'.nii']);
+    binaryMask = niftiread([dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(sub),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     
     % S1

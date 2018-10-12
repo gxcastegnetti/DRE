@@ -121,6 +121,9 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 load([dir.rsaOut,fs,'sl',fs,'_responsePatterns',fs,slAnalysisName,fs,'rsaPatterns_sl.mat'])
 respPatt_sl = responsePatterns; clear responsePatterns
 
+%
+subNames = fieldnames(respPatt_sl);
+
 % searchlight options
 userOptions.voxelSize = [3 3 3];
 userOptions.searchlightRadius = 12;

@@ -7,9 +7,9 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons2';
+analysisName = 'rsa_sl_pulse_ons0';
 % analysisName = 'dim_sl_ons0';
-betaid       = 'rsa_pulse_ons2';
+betaid       = 'rsa_pulse_ons0';
 thisIsDim    = false;
 
 %% directories
@@ -93,7 +93,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if true
+if false
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,7 +164,7 @@ if true
             
             % write the native-space mask to a file
             maskMetadataStruct_nS = subjectMetadataStruct{1};
-            maskMetadataStruct_nS.fname = [dir.out,fs,'_nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            maskMetadataStruct_nS.fname = [dir.out,fs,'sl',fs,'_nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
             maskMetadataStruct_nS.descrip =  'Native space mask';
             maskMetadataStruct_nS.dim = size(mask);
             spm_write_vol(maskMetadataStruct_nS, mask);
@@ -185,7 +185,7 @@ if true
             clear job
             
             % read them back in
-            wMaskFile = [dir.out,fs,'_nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            wMaskFile = [dir.out,fs,'sl',fs,'_nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
             wrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
             mask_sS = spm_read_vols(spm_vol(wMaskFile));
             
@@ -282,7 +282,7 @@ for m = 1:length(modelNames)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
                     [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    if p1(x,y,z) < 0.01
+                    if p1(x,y,z) < 1
                         t1(x,y,z) = stats.tstat;
                     end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));

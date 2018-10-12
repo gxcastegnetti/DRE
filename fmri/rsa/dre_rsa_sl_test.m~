@@ -8,9 +8,9 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'rsa_sl_pulse_ons0';
-analysisName = 'dim_sl_ons0';
+% analysisName = 'dim_sl_ons0';
 betaid       = 'rsa_pulse_ons0';
-thisIsDim    = true;
+thisIsDim    = false;
 
 %% directories
 dir.rsaCod = pwd;
@@ -93,7 +93,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if false
+if true
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -164,7 +164,7 @@ if false
             
             % write the native-space mask to a file
             maskMetadataStruct_nS = subjectMetadataStruct{1};
-            maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            maskMetadataStruct_nS.fname = [dir.out,fs,'sl''_nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
             maskMetadataStruct_nS.descrip =  'Native space mask';
             maskMetadataStruct_nS.dim = size(mask);
             spm_write_vol(maskMetadataStruct_nS, mask);
@@ -185,7 +185,7 @@ if false
             clear job
             
             % read them back in
-            wMaskFile = [dirSl,fs,'nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            wMaskFile = [dir.out,fs,'sl',fs,'_nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
             wrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
             mask_sS = spm_read_vols(spm_vol(wMaskFile));
             
@@ -248,22 +248,14 @@ if thisIsDim
     %         figure,imagesc(meanDim(:,:,i)),colorbar
     %     end
     
-    % make it nice
-    meanDim = smooth3(meanDim,'gaussian',[1 1 1]);
-    meanDim = interp3(meanDim,'nearest');
-    meanDim = smooth3(meanDim,'gaussian',[1 1 1]);
-    meanDim = interp3(meanDim,'nearest');
-    
     % write d(imensionality)-map
-    swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    dMapMetadataStruct_sS = spm_vol(swrMapFile);
+%     swrMapFile = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    dMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
     dMapMetadataStruct_sS.fname = [dirSl,fs,'dMap.nii'];
     dMapMetadataStruct_sS.descrip =  'd-map';
     dMapMetadataStruct_sS.dim = size(meanDim);
     spm_write_vol(dMapMetadataStruct_sS, meanDim);
-    
-    keyboard
-    
+        
     % end code here
     return
 end
@@ -290,7 +282,7 @@ for m = 1:length(modelNames)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
                     [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    if p1(x,y,z) < 0.01
+                    if p1(x,y,z) < 1
                         t1(x,y,z) = stats.tstat;
                     end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));

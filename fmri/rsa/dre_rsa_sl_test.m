@@ -7,9 +7,9 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
-% analysisName = 'dim_roi_test_2';
-betaid       = 'rsa_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons2';
+% analysisName = 'dim_sl_ons0';
+betaid       = 'rsa_pulse_ons2';
 thisIsDim    = false;
 
 %% directories
@@ -19,7 +19,7 @@ idcs       = strfind(dir.rsaCod,'/');
 dir.dre    = dir.rsaCod(1:idcs(end-2)-1); clear idcs
 dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
 dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'atlas'];
-dir.dimOut = [dir.dre,fs,'out',fs,'fmri',fs,'dim',fs,'atlas'];
+dir.dimOut = [dir.dre,fs,'out',fs,'fmri',fs,'dim'];
 dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 
@@ -86,7 +86,7 @@ dirSl = [userOptions.rootPath,filesep,'sl',fs,analysisName];
 
 if thisIsDim
     % directory with searchlight correlation maps
-    dirDim = [dir.dimOut,fs,'sl',fs,analysisName];
+    dirSl = [dir.dimOut,fs,'sl',fs,analysisName];
 end
 
 % directory with betas
@@ -164,7 +164,7 @@ if true
             
             % write the native-space mask to a file
             maskMetadataStruct_nS = subjectMetadataStruct{1};
-            maskMetadataStruct_nS.fname = [dirSl,fs,'nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            maskMetadataStruct_nS.fname = [dir.out,fs,'_nS_masks_gm',fs,'nS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
             maskMetadataStruct_nS.descrip =  'Native space mask';
             maskMetadataStruct_nS.dim = size(mask);
             spm_write_vol(maskMetadataStruct_nS, mask);
@@ -185,7 +185,7 @@ if true
             clear job
             
             % read them back in
-            wMaskFile = [dirSl,fs,'nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+            wMaskFile = [dir.out,fs,'_nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
             wrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
             mask_sS = spm_read_vols(spm_vol(wMaskFile));
             
@@ -243,18 +243,19 @@ end
 %% if it's a dimensionality searchlight and plot
 if thisIsDim
     meanDim = mean(rMaps_all.dim,4);
-    for i = 1:79
-        figure,imagesc(meanDim(:,:,i)),colorbar
-    end
+    meanDim(meanDim == 0) = 0;
+    %     for i = 1:79
+    %         figure,imagesc(meanDim(:,:,i)),colorbar
+    %     end
     
     % write d(imensionality)-map
-    swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    dMapMetadataStruct_sS = spm_vol(swrMapFile);
-    dMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
-    dMapMetadataStruct_sS.descrip =  'p-map';
-    dMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);
-    spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_sr);
-    
+%     swrMapFile = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    dMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    dMapMetadataStruct_sS.fname = [dirSl,fs,'dMap.nii'];
+    dMapMetadataStruct_sS.descrip =  'd-map';
+    dMapMetadataStruct_sS.dim = size(meanDim);
+    spm_write_vol(dMapMetadataStruct_sS, meanDim);
+        
     % end code here
     return
 end
@@ -275,11 +276,15 @@ for m = 1:length(modelNames)
     % the model similarities:
     p1 = NaN(79,95,79);
     p2 = p1;
+    t1 = p1;
     for x = 1:size(rMaps,1)
         for y = 1:size(rMaps,2)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
-                    [h p1(x,y,z)] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+                    [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+                    if p1(x,y,z) < 0.01
+                        t1(x,y,z) = stats.tstat;
+                    end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
                 end
             end
@@ -288,7 +293,7 @@ for m = 1:length(modelNames)
     end
     
     % plot p-values
-    if true && m == 4
+    if true && m == 25
         for i = 1:79
             figure,
             subplot(1,2,1),imagesc(p1(:,:,i))
@@ -306,9 +311,18 @@ for m = 1:length(modelNames)
     supraThreshMarked_sr = zeros(size(p2));
     supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
     
+    % write t-map
+    %     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+    %     pMapMetadataStruct_sS = spm_vol(swrMapFile);
+    tMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    tMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'tMap_',modelName,'.nii'];
+    tMapMetadataStruct_sS.descrip =  't-map';
+    tMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);
+    spm_write_vol(tMapMetadataStruct_sS, t1);
+    
     % write p-map
-    swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    pMapMetadataStruct_sS = spm_vol(swrMapFile);
+    %     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+    pMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
     pMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
     pMapMetadataStruct_sS.descrip =  'p-map';
     pMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);

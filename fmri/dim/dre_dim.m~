@@ -42,8 +42,8 @@ taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)]; % order (1: FBFB; 
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns computed in dre_rsa_roi_run
-% load([dir.rsaOut,fs,'roi',fs,roiAnalysisName,fs,'rsaPatterns_roi.mat'])
-% respPatt_roi = responsePatterns; clear responsePatterns
+load([dir.rsaOut,fs,'roi',fs,roiAnalysisName,fs,'rsaPatterns_roi.mat'])
+respPatt_roi = responsePatterns; clear responsePatterns
 
 %% find roi and sub names
 % roiNames = fieldnames(respPatt_roi);
@@ -89,31 +89,31 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% PCA
 % threshold of variance to be accounted for
-% explVar_threshold = 75;
-% 
-% % loop over ROIs, subjects, sessions
-% for roi = 1:length(roiNames)
-%     for sub = 1:length(subNames)
-%         for sess = 1:4
-%             [~,~,~,~,explVar_vec,~] = pca(respPatt_presentOrder_roi{roi}{sub}{sess});
-%             explVar_soFar = cumsum(explVar_vec);
-%             explVar_sess{roi}(sub,sess) = find(explVar_soFar > explVar_threshold,1);
-%         end
-%     end
-%     % average over sessions
-%     explVar_sub{roi} = mean(explVar_sess{roi},2);
-% end
-% 
-% % t-test
-% tTestResults = zeros(length(roiNames));
-% for roi_1 = 1:length(roiNames)
-%     for roi_2 = 1:length(roiNames)
-%         [h,p,ci,stats] = ttest(explVar_sub{roi_1},explVar_sub{roi_2});
-%         if h == 1
-%             tTestResults(roi_1,roi_2) = stats.tstat;
-%         end
-%     end
-% end
+explVar_threshold = 75;
+
+% loop over ROIs, subjects, sessions
+for roi = 1:length(roiNames)
+    for sub = 1:length(subNames)
+        for sess = 1:4
+            [~,~,~,~,explVar_vec,~] = pca(respPatt_presentOrder_roi{roi}{sub}{sess});
+            explVar_soFar = cumsum(explVar_vec);
+            explVar_sess{roi}(sub,sess) = find(explVar_soFar > explVar_threshold,1);
+        end
+    end
+    % average over sessions
+    explVar_sub{roi} = mean(explVar_sess{roi},2);
+end
+
+% t-test
+tTestResults = zeros(length(roiNames));
+for roi_1 = 1:length(roiNames)
+    for roi_2 = 1:length(roiNames)
+        [h,p,ci,stats] = ttest(explVar_sub{roi_1},explVar_sub{roi_2});
+        if h == 1
+            tTestResults(roi_1,roi_2) = stats.tstat;
+        end
+    end
+end
 
 %% run searchlight for dimensionality
 

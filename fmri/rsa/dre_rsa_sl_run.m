@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
-betaid       = 'rsa_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons2';
+betaid       = 'rsa_pulse_ons2';
 
 %% directories
 fs         = filesep;
@@ -66,7 +66,7 @@ if ~exist(filePatterns,'file')
 else
     load(filePatterns,'responsePatterns')
 end
-
+keyboard
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
 

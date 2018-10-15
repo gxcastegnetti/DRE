@@ -7,9 +7,11 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
+% analysisName = 'rsa_sl_pulse_ons0';
+% analysisName = 'rsa_sl_pulse_choice';
 analysisName = 'dim_sl_ons0';
 betaid       = 'rsa_pulse_ons0';
+% betaid       = 'rsa_pulse_choice';
 thisIsDim    = true;
 
 %% directories
@@ -73,8 +75,8 @@ mask = logical(mask);
 
 %% model names
 modelNames = {'val','fam','oid','cxt'};
+% modelNames = {'dval','vCho','vUnc','chMu','oids'};
 % modelNames = {'valMed','famMed'};
-% modelNames = {'cxt'};
 
 if thisIsDim
     modelNames = {'dim'};
@@ -233,7 +235,7 @@ for s = 1:length(subs)
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
-        figure,imagesc(swrMap(:,:,40)),colorbar
+%         figure,imagesc(swrMap(:,:,40)),colorbar
         
     end
 end
@@ -241,7 +243,7 @@ end
 %% if it's a dimensionality searchlight and plot
 if thisIsDim
     meanDim = mean(rMaps_all.dim,4);
-    meanDim(meanDim == 0) = 0;
+    meanDim(meanDim <= 1) = nan;
     %     for i = 1:79
     %         figure,imagesc(meanDim(:,:,i)),colorbar
     %     end
@@ -280,9 +282,7 @@ for m = 1:length(modelNames)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
                     [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    if p1(x,y,z) < 0.005
-                        t1(x,y,z) = stats.tstat;
-                    end
+                    t1(x,y,z) = stats.tstat;
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
                 end
             end
@@ -310,21 +310,21 @@ for m = 1:length(modelNames)
     supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
     
     % write t-map
-    %     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    %     pMapMetadataStruct_sS = spm_vol(swrMapFile);
-    tMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+    tMapMetadataStruct_sS = spm_vol(swrMapFile);
     tMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'tMap_',modelName,'.nii'];
-    tMapMetadataStruct_sS.descrip =  't-map';
-    tMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);
+    tMapMetadataStruct_sS.descrip = 't-map';
+    tMapMetadataStruct_sS.dim = size(supraThreshMarked_t);
     spm_write_vol(tMapMetadataStruct_sS, t1);
     
     % write p-map
-    %     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-    pMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    pMapMetadataStruct_sS = spm_vol(swrMapFile);
     pMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
-    pMapMetadataStruct_sS.descrip =  'p-map';
-    pMapMetadataStruct_sS.dim = size(supraThreshMarked_sr);
-    spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_sr);
+    pMapMetadataStruct_sS.descrip = 'p-map';
+    pMapMetadataStruct_sS.dim = size(supraThreshMarked_t);
+    supraThreshMarked_t = p1 < 0.005;
+    spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_t);
+    disp(['significant voxels: ', num2str(sum(supraThreshMarked_t(:)))])
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % create cluster-specific masks %

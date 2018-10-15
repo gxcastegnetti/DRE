@@ -249,13 +249,13 @@ if thisIsDim
     %     end
     
     % write d(imensionality)-map
-%     swrMapFile = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    %     swrMapFile = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
     dMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
     dMapMetadataStruct_sS.fname = [dirSl,fs,'dMap.nii'];
     dMapMetadataStruct_sS.descrip =  'd-map';
     dMapMetadataStruct_sS.dim = size(meanDim);
     spm_write_vol(dMapMetadataStruct_sS, meanDim);
-        
+    
     % end code here
     return
 end
@@ -282,7 +282,7 @@ for m = 1:length(modelNames)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
                     [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    if p1(x,y,z) < 1
+                    if p1(x,y,z) < 0.005
                         t1(x,y,z) = stats.tstat;
                     end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));

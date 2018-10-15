@@ -67,7 +67,7 @@ RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 %% plot RDMs
 % matrices
 % for i = 1:28
-figureRDMs(RDM_average(9),userOptions)
+figureRDMs(RDM_average,userOptions)
 % keyboard
 % end
 

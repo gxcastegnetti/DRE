@@ -18,7 +18,6 @@ foo         = logical(table2array(objs(:,objVersion)));
 objsName    = table2cell(objs(foo,2)); clear foo objs
 
 % attach F and B conditions
-
 for h = 1:length(objsName)
     objsF{h} = ['F-',objsName{h}];
     objsB{h} = ['B-',objsName{h}];

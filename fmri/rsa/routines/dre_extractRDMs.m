@@ -33,44 +33,58 @@ for s = 1:length(subs)
         dirPsyO = [dirData,fs,'fmri',fs,'psychOut',fs,'SF',num2str(subs(s),'%03d')];
         Mday2 = csvread([dirPsyO,fs,'DRE_mri_S',num2str(subs(s),'%03d'),'_B',num2str(r),day2Order{r},'.csv']);
         
-        %% object IDs
-        % extract IDs from day 2
-        sessions(:,r) = Mday2(Mday2(:,3)==0,4);
-        id_vec = sessions(:);
+        %% imagination
+        % extract IDs
+        sessIma(:,r) = Mday2(Mday2(:,3) == 0,4);
+        
+        %% choice
+        % extract IDs (for both objects)
+        sessCho_ID{r} = Mday2(Mday2(:,3) == 1,4:5);
+        
+        % extract choice (-1=L; 1=R)
+        sessCho_LR(:,r) = Mday2(Mday2(:,3) == 1,7);
         
     end
     
     %% separate F and B
     if taskOrd(s) == 1
-        obj_F = [sessions(:,1); sessions(:,3)];
-        obj_B = [sessions(:,2); sessions(:,4)];
+        sessIma_F_vec = [sessIma(:,1); sessIma(:,3)];
+        sessIma_B_vec = [sessIma(:,2); sessIma(:,4)];
+        sessIma_F = sessIma(:,[1 3]);
+        sessIma_B = sessIma(:,[2 4]);
+        sessCho_F = [sessCho_ID{1},sessCho_LR(:,1);sessCho_ID{3},sessCho_LR(:,3)];
+        sessCho_B = [sessCho_ID{2},sessCho_LR(:,2);sessCho_ID{4},sessCho_LR(:,4)];
     else
-        obj_F = [sessions(:,2); sessions(:,4)];
-        obj_B = [sessions(:,1); sessions(:,3)];
+        sessIma_F_vec = [sessIma(:,2); sessIma(:,4)];
+        sessIma_B_vec = [sessIma(:,1); sessIma(:,3)];
+        sessIma_F = sessIma(:,[2 4]);
+        sessIma_B = sessIma(:,[1 3]);
+        sessCho_F = [sessCho_ID{2},sessCho_LR(:,2);sessCho_ID{4},sessCho_LR(:,4)];
+        sessCho_B = [sessCho_ID{1},sessCho_LR(:,1);sessCho_ID{3},sessCho_LR(:,3)];
     end
     
     % sort them
-    [obj_F_sort,idx_sort_F] = sort(obj_F);
-    [obj_B_sort,idx_sort_B] = sort(obj_B);
+    [obj_F_sort,idx_sort_F] = sort(sessIma_F_vec);
+    [obj_B_sort,idx_sort_B] = sort(sessIma_B_vec);
     
-    %% day 1 - load behavioural data
+    %% load behavioural data from day 1
     dirBeha = [dirData,fs,'behaviour',fs,'SF',num2str(subs(s),'%03d')];
     Mday1_F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B1_DRE.csv']);
     Mday1_B = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B2_DRE.csv']);
     Mday1_p = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);
     
-    %% day 2 - compute scores assigned to presented objects
+    %% assign scores to imagination trials
     
     %%%%%%%%%%%%%%%%%%%%%%%%
     % value and confidence %
     %%%%%%%%%%%%%%%%%%%%%%%%
     
     % for each object presented on day 2, find corresponding idx on day 1
-    idx_day1_F = NaN(length(obj_F),1);
-    idx_day1_B = NaN(length(obj_B),1);
-    for i = 1:length(obj_F)
-        idx_day1_F(i) = find(obj_F(i) == Mday1_F(:,2));
-        idx_day1_B(i) = find(obj_B(i) == Mday1_B(:,2));
+    idx_day1_F = NaN(length(sessIma_F_vec),1);
+    idx_day1_B = NaN(length(sessIma_B_vec),1);
+    for i = 1:length(sessIma_F_vec)
+        idx_day1_F(i) = find(sessIma_F_vec(i) == Mday1_F(:,2));
+        idx_day1_B(i) = find(sessIma_B_vec(i) == Mday1_B(:,2));
     end
     
     % extract value, confidence
@@ -85,9 +99,9 @@ for s = 1:length(subs)
     % familiarity and price %
     %%%%%%%%%%%%%%%%%%%%%%%%%
     
-    for i = 1:length(obj_F)
-        idx_day1_F_FP(i) = find(obj_F(i) == Mday1_p(:,2)); %#ok<*AGROW>
-        idx_day1_B_FP(i) = find(obj_B(i) == Mday1_p(:,2));
+    for i = 1:length(sessIma_F_vec)
+        idx_day1_F_FP(i) = find(sessIma_F_vec(i) == Mday1_p(:,2)); %#ok<*AGROW>
+        idx_day1_B_FP(i) = find(sessIma_B_vec(i) == Mday1_p(:,2));
     end
     
     % extract familiarity, price
@@ -109,60 +123,54 @@ for s = 1:length(subs)
     %% create median split RDMs
     % the 0.00001*idx is to make median univocally defined
     
-    val_all_pert = val_all + 0.00001*[1:length(val_all)]';
+    val_all_pert = val_all + 0.00001*(1:length(val_all))';
     medVal = median(val_all_pert);
     idxVal_H = val_all_pert > medVal;
     
-    con_all_pert = con_all + 0.00001*[1:length(con_all)]';
+    con_all_pert = con_all + 0.00001*(1:length(con_all))';
     medCon = median(con_all_pert);
     idxCon_H = con_all_pert > medCon;
     
-    fam_all_pert = fam_all + 0.00001*[1:length(fam_all)]';
+    fam_all_pert = fam_all + 0.00001*(1:length(fam_all))';
     medFam = median(fam_all_pert);
     idxFam_H = fam_all_pert > medFam;
     
-    pri_all_pert = pri_all + 0.00001*[1:length(pri_all)]';
+    pri_all_pert = pri_all + 0.00001*(1:length(pri_all))';
     medPri = median(pri_all_pert);
     idxPri_H = pri_all_pert > medPri;
     
     % create median split RDMs
     for i = 1:length(val_all)
-        RDMs{s}.valMed(:,i) = abs(idxVal_H(i) - idxVal_H);
-        RDMs{s}.conMed(:,i) = abs(idxCon_H(i) - idxCon_H);
-        RDMs{s}.famMed(:,i) = abs(idxFam_H(i) - idxFam_H);
+        RDMs{s}.valMed(:,i) = abs(idxVal_H(i) - idxVal_H)/50;
+        RDMs{s}.conMed(:,i) = abs(idxCon_H(i) - idxCon_H)/50;
+        RDMs{s}.famMed(:,i) = abs(idxFam_H(i) - idxFam_H)/50;
         RDMs{s}.priMed(:,i) = abs(idxPri_H(i) - idxPri_H);
     end
     
-    %% divide into three percentiles
-    
     %% create context model
-    % to avoid overestimation of correlation due to time correlation within
-    % sessions, we set correlation within session to NaN. Dissimilarity
-    % across sessions is zero and one for same and different contect, respectively.
-    if taskOrd(s) == 1
-        sessions_F = sessions(:,[1 3]);
-        sessions_B = sessions(:,[2 4]);
-    else
-        sessions_F = sessions(:,[2 4]);
-        sessions_B = sessions(:,[1 3]);
-    end
     cxt_model = nan(240);
     
     for i = 1:120
         for j = 1:120
             
             % fire
-            [~,sess_F_i] = find(sessions_F == obj_F_sort(i));
-            [~,sess_F_j] = find(sessions_F == obj_F_sort(j));
+            [~,sess_F_i] = find(sessIma_F == obj_F_sort(i));
+            [~,sess_F_j] = find(sessIma_F == obj_F_sort(j));
             
             % boat
-            [~,sess_B_i] = find(sessions_B == obj_B_sort(i));
-            [~,sess_B_j] = find(sessions_B == obj_B_sort(j));
+            [~,sess_B_i] = find(sessIma_B == obj_B_sort(i));
+            [~,sess_B_j] = find(sessIma_B == obj_B_sort(j));
             
+            % dissimilarity is 0 between different sessions with same context
             if sess_F_i ~= sess_F_j
                 cxt_model(i,j) = 0;
             end
             
+            if sess_B_i ~= sess_B_j
+                cxt_model(120+i,120+j) = 0;
+            end
+            
+            % dissimilarity is 1 across contexts (between S1,S4 and S2,S3 only)
             if sess_F_i ~= sess_B_j
                 cxt_model(i,120+j) = 1;
             end
@@ -170,16 +178,78 @@ for s = 1:length(subs)
             if sess_F_j ~= sess_B_i
                 cxt_model(120+i,j) = 1;
             end
-            
-            if sess_B_i ~= sess_B_j
-                cxt_model(120+i,120+j) = 0;
-            end
-            
         end
     end
     RDMs{s}.cxt = cxt_model;
     
-%     cxt_model(isnan(cxt_model)) = -1;
-%     figure,imagesc(cxt_model)
+    %     cxt_model(isnan(cxt_model)) = -1;
+    %     figure,imagesc(cxt_model)
+    
+    %% assign scores to choice trials
+    for r = 1:4
+        
+        numChoices = 48;
+        
+        % extract value of chosen and unchosen item
+        valCho_F = NaN(numChoices,1);
+        valUnc_F = NaN(numChoices,1);
+        valCho_B = NaN(numChoices,1);
+        valUnc_B = NaN(numChoices,1);
+        for i = 1:numChoices
+            idxCho_day1_F_L(i) = find(Mday1_F(:,2) == sessCho_F(i,1));
+            idxCho_day1_F_R(i) = find(Mday1_F(:,2) == sessCho_F(i,2));
+            idxCho_day1_B_L(i) = find(Mday1_B(:,2) == sessCho_B(i,1));
+            idxCho_day1_B_R(i) = find(Mday1_B(:,2) == sessCho_B(i,2));
+            if sessCho_F(i,3) == -1
+                valCho_F(i) = Mday1_F(idxCho_day1_F_L(i),3);
+                valUnc_F(i) = Mday1_F(idxCho_day1_F_R(i),3);
+            elseif sessCho_F(i,3) == 1
+                valCho_F(i) = Mday1_F(idxCho_day1_F_R(i),3);
+                valUnc_F(i) = Mday1_F(idxCho_day1_F_L(i),3);
+            end
+            if sessCho_B(i,3) == -1
+                valCho_B(i) = Mday1_B(idxCho_day1_B_L(i),3);
+                valUnc_B(i) = Mday1_B(idxCho_day1_B_R(i),3);
+            elseif sessCho_B(i,3) == 1
+                valCho_B(i) = Mday1_B(idxCho_day1_B_R(i),3);
+                valUnc_B(i) = Mday1_B(idxCho_day1_B_L(i),3);
+            end
+        end
+        
+        % put F and B together
+        valCho = [valCho_F; valCho_B];
+        valUnc = [valUnc_F; valUnc_B];
+        
+        % compute (signed and unsigned) value difference
+        chMunc = valCho - valUnc;
+        dVal = abs(valCho - valUnc);
+        
+        
+        % movement onset and side
+        movCho = Mday2(Mday2(:,3)==1,8);
+        sidCho = Mday2(Mday2(:,3)==1,7);
+        
+    end
+    
+    %% create context model for choice
+    cxt_model_choice = [nan(24),zeros(24),nan(24),ones(24)
+        zeros(24),nan(24),ones(24),nan(24)
+        nan(24),ones(24),nan(24),zeros(24)
+        ones(24),nan(24),zeros(24),nan(24)];
+    
+%     cxt_model_choice(isnan(cxt_model_choice)) = -1;
+%     figure,imagesc(cxt_model_choice)
+    
+    
+    %% create RDMs for choice trials
+    % unlike imagination trials, I keep in task order within sessions (FFBB),
+    % because there's no natural ordering and choice trials differed across subjects
+    for i = 1:length(valCho)
+        RDMs{s}.choice.dVal(:,i) = abs(dVal(i) - dVal)/50;
+        RDMs{s}.choice.cMun(:,i) = abs(chMunc(i) - chMunc)/50;
+        RDMs{s}.choice.Chos(:,i) = abs(valCho(i) - valCho)/50;
+        RDMs{s}.choice.Unch(:,i) = abs(valUnc(i) - valUnc)/50;
+        RDMs{s}.choice.ccxt = cxt_model_choice;
+    end
     
 end

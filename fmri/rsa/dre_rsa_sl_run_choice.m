@@ -1,4 +1,4 @@
-%% dre_rsa_sl_run
+%% dre_rsa_sl_run_choice
 % ~~~
 % GX Castegnetti --- 2018
 
@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons2';
-betaid       = 'rsa_pulse_ons2';
+analysisName = 'rsa_sl_pulse_choice';
+betaid       = 'rsa_pulse_choice';
 
 %% directories
 fs         = filesep;
@@ -44,15 +44,27 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
+%% modify condition names
+objsName = 1:48;
+for i = 1:length(objsName)
+    objsF{i} = ['F-',num2str(objsName(i))]; %#ok<*SAGROW>
+    objsB{i} = ['B-',num2str(objsName(i))];
+end
+condLabels = [objsF';objsB'];
+
+% text lables which may be attached to the conditions for MDS plots
+userOptions.conditionLabels = condLabels;
+
+% colours for the conditions
+userOptions.conditionColours = kron([1 0 0; 0 0 1], ones(48,1));
+
 %% 1st level
 roiNames = {'none'};
 if false
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,betaid,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = 0;
-        timing.iDur = 0;
-        dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
+        dre_level1_rsa_choice(dir,nameBeta,subs,bData,roiNames{i});
     end
 end
 
@@ -62,6 +74,7 @@ userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdenti
 filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
 if ~exist(filePatterns,'file')
     [~, responsePatterns] = fMRIDataPreparation('SPM', userOptions);
+    if ~exist([dir.out,fs,'_responsePatterns',fs,betaid],'dir'),mkdir([dir.out,fs,'_responsePatterns',fs,betaid]),end
     save(filePatterns,'responsePatterns','-v7.3')
 else
     load(filePatterns,'responsePatterns')
@@ -76,29 +89,29 @@ userOptions.searchlightRadius = 9;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
-searchlightOptions.nConditions = 240;
+searchlightOptions.nConditions = 96;
 
-%% run searchlight for imagination
-% create matrix for object ID
-mat_ID = [diag(ones(120,1)), diag(ones(120,1));
-          diag(ones(120,1)), diag(ones(120,1))];
+%% run searchlight for choice
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
-    model(1).name = 'val';
-    model(1).RDM = RDMs{s}.val;
+    model(1).name = 'dval';
+    model(1).RDM = RDMs{s}.choice.dVal;
     model(1).color = [0 1 0];
-    model(2).name = 'fam';
-    model(2).RDM = RDMs{s}.fam;
+    model(2).name = 'vCho';
+    model(2).RDM = RDMs{s}.choice.Chos;
     model(2).color = [0 1 0];
-    model(3).name = 'oid';
-    model(3).RDM = 1-mat_ID;
+    model(3).name = 'vUnc';
+    model(3).RDM = RDMs{s}.choice.Unch;
     model(3).color = [0 1 0];
-    model(4).name = 'cxt';
-    model(4).RDM = RDMs{s}.cxt;
+    model(4).name = 'chMu';
+    model(4).RDM = RDMs{s}.choice.cMun;
     model(4).color = [0 1 0];
+    model(5).name = 'oids';
+    model(5).RDM = RDMs{s}.choice.ccxt;
+    model(5).color = [0 1 0];
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

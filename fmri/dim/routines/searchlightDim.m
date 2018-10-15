@@ -169,18 +169,9 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     explVar_sess(4) = idxThr;
     
     % take difference of correlations across context and within context
+    if mean(explVar_sess) < 1, keyboard, end
     smm_t2(x,y,z) = mean(explVar_sess);
     
 end
-
-%% END OF THE BIG LOOP! %%
-
-if monitor
-    fprintf('\n');
-    close(h_progressMonitor);
-end
-
-mappingMask_actual = mappingMask_request;
-mappingMask_actual(isnan(sum(smm_t2,4))) = 0;
 
 end

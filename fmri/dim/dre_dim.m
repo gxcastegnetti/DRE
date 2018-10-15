@@ -9,9 +9,9 @@ close all
 restoredefaultpath
 
 %% analysis name
-analysisName = 'dim_roi_ons2';
-roiAnalysisName = 'rsa_roi_pulse_ons2';
-slAnalysisName = 'rsa_pulse_ons2';
+analysisName = 'dim_roi_test3';
+roiAnalysisName = 'rsa_roi_pulse_ons0';
+slAnalysisName = 'rsa_pulse_ons0';
 
 %% directories
 fs         = filesep;

@@ -11,9 +11,9 @@ foodir  = pwd;
 fs      = filesep;
 idcs    = strfind(foodir,'/');
 dir.dre = foodir(1:idcs(end-2)-1);
-dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
-dir.phy = [dir.dre,fs,'data',fs,'physio'];
+dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
+dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
+dir.phyDat = [dir.dre,fs,'data',fs,'physio'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'uni'];
 newdir4 = foodir(1:idcs(end-4));
 dir.spm = [newdir4,'tools/matlab/spm12'];
@@ -75,7 +75,7 @@ if false
 end
 
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
-if false
+if true
     analysisName = 'uni_pulse_iV_cV';
     
     % 1st level

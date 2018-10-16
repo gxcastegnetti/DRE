@@ -7,12 +7,12 @@ close all
 restoredefaultpath
 
 %% analysisName
-% analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons0';
 % analysisName = 'rsa_sl_pulse_choice';
-analysisName = 'dim_sl_ons0';
+% analysisName = 'dim_sl_ons0';
 betaid       = 'rsa_pulse_ons0';
 % betaid       = 'rsa_pulse_choice';
-thisIsDim    = true;
+thisIsDim    = false;
 
 %% directories
 dir.rsaCod = pwd;
@@ -95,7 +95,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if false
+if true
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -235,7 +235,7 @@ for s = 1:length(subs)
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;
-%         figure,imagesc(swrMap(:,:,40)),colorbar
+        % figure,imagesc(swrMap(:,:,40)),colorbar
         
     end
 end
@@ -244,13 +244,13 @@ end
 if thisIsDim
     meanDim = mean(rMaps_all.dim,4);
     meanDim(meanDim <= 1) = nan;
+    
     %     for i = 1:79
     %         figure,imagesc(meanDim(:,:,i)),colorbar
     %     end
     
     % write d(imensionality)-map
-    %     swrMapFile = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
-    dMapMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/uni/uni_pulse_iVCF_cS/2nd_level/choice_valueChosen/spmT_0001.nii');
+    dMapMetadataStruct_sS = spm_vol(swrMapFile);
     dMapMetadataStruct_sS.fname = [dirSl,fs,'dMap.nii'];
     dMapMetadataStruct_sS.descrip =  'd-map';
     dMapMetadataStruct_sS.dim = size(meanDim);
@@ -282,7 +282,9 @@ for m = 1:length(modelNames)
             for z = 1:size(rMaps,3)
                 if mask(x,y,z) == 1
                     [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
-                    t1(x,y,z) = stats.tstat;
+                    if p1(x,y,z) < 0.005
+                        t1(x,y,z) = stats.tstat;
+                    end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
                 end
             end
@@ -324,7 +326,6 @@ for m = 1:length(modelNames)
     pMapMetadataStruct_sS.dim = size(supraThreshMarked_t);
     supraThreshMarked_t = p1 < 0.005;
     spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_t);
-    disp(['significant voxels: ', num2str(sum(supraThreshMarked_t(:)))])
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % create cluster-specific masks %

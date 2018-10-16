@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons2';
-betaid       = 'rsa_pulse_ons2';
+analysisName = 'rsa_sl_pulse_smallSphere';
+betaid       = 'rsa_pulse_ons0';
 
 %% directories
 fs         = filesep;
@@ -72,7 +72,7 @@ RDMs = dre_extractRDMs(dir,subs,taskOrd);
 
 %% searchlight options
 userOptions.voxelSize = [3 3 3];
-userOptions.searchlightRadius = 9;
+userOptions.searchlightRadius = 6;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;

@@ -1,4 +1,4 @@
-function dre_con_i1_c1(dir,anName,subs,taskOrd)
+function dre_con_i1_c1(dir,anName,subs)
 %% function dre_con_i1_c1(dir,anName,subs)
 % computes contrasts of parametric modulators in the case of ONE parametric
 % modulator for imagination and one for choice

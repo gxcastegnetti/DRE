@@ -1,4 +1,4 @@
-function [p,h] = signrank_onesided(x);
+function [p,h] = signrank_onesided(x)
 % returns the p-value from a one-sided Wilcoxon signed rank test comparing
 % against zero. The exact method is chosen to get the p-values with greater
 % resolution.

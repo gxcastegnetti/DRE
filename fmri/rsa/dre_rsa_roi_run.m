@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_ons-1';
-dirBeta = 'rsa_pulse_ons-1';
+analysisName = 'rsa_roi_pulse_front';
+dirBeta = 'rsa_pulse_ons0';
 
 %% directories
 dir.rsaCod = pwd;
@@ -30,28 +30,29 @@ mkdir([dir.out,fs,analysisName])
 
 %% load masks
 % roiNames = {'none'};
-roiNames = {'HPC','mPFC_cS_pulse','verm_iV_pulse','rANG','paraHPC','l_midFC','insula','ACC','PCC','supOcc'};
+% roiNames = {'HPC','mPFC_cS_pulse','verm_iV_pulse','rANG','paraHPC','l_midFC','insula','ACC','PCC','supOcc'};
+roiNames = {'ba10','ba11','ba12','ba24','ba25','ba47'};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% reverse normalise mask to subjective space and coregister
-if false
+if true
     for i = 1:length(roiNames)
         for s = 1:length(subs)
             
             % create folder for subjective masks
-            dirSubjMask = [dir.msk,fs,roiNames{i},'_subj',fs,'SF',num2str(subs(s),'%03d')];
+            dirSubjMask = [dir.mskOut,fs,roiNames{i},'_subj',fs,'SF',num2str(subs(s),'%03d')];
             if ~exist(dirSubjMask,'dir'),mkdir(dirSubjMask),end
             cd(dirSubjMask)
             
             % copy atlas mask to subject's folder
-            fileSource = [dir.msk,fs,'_useNow',fs,roiNames{i},'.nii'];
+            fileSource = [dir.mskOut,fs,'_useNow',fs,roiNames{i},'.nii'];
             copyfile(fileSource)
             
             % select inverse deformation images from T1 segmentation step
-            dirStruct = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
+            dirStruct = [dir.datScn,fs,'SF',num2str(subs(s),'%03d'),fs,'struct'];
             d = spm_select('List', dirStruct, '^iy_.*\.nii$');
             y_file = {[dirStruct fs d]}; clear d dirStruct
             job1{1}.spatial{1}.normalise{1}.write.subj.def = y_file;
@@ -74,7 +75,7 @@ if false
             delete([dirSubjMask,fs,roiNames{i},'.nii'])
             
             % load sample EPI from current subject for coregistration
-            dirFun = [dir.data,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
+            dirFun = [dir.datScn,fs,'SF',num2str(subs(s),'%03d'),fs,'fun',fs,'S4'];
             d = spm_select('List', dirFun, '^uaf.*\.nii$');
             d = d(end-1,:);
             epi_file = [dirFun fs d];
@@ -108,7 +109,7 @@ if true
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end
 end
-
+keyboard
 %% load betas and build response patterns
 userOptions = dre_rsa_userOptions(dir,subs);
 userOptions.analysisName = analysisName;

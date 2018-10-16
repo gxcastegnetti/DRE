@@ -33,8 +33,8 @@ taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 plot_rda_SS = false;
 plot_his_SS = 1;
 plot_den_SS = false;
-hist_fire_color = [0.75 0.5 0];
-hist_boat_color = [0.35 0.4 0.8];
+hist_fire_color = [0.8706 0.4196 0.1569];
+hist_boat_color = [0.2627 0.5255 0.5882];
 
 %% read tables
 objVersion  = 7; % set which column to read according to the object set version
@@ -54,6 +54,7 @@ pri        = nan(length(subs),ntrials);
 allSubs    = [];
 allCond    = [];
 alldV      = [];
+alldV_opp  = [];
 alldF      = [];
 allCho     = [];
 
@@ -376,16 +377,23 @@ for s = 1:length(subs)
     pVal(s).('BonB') = mdl_BonB.Coefficients.pValue(2);
     pVal(s).('BonF') = mdl_BonF.Coefficients.pValue(2);
     
-    % extract slopes (just better interpretation at this stage)
+    % extract slopes
     slopes(s).('FonF') = mdl_FonF.Coefficients.Estimate(2);
     slopes(s).('FonB') = mdl_FonB.Coefficients.Estimate(2);
     slopes(s).('BonB') = mdl_BonB.Coefficients.Estimate(2);
     slopes(s).('BonF') = mdl_BonF.Coefficients.Estimate(2);
     
+    % extract offsets
+    offset(s).('FonF') = mdl_FonF.Coefficients.Estimate(1);
+    offset(s).('FonB') = mdl_FonB.Coefficients.Estimate(1);
+    offset(s).('BonB') = mdl_BonB.Coefficients.Estimate(1);
+    offset(s).('BonF') = mdl_BonF.Coefficients.Estimate(1);
+    
     %% create vectors for table
     allSubs = [allSubs; s*ones(2*length(choice_F),1)];
     allCond = [allCond; ones(length(choice_F),1); 2*ones(length(choice_F),1)];
     alldV   = [alldV; dV_F/50; dV_B/50];
+    alldV_opp   = [alldV_opp; dV_B/50; dV_F/50];
     alldF   = [alldF; dF_F/50; dF_B/50]; %#ok<*AGROW>
     allCho  = [allCho; choice_F(:,3); choice_B(:,3)];
     
@@ -515,29 +523,68 @@ figure
 bar(mean(fooPlot_ChMUnc,1))
 set(gca,'fontsize',12,'xticklabel',{'v','c','f'}),ylabel('r')
 
-%% lme
-keyboard
-% create table
-tblChoice = table(allSubs,allCond,alldV,alldF,allCho);
-tblChoice.Properties.VariableNames = {'sub','cond','dV','dF','choice'};
+%% plot average decision sigmoid
+slope_avg.FonF = mean([slopes.FonF]);
+slope_avg.FonB = mean([slopes.FonB]);
+slope_avg.BonF = mean([slopes.BonF]);
+slope_avg.BonB = mean([slopes.BonB]);
 
-lmeChoice = fitlme(tblChoice,'choice ~ 1 + dV + cond + dF + (1 + dV + cond + dF | sub)');
+offset_avg.FonF = mean([offset.FonF]);
+offset_avg.FonB = mean([offset.FonB]);
+offset_avg.BonF = mean([offset.BonF]);
+offset_avg.BonB = mean([offset.BonB]);
+
+% draw sigmoids with the average parameters
+xspan = -50:0.1:50;
+sigm_avg.FonF = sigmf(xspan,[slope_avg.FonF offset.FonF]);
+sigm_avg.FonB = sigmf(xspan,[slope_avg.FonB offset.FonB]);
+sigm_avg.BonF = sigmf(xspan,[slope_avg.BonF offset.BonF]);
+sigm_avg.BonB = sigmf(xspan,[slope_avg.BonB offset.BonB]);
+
+figure('color',[1 1 1])
+subplot(4,4,[1 2 5 6])
+plot(xspan,sigm_avg.FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
+set(gca,'fontsize',12,'ytick',[],'xtick',[]),ylabel('P(Right)'),xlabel('Value diff.'),ylim([-0.025 1.025])
+
+subplot(4,4,[3 4 7 8])
+plot(xspan,sigm_avg.BonF,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
+set(gca,'fontsize',12,'ytick',[],'xtick',[]),ylabel('P(Right)'),xlabel('Value diff.'),ylim([-0.025 1.025])
+
+subplot(4,4,[9 10 13 14])
+plot(xspan,sigm_avg.FonB,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
+set(gca,'fontsize',12,'ytick',[],'xtick',[]),ylabel('P(Right)'),xlabel('Value diff.'),ylim([-0.025 1.025])
+
+subplot(4,4,[11 12 15 16])
+plot(xspan,sigm_avg.BonB,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
+set(gca,'fontsize',12,'ytick',[],'xtick',[]),ylabel('P(Right)'),xlabel('Value diff.'),ylim([-0.025 1.025])
+
+%% lme
+
+% create table
+tblChoice = table(allSubs,allCond,alldV,alldV_opp,alldF,allCho);
+tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','dF','choice'};
+
+lmeChoice = fitlme(tblChoice,'choice ~ 1 + dV + dVo +  cond + dF + (1 + dV + dVo + cond + dF | sub)');
 
 % plot coefficients
 k_cond = lmeChoice.Coefficients(2,2).Estimate;
-k_dV =   lmeChoice.Coefficients(3,2).Estimate;
-k_dF =   lmeChoice.Coefficients(4,2).Estimate;
+k_dV   = lmeChoice.Coefficients(3,2).Estimate;
+k_dVo  = lmeChoice.Coefficients(4,2).Estimate;
+k_dF   = lmeChoice.Coefficients(5,2).Estimate;
 ce_cond = lmeChoice.Coefficients(2,3).SE;
-ce_dV = lmeChoice.Coefficients(3,3).SE;
-ce_dF = lmeChoice.Coefficients(4,3).SE;
+ce_dV  = lmeChoice.Coefficients(3,3).SE;
+ce_dVo = lmeChoice.Coefficients(4,3).SE;
+ce_dF  = lmeChoice.Coefficients(5,3).SE;
 
-figure('color',[1 1 1])
-errorbar([1 2 3],[k_cond k_dV k_dF],[ce_cond ce_dV ce_dF],'linestyle','none',...
-    'color','k','linewidth',1.5,'capsize',0),hold on
-scatter([1 2 3],[k_cond k_dV k_dF],90,'MarkerEdgeColor',[0 .5 .5],...
-    'MarkerFaceColor',[0 .7 .7]), 
-
+figure('color',[1 1 1]),hold on
 xspan = -10:0.1:10;
 plot(xspan,zeros(length(xspan)),'linestyle',':','color',[0.5 0.5 0.5],'linewidth',2)
-set(gca,'fontsize',14,'xtick',[1 2 3],'xticklabel',{'Goal','dV','dF'}),xlim([0 4]),ylim([-1.5 2])
+set(gca,'fontsize',16,'xtick',[1 2 3 4],'xticklabel',{'Goal','dV same','dV ~same','dF'}),xlim([0.5 4.5]),ylim([-1.5 2])
 ylabel('Coefficient')
+
+% errorbar([1 2 3 4],[k_cond k_dV k_dVo k_dF],[ce_cond ce_dV ce_dVo ce_dF],'linestyle','none',...
+%     'color','k','linewidth',1.5,'capsize',0),hold on
+scatter([1 2 3 4],[k_cond k_dV k_dVo k_dF],180,'MarkerEdgeColor',[0 0 0],...
+    'MarkerFaceColor',[0 0 0])
+
+

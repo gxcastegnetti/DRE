@@ -7,11 +7,11 @@ close all
 restoredefaultpath
 
 %% analysisName
+% analysisName = 'rsa_sl_pulse_ons0';
 analysisName = 'rsa_sl_pulse_ons0';
-% analysisName = 'rsa_sl_pulse_choice';
 % analysisName = 'dim_sl_ons0';
+% betaid       = 'rsa_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
-% betaid       = 'rsa_pulse_choice';
 thisIsDim    = false;
 
 %% directories
@@ -205,11 +205,10 @@ if true
             % smooth %
             %%%%%%%%%%
             
-            disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
-            swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-            
-            % only light smoothing for dimensionality
             if ~thisIsDim
+                disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
+                swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+                
                 spm_smooth(wrMapFile,swrMapFile,[9 9 9]);
             end
             

@@ -158,30 +158,6 @@ for s = 1:length(subs)
         clear job d files
     end
     
-    %% light smoothing on native space (for RSA)
-    if smoothNat
-        disp(['Native smoothing job specification for sub#', num2str(subs(s),'%03d')]);
-        
-        % get normalized scans
-        conCat_files = [];
-        for r = 1:n_sess
-            dirFun = [dirSub,fs,'fun',fs,'S',num2str(r)];
-            d = spm_select('List', dirFun, '^uaf.*\.nii$');
-            files  = cellstr([repmat([dirFun fs],size(d,1),1) d]);
-            conCat_files = [conCat_files; files]; clear d files % concatenate all files over runs
-        end
-        
-        job{1}.spatial{1}.smooth.data                          = conCat_files;
-        job{1}.spatial{1}.smooth.fwhm                          = [3 3 3]; % <--- light smoothing
-        job{1}.spatial{1}.smooth.dtype                         = 0;
-        matlabbatch{1}.spm.spatial.smooth.prefix               = 's';
-        
-        % save and run job
-        disp(['Smoothing sub#',num2str(subs(s),'%03d'),'...'])
-        d = spm_jobman('run',job);
-        clear job
-    end
-    
     %% Unified segmentation (new segment)
     if segment
         disp(['Segmentation job specification for sub#', num2str(subs(s),'%03d'),'...']);

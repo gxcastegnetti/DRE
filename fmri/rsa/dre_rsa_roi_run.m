@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_front';
+analysisName = 'rsa_roi_pulse_cxt';
 dirBeta = 'rsa_pulse_ons0';
 
 %% directories
@@ -31,14 +31,15 @@ mkdir([dir.out,fs,analysisName])
 %% load masks
 % roiNames = {'none'};
 % roiNames = {'HPC','mPFC_cS_pulse','verm_iV_pulse','rANG','paraHPC','l_midFC','insula','ACC','PCC','supOcc'};
-roiNames = {'ba10','ba11','ba12','ba24','ba25','ba47'};
+roiNames = {'ba10','ba11','ba24','ba25','ba47','hpc'};
+roiNames = {'sl_cxt'};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% reverse normalise mask to subjective space and coregister
-if true
+if false
     for i = 1:length(roiNames)
         for s = 1:length(subs)
             
@@ -100,16 +101,16 @@ if true
 end
 
 %% 1st level
-if true
+if false
     for i = 1:length(roiNames)
         nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
         bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = -1;
+        timing.iOns = 0;
         timing.iDur = 0;
         dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
     end
 end
-keyboard
+
 %% load betas and build response patterns
 userOptions = dre_rsa_userOptions(dir,subs);
 userOptions.analysisName = analysisName;
@@ -124,4 +125,3 @@ for i = 1:length(roiNames)
     responsePatterns.(roiNames{i}) = fullBrainVols; clear fullBrainVols
 end
 save([dir.out,fs,analysisName,fs,'rsaPatterns_roi'],'responsePatterns','-v7.3')
-

@@ -7,7 +7,7 @@ function spmMat_name = dre_level1_rsa(dir,anName,subs,bData,timing,maskName)
 %   subs: subjects
 %   bData: behavioural data
 % ~~~
-% GX Castegnetti --- start ~ 08.08.18 --- last ~ 18.08.18
+% GX Castegnetti --- 2018
 
 fs = filesep;
 

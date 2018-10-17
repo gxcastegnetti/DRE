@@ -72,7 +72,7 @@ RDMs = dre_extractRDMs(dir,subs,taskOrd);
 
 %% searchlight options
 userOptions.voxelSize = [3 3 3];
-userOptions.searchlightRadius = 6;
+userOptions.searchlightRadius = 9;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;

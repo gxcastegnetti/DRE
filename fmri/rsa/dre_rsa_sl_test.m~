@@ -184,13 +184,14 @@ if true
             disp(['Normalising sub#', num2str(subs(s),'%03d'),' - MASK ',modelName])
             d = spm_jobman('run',job_mask);
             clear job
-                        
-            % read them back in
-            wMaskFile = [dir.out,fs,'sl',fs,'_nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
-            mask_sS = spm_read_vols(spm_vol(wMaskFile));
             
             % normalise the mask only once
             if m == 1
+                
+                % read them back in
+                wMaskFile = [dir.out,fs,'sl',fs,'_nS_masks_gm',fs,'wnS_gm_SF',num2str(subs(s),'%03d'),'.nii'];
+                mask_sS = spm_read_vols(spm_vol(wMaskFile));
+                
                 % Fix the normalisation of the mask
                 maskMetadataStruct_sS = spm_vol(wMaskFile);
                 maskMetadataStruct_sS.fname = wMaskFile;
@@ -219,19 +220,15 @@ if true
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
             % re-apply mask after smoothing %
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
-            % take smoothed data
             smoothMetadataStruct_sS = spm_vol(swrMapFile);
-            smoothData = spm_read_vols(smoothMetadataStruct_sS);
-            
-            % apply mask
-            smoothData(mask_sS == 0) = nan;
-            
-            % write again
-            spm_write_vol(smoothMetadataStruct_sS, smoothData);
+            spm_write_vol(smoothMetadataStruct_sS, t1);
             
         end
     end
+end
+
+for i = 1:79
+    figure,imagesc(nS_mask(:,:,i))
 end
 
 %% load and concatenate files
@@ -248,6 +245,7 @@ for s = 1:length(subs)
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));
+        swrMap(swrMap == 0) = NaN;
         
         % concatenate across subjects
         rMaps_all.(modelName)(:,:,:,s) = swrMap;

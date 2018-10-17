@@ -127,7 +127,7 @@ for r = 1:size(RDMs_data,1)
         
         scores = rL2(m,:,r);
         [h,p(r,m),~,~] = ttest(scores);
-        if m == 4, keyboard,end
+        if r == 4, keyboard,end
     end
 end
 

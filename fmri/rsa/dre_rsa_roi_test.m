@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_cxt';
+analysisName = 'rsa_roi_pulse_sphere';
 
 %% directories
 dir.rsaCod = pwd;
@@ -61,7 +61,7 @@ for i = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt_acc2val, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs

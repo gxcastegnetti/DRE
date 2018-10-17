@@ -91,7 +91,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if true
+if false
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -214,8 +214,12 @@ if true
             if ~thisIsDim
                 disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
                 swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-                
                 spm_smooth(wrMapFile,swrMapFile,[9 9 9]);
+                
+            else % lighter smoothing for dimensionality
+                disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
+                swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+                spm_smooth(wrMapFile,swrMapFile,[3 3 3]);
             end
             
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -279,7 +283,7 @@ if thisIsDim
 end
 
 %% statistics
-for m = 1:length(modelNames)
+for m = 4:length(modelNames)
     
     modelName = modelNames{m};
     
@@ -352,7 +356,7 @@ for m = 1:length(modelNames)
     % create cluster-specific masks %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false % <------- false
+%     if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && true % <------- true
         
         % find connected clusters
         k = 1;
@@ -378,6 +382,6 @@ for m = 1:length(modelNames)
                 k = k+1;
             end
         end, clear cluster_foo i k L
-    end
+%     end
     
 end

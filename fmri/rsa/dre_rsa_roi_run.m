@@ -33,7 +33,7 @@ mkdir([dir.out,fs,analysisName])
 % roiNames = {'none'};
 % roiNames = {'HPC','mPFC_cS_pulse','verm_iV_pulse','rANG','paraHPC','l_midFC','insula','ACC','PCC','supOcc'};
 roiNames = {'ba10','ba11','ba24','ba25','ba47','hpc'};
-roiNames = {'sl_cxt_1'};
+roiNames = {'sl_cxt_2'};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];

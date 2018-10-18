@@ -41,7 +41,7 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
 %% mask brains
-roiNames = {'left_post_hpc_9'};
+roiNames = {'sl_cxt_2'};
 
 filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
 load(filePatterns,'responsePatterns')
@@ -101,6 +101,7 @@ for s = 1:size(RDMs_data,2)
         b = permute(unwrapRDMs(vectorizeRDM(RDMs_model(m,s).RDM)),[3 2 1]);
         rL2(m,s) = corr(b',a','rows','pairwise','type','Spearman');
         rL2(m,s) = fisherTransform(rL2(m,s));
+        if s == 21, keyboard, end
     end
 end
 figure

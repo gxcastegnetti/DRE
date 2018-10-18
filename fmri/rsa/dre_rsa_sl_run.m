@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_smallSphere';
+analysisName = 'rsa_sl_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories
@@ -85,6 +85,12 @@ mat_ID = [diag(ones(120,1)), diag(ones(120,1));
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+    
+    %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    masktestfile = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/sl_cxt_2_subj/SF004/rwsl_cxt_2.nii';
+    binaryMask = spm_read_vols(spm_vol(masktestfile));
+    %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
     model(1).name = 'val';

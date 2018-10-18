@@ -229,16 +229,15 @@ if true
             % take smoothed-norm and norm data
             swrMetadataStruct_sS = spm_vol(swrMapFile);
             wrMetadataStruct_sS = spm_vol(wrMapFile);
+            rMetadataStruct_sS = spm_vol(rMapFile);
             swrData = spm_read_vols(swrMetadataStruct_sS);
             wrData = spm_read_vols(wrMetadataStruct_sS);
             
             % apply mask
             swrData(mask_sS == 0) = nan;
-            wrData(mask_sS == 0) = nan;
             
             % write again
             spm_write_vol(swrMetadataStruct_sS, swrData);
-            spm_write_vol(swrMetadataStruct_sS, wrData);
             
         end
     end

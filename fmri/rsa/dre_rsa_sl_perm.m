@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-% analysisName = 'rsa_sl_pulse_choice';
-analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_choice';
+% analysisName = 'rsa_sl_pulse_ons0';
 
 %% directories
 dir.rsaCod = pwd;
@@ -28,7 +28,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% specify model(s) to test
-models = {'oid'};
+models = {'dval'};
 
 %% run batch for each model
 for m = 1:length(models)

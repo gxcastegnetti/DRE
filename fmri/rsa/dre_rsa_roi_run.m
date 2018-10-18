@@ -30,10 +30,8 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% load masks
-% roiNames = {'none'};
-% roiNames = {'HPC','mPFC_cS_pulse','verm_iV_pulse','rANG','paraHPC','l_midFC','insula','ACC','PCC','supOcc'};
-roiNames = {'ba10','ba11','ba24','ba25','ba47','hpc'};
-roiNames = {'sl_cxt_2'};
+roiNames = {'sphere_6--4_1_60','sphere_6--4_26_50','sphere_6--4_53_29','sphere_6--4_62_5','sphere_6--4_36_-17',...
+    'sphere_6--4_2_40','sphere_6--4_17_30','sphere_6--4_36_19','sphere_6--4_42_8','sphere_6--4_27_-8'};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
@@ -100,29 +98,3 @@ if true
         end
     end
 end
-
-%% 1st level
-if false
-    for i = 1:length(roiNames)
-        nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
-        bData = dre_extractData(dir,subs,taskOrd,0);
-        timing.iOns = 0;
-        timing.iDur = 0;
-        dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiNames{i});
-    end
-end
-
-%% load betas and build response patterns
-userOptions = dre_rsa_userOptions(dir,subs);
-userOptions.analysisName = analysisName;
-userOptions.rootPath = dir.out;
-userOptions.forcePromptReply = 'r';
-
-for i = 1:length(roiNames)
-    nameBeta = ['level1',fs,dirBeta,fs,roiNames{i}];
-    dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,nameBeta];
-    userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-    [fullBrainVols, ~] = fMRIDataPreparation('SPM', userOptions);
-    responsePatterns.(roiNames{i}) = fullBrainVols; clear fullBrainVols
-end
-save([dir.out,fs,analysisName,fs,'rsaPatterns_roi'],'responsePatterns','-v7.3')

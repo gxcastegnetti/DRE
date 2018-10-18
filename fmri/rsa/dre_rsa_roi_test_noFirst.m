@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_roi_pulse_sphere';
+analysisName = 'rsa_roi_pulse_path';
 dirBeta = 'rsa_pulse_ons0';
 
 %% directories
@@ -40,12 +40,13 @@ userOptions.analysisName = analysisName;
 userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
-%% mask brains
-roiNames = {'sl_cxt_2'};
-
+%% load masks
 filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
 load(filePatterns,'responsePatterns')
 
+%% find roi names
+roiNames = {'sphere_6--4_1_60','sphere_6--4_26_50','sphere_6--4_53_29','sphere_6--4_36_-17',...
+    'sphere_6--4_2_40','sphere_6--4_17_30','sphere_6--4_36_19','sphere_6--4_42_8','sphere_6--4_27_-8'};
 
 for r = 1:length(roiNames)
     for s = 1:length(subs)
@@ -57,17 +58,43 @@ for r = 1:length(roiNames)
         mask = reshape(mask, 1, []);
         mask = logical(mask');
         
-        respPatt{s} = responsePatterns.(subjName)(mask,:);
+        respPatt_foo = responsePatterns.(subjName)(mask,:);
+        respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
     end
 end
 
 
+%% find roi names
+roiNames = {'sphere_6--4_1_60','sphere_6--4_26_50','sphere_6--4_53_29','sphere_6--4_36_-17',...
+    'sphere_6--4_2_40','sphere_6--4_17_30','sphere_6--4_36_19','sphere_6--4_42_8','sphere_6--4_27_-8'};
+
+%% create structures of rearranged response patterns
+respPatt_acc2ses = respPatt;
+respPatt_acc2val = respPatt;
+respPatt_acc2fam = respPatt;
+
+for r = 1:length(roiNames)
+    for s = 1:length(subs)
+        subjName = ['SF',num2str(subs(s),'%03d')];
+        respPatt_acc2ses.(['roi',num2str(r)]).(subjName) = respPatt_acc2ses.(['roi',num2str(r)]).(subjName)(:,ordData(subs(s)).norm2sessions);
+        respPatt_acc2val.(['roi',num2str(r)]).(subjName) = respPatt_acc2val.(['roi',num2str(r)]).(subjName)(:,ordData(subs(s)).norm2val_disc);
+        respPatt_acc2fam.(['roi',num2str(r)]).(subjName) = respPatt_acc2fam.(['roi',num2str(r)]).(subjName)(:,ordData(subs(s)).norm2fam_disc);
+    end
+end
+
+%% construct RDMs
+RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
+RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
+
+%% plot RDMs
+figureRDMs(RDM_average,userOptions)
+
 %% construct RDMs
 % RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
 
-for s = 1:28
-    RDMs_data{s} = squareform(pdist(respPatt{s}', 'correlation'));
-end
+% for s = 1:28
+%     RDMs_data{s} = squareform(pdist(respPatt{s}', 'correlation'));
+% end
 
 %% extract models of value, confidence, familiarity, price
 RDMs_models = dre_extractRDMs(dir,subs,taskOrd);
@@ -87,38 +114,68 @@ for s = 1:length(subs)
     RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
     RDMs_model(4,s).color = [0 1 0];
     
-%     for m = 1:4
-%         modelRDMs_ltv(m,:) = permute(unwrapRDMs(vectorizeRDMs(RDMs_model(m,s))), [3 2 1]);
-%     end
+    %     for m = 1:4
+    %         modelRDMs_ltv(m,:) = permute(unwrapRDMs(vectorizeRDMs(RDMs_model(m,s))), [3 2 1]);
+    %     end
 end
 
 %% for every region and sub, correlate RDM and model
 scoreNames = {'val','fam','ID','cxt'};
-
-for s = 1:size(RDMs_data,2)
-    for m = 1:size(RDMs_model,1)
-        a = vectorizeRDM(RDMs_data{s});
-        b = permute(unwrapRDMs(vectorizeRDM(RDMs_model(m,s).RDM)),[3 2 1]);
-        rL2(m,s) = corr(b',a','rows','pairwise','type','Spearman');
-        rL2(m,s) = fisherTransform(rL2(m,s));
-        if s == 21, keyboard, end
+h = figure;
+for r = 1:length(roiNames)
+    for s = 1:size(RDMs_data,2)
+        for m = 1:size(RDMs_model,1)
+            a = vectorizeRDM(RDMs_data(r,s).RDM);
+            b = permute(unwrapRDMs(vectorizeRDM(RDMs_model(m,s).RDM)),[3 2 1]);
+            rL2(m,s,r) = corr(b',a','rows','pairwise','type','Spearman');
+            rL2(m,s,r) = fisherTransform(rL2(m,s,r));
+        end
     end
+    figure(h),subplot(2,5,r)
+    bar(mean(rL2(:,:,r),2)),set(gca,'xticklabel',scoreNames)
+    set(gca,'fontsize',16)
+    ylim([-0.01 0.01]),title(roiNames{r})
 end
-figure
-bar(mean(rL2(:,:,r),2)),set(gca,'xticklabel',scoreNames)
-set(gca,'fontsize',16)
-ylim([-0.01 0.01])
+keyboard
 
 %% ttest
-for m = 1:size(RDMs_model,1)
-    
-    scores = rL2(m,:,r);
-    [h,p(m),~,~] = ttest(scores);
+for r = 1:length(roiNames)
+    for m = 1:size(RDMs_model,1)
+        scores = rL2(m,:,r);
+        [h,p(m,r),~,~] = ttest(scores);
+    end
 end
 
 %%
 
+subsBest = [23 18 5 3 21 11 10 20 17 28 24  1 15 22];
+subsWors = [2  14 6 4  7  9 27 26 12 16 19 13  8 25];
 
+bestVsWorsePlot = figure('color',[1 1 1]);
+x_err = [0.85 1.15 1.85 2.15 2.85 3.15 3.85 4.15];
+for r = 1:size(RDMs_data,1)
+    
+    % compute mean and sem for best and worse perf subs
+    meanBest = mean(rL2(:,subsBest,r),2);
+    meanWors = mean(rL2(:,subsWors,r),2);
+    semBest = std(rL2(:,subsBest,r)')/sqrt(length(subs));
+    semWors = std(rL2(:,subsWors,r)')/sqrt(length(subs));
+    
+    % plot bars
+    figure(bestVsWorsePlot)
+    subplot(4,3,r)
+    bar([meanBest,meanWors])
+    if r == 1,legend('best','worse','location','northwest'),end
+    ylim([-0.008 0.009])
+    set(gca,'xticklabel',scoreNames,'fontsize',14),hold on
+    
+    % plot error bars
+    foo_mean = [meanBest';meanWors'];
+    foo_mean = foo_mean(:);
+    foo_err = [semBest',semWors'];
+    foo_err = foo_err(:);
+    errorbar(x_err,foo_mean,foo_err,'linestyle','none','color','k')
+end
 
 
 

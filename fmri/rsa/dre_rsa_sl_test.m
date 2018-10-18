@@ -91,7 +91,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if true
+if false
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -238,7 +238,7 @@ if true
             
             % write again
             spm_write_vol(swrMetadataStruct_sS, swrData);
-            spm_write_vol(swrMetadataStruct_sS, wrData);
+            spm_write_vol(wrMetadataStruct_sS, wrData);
             
         end
     end
@@ -311,7 +311,7 @@ for m = 1:length(modelNames)
                 if impMask(x,y,z)
                     [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
                     %                     if x == 32 && y == 60 && z == 28, keyboard, end
-                    if p1(x,y,z) < 0.005
+                    if p1(x,y,z) < 0.5
                         t1(x,y,z) = stats.tstat;
                     end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
@@ -360,7 +360,7 @@ for m = 1:length(modelNames)
     % create cluster-specific masks %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-%     if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && true % <------- true
+    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false % <------- true
         
         % find connected clusters
         k = 1;
@@ -386,6 +386,10 @@ for m = 1:length(modelNames)
                 k = k+1;
             end
         end, clear cluster_foo i k L
-%     end
+    end
     
+end
+for i = 1:79
+    figure,
+    imagesc(t1(:,:,i)),colorbar
 end

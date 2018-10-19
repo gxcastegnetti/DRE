@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_allModels';
+analysisName = 'rsa_sl_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories
@@ -83,11 +83,7 @@ searchlightOptions.nConditions = 240;
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
           diag(ones(120,1)), diag(ones(120,1))];
 for s = 1:length(subs)
-    
-    % update user
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
-    
-    % prepare mask
     binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
@@ -141,10 +137,9 @@ for s = 1:length(subs)
     model(13).RDM = RDMs{s}.conMed;
     model(13).color = [0 1 0];
     model(14).name = 'famMed';
-    model(14).RDM = RDMs{s}.famMed;
+    model(14).RDM = RDMs{s}.fam;
     model(14).color = [0 1 0];
     
-    % run searchlight
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

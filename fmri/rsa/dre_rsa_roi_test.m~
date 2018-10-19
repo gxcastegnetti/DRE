@@ -45,8 +45,7 @@ filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePa
 load(filePatterns,'responsePatterns')
 
 %% find roi names
-roiNames = {'sphere_6--4_1_60','sphere_6--4_26_50','sphere_6--4_53_29','sphere_6--4_36_-17',...
-    'sphere_6--4_2_40','sphere_6--4_17_30','sphere_6--4_36_19','sphere_6--4_42_8','sphere_6--4_27_-8'};
+roiNames = {'sphere_10-0_28_-14','sphere_10-0_41_10','sphere_10-0_48_12','sphere_10-0_32_34','sphere_10-0_7_43','sphere_10-0_18_48'};
 
 for r = 1:length(roiNames)
     for s = 1:length(subs)
@@ -62,11 +61,6 @@ for r = 1:length(roiNames)
         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
     end
 end
-
-
-%% find roi names
-roiNames = {'sphere_6--4_1_60','sphere_6--4_26_50','sphere_6--4_53_29','sphere_6--4_36_-17',...
-    'sphere_6--4_2_40','sphere_6--4_17_30','sphere_6--4_36_19','sphere_6--4_42_8','sphere_6--4_27_-8'};
 
 %% create structures of rearranged response patterns
 respPatt_acc2ses = respPatt;
@@ -89,13 +83,6 @@ RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 %% plot RDMs
 figureRDMs(RDM_average,userOptions)
 
-%% construct RDMs
-% RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
-
-% for s = 1:28
-%     RDMs_data{s} = squareform(pdist(respPatt{s}', 'correlation'));
-% end
-
 %% extract models of value, confidence, familiarity, price
 RDMs_models = dre_extractRDMs(dir,subs,taskOrd);
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
@@ -104,19 +91,19 @@ for s = 1:length(subs)
     RDMs_model(1,s).name = 'val';
     RDMs_model(1,s).RDM = RDMs_models{s}.val; %#ok<*SAGROW>
     RDMs_model(1,s).color = [0 1 0];
-    RDMs_model(2,s).name = 'fam';
-    RDMs_model(2,s).RDM = RDMs_models{s}.fam;
+    RDMs_model(2,s).name = 'con';
+    RDMs_model(2,s).RDM = RDMs_models{s}.con;
     RDMs_model(2,s).color = [0 1 0];
-    RDMs_model(3,s).name = 'oid';
-    RDMs_model(3,s).RDM = 1-mat_ID;
+    RDMs_model(3,s).name = 'fam';
+    RDMs_model(3,s).RDM = RDMs_models{s}.fam;
     RDMs_model(3,s).color = [0 1 0];
-    RDMs_model(4,s).name = 'cxt';
-    RDMs_model(4,s).RDM = RDMs_models{s}.cxt;
+    RDMs_model(4,s).name = 'oid';
+    RDMs_model(4,s).RDM = 1-mat_ID;
     RDMs_model(4,s).color = [0 1 0];
+    RDMs_model(5,s).name = 'cxt';
+    RDMs_model(5,s).RDM = RDMs_models{s}.cxt;
+    RDMs_model(5,s).color = [0 1 0];
     
-    %     for m = 1:4
-    %         modelRDMs_ltv(m,:) = permute(unwrapRDMs(vectorizeRDMs(RDMs_model(m,s))), [3 2 1]);
-    %     end
 end
 
 %% for every region and sub, correlate RDM and model
@@ -147,7 +134,7 @@ for r = 1:length(roiNames)
 end
 
 %%
-
+keyboard
 subsBest = [23 18 5 3 21 11 10 20 17 28 24  1 15 22];
 subsWors = [2  14 6 4  7  9 27 26 12 16 19 13  8 25];
 
@@ -166,15 +153,15 @@ for r = 1:size(RDMs_data,1)
     subplot(4,3,r)
     bar([meanBest,meanWors])
     if r == 1,legend('best','worse','location','northwest'),end
-    ylim([-0.008 0.009])
+    ylim([-0.015 0.009])
     set(gca,'xticklabel',scoreNames,'fontsize',14),hold on
     
     % plot error bars
-    foo_mean = [meanBest';meanWors'];
-    foo_mean = foo_mean(:);
-    foo_err = [semBest',semWors'];
-    foo_err = foo_err(:);
-    errorbar(x_err,foo_mean,foo_err,'linestyle','none','color','k')
+%     foo_mean = [meanBest';meanWors'];
+%     foo_mean = foo_mean(:);
+%     foo_err = [semBest',semWors'];
+%     foo_err = foo_err(:);
+%     errorbar(x_err,foo_mean,foo_err,'linestyle','none','color','k')
 end
 
 

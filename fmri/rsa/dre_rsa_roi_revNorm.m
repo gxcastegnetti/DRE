@@ -30,8 +30,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% load masks
-roiNames = {'sphere_6--4_1_60','sphere_6--4_26_50','sphere_6--4_53_29','sphere_6--4_62_5','sphere_6--4_36_-17',...
-    'sphere_6--4_2_40','sphere_6--4_17_30','sphere_6--4_36_19','sphere_6--4_42_8','sphere_6--4_27_-8'};
+roiNames = {'sphere_10-0_28_-14','sphere_10-0_41_10','sphere_10-0_48_12','sphere_10-0_32_34','sphere_10-0_7_43','sphere_10-0_18_48'};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];

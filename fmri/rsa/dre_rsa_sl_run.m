@@ -60,7 +60,7 @@ end
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
-if ~exist(filePatterns,'file')
+if ~exist(filePatterns,'file') && 
     [~, responsePatterns] = fMRIDataPreparation('SPM', userOptions);
     save(filePatterns,'responsePatterns','-v7.3')
 else
@@ -85,12 +85,6 @@ mat_ID = [diag(ones(120,1)), diag(ones(120,1));
 for s = 1:length(subs)
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
-    
-    %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    masktestfile = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/sl_cxt_2_subj/SF004/rwsl_cxt_2.nii';
-    binaryMask = spm_read_vols(spm_vol(masktestfile));
-    %% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
     binaryMask = logical(binaryMask);
     thisSubject = userOptions.subjectNames{s};
     model(1).name = 'val';

@@ -40,13 +40,14 @@ userOptions.analysisName = analysisName;
 userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
-%% load masks
+%% load response patterns and apply mask
 filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
 load(filePatterns,'responsePatterns')
 
-%% find roi names
+% roi names
 roiNames = {'sphere_10-0_28_-14','sphere_10-0_41_10','sphere_10-0_48_12','sphere_10-0_32_34','sphere_10-0_7_43','sphere_10-0_18_48'};
 
+% apply mask
 for r = 1:length(roiNames)
     for s = 1:length(subs)
         subjName = ['SF',num2str(subs(s),'%03d')];
@@ -77,7 +78,7 @@ for r = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2ses, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs
@@ -103,7 +104,6 @@ for s = 1:length(subs)
     RDMs_model(5,s).name = 'cxt';
     RDMs_model(5,s).RDM = RDMs_models{s}.cxt;
     RDMs_model(5,s).color = [0 1 0];
-    
 end
 
 %% for every region and sub, correlate RDM and model

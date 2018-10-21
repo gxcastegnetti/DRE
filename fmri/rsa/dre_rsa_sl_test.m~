@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_allModels';
+analysisName = 'rsa_sl_pulse_ons0';
 % analysisName = 'rsa_sl_pulse_choice';
 % analysisName = 'dim_sl_ons0';
 betaid       = 'rsa_pulse_ons0';
@@ -72,6 +72,7 @@ end
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
+% modelNames = {'valMed','famMed'};
 
 if thisIsDim
     modelNames = {'dim'};
@@ -90,7 +91,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if true
+if false
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -328,9 +329,6 @@ for m = 1:length(modelNames)
             subplot(1,2,2),imagesc(p1(:,:,i)<0.05)
         end
     end
-    
-    % update user
-    disp(['model: ',modelName])
     
     % apply FDR correction
     pThrsh_t  = FDRthreshold(p1,0.05,impMask);

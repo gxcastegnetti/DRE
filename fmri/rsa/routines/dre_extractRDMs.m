@@ -16,7 +16,7 @@ dirData = [dir.dre,fs,'data'];
 
 %% read objects
 objs        = readtable([dir.behDat,fs,'Objects.csv']);
-objsName    = table2cell(objs(:,2)); clear foo objs
+clear foo objs
 
 %% loop over subjects and sessions
 for s = 1:length(subs)

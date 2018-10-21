@@ -87,14 +87,11 @@ for subject = 1:nSubjects
 
         % vectorise it
         brainVector = reshape(brainMatrix, 1, []);
-        brainVector_full = brainVector;
-        brainVector = brainVector(~isnan(brainVector));
         
         % put everyting in a matrix (nVoxels x nConditions)
-        subjectMatrix(:, condition, 1) = brainVector;
-        subjectMatrix_full(:, condition, 1) = brainVector_full; %#ok<*AGROW>
+        subjectMatrix(:, condition, 1) = brainVector; %#ok<*AGROW>
         
-        clear brainMatrix brainVector brainVector_full;
+        clear brainMatrix brainVector;
         
         fprintf('.');
         
@@ -102,14 +99,12 @@ for subject = 1:nSubjects
     
     % For each subject, record the vectorised brain scan in a subject-name-indexed structure
     fullBrainVols.(thisSubject) = subjectMatrix; clear subjectMatrix;
-    fullBrainVols_full.(thisSubject) = subjectMatrix_full; clear subjectMatrix_full;
     
     fprintf('\b:\n');
     
 end
 
 varargout{1} = fullBrainVols;
-varargout{2} = fullBrainVols_full;
 
 cd(returnHere); % Go back (probably will never have left)
 

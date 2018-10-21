@@ -61,7 +61,7 @@ dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none']
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
 if ~exist(filePatterns,'file') 
-    [~, responsePatterns] = fMRIDataPreparation('SPM', userOptions);
+    responsePatterns = fMRIDataPreparation('SPM', userOptions);
     save(filePatterns,'responsePatterns','-v7.3')
 else
     load(filePatterns,'responsePatterns')

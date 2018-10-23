@@ -42,33 +42,6 @@ userOptions.analysisName = analysisName;
 userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
-%% mask <- should be 79x95x79 because we put correlation map in MNI
-
-% reslice mask to the size of the correlation maps, if needed
-if ~exist([dir.mskOut,fs,'rgm.nii'],'file')
-    
-    % load sample EPI from one subject for coregistration
-    dirFun = [dir.datScn,fs,'SF039',fs,'fun',fs,'S4'];
-    d = spm_select('List', dirFun, '^wuaf.*\.nii$');
-    d = d(end-1,:);
-    epi_file = [dirFun fs d];
-    job_rs{1}.spm.spatial.coreg.write.ref = {epi_file};
-    
-    % select mask to coregister
-    job_rs{1}.spm.spatial.coreg.write.source = {[dir.mskOut,fs,'gm.nii']};
-    
-    % defaults
-    job_rs{1}.spm.spatial.coreg.write.roptions.interp = 4;
-    job_rs{1}.spm.spatial.coreg.write.roptions.wrap = [0 0 0];
-    job_rs{1}.spm.spatial.coreg.write.roptions.mask = 0;
-    job_rs{1}.spm.spatial.coreg.write.roptions.prefix = 'r';
-    
-    % run job
-    disp('Coregistering grey matter mask')
-    spm_jobman('run',job_rs);
-    clear job d epi_file
-end
-
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};

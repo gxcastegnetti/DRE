@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_geom_test_1';
+analysisName = 'geom_test_1';
 
 %% directories
 fs         = filesep;
@@ -18,7 +18,7 @@ dir.uniCod = [dir.dre,fs,'codes',fs,'fmri',fs,'uni'];
 dir.rsaCod = [dir.dre,fs,'codes',fs,'fmri',fs,'rsa'];
 dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
 dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
-dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
+dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'geom',fs,'sl'];
 dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 
 % paths

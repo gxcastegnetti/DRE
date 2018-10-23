@@ -107,7 +107,7 @@ if monitor
 end
 
 %% THE BIG LOOP! %%
-
+geomDiff = nan([size(mask),7140]);
 for cMappingVoxI = 1:nVox_mappingMask_request
     
     if mod(cMappingVoxI,1000)==0
@@ -146,7 +146,7 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     searchlightRDM_B = corr(t_B(:,cIllValidVox_YspaceINDs)');
     
     % take difference of correlations across context and within context
-    geomDiff(x,y,z,:) = single(vectorizeRDM(searchlightRDM_F - searchlightRDM_B));
+    geomDiff(x,y,z,:) = abs(single(vectorizeRDM(searchlightRDM_F - searchlightRDM_B)));
 end
 
 %% END OF THE BIG LOOP! %%

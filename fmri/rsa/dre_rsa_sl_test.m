@@ -7,11 +7,11 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_allModels';
+% analysisName = 'rsa_sl_allModels';
 % analysisName = 'rsa_sl_pulse_choice';
-% analysisName = 'dim_sl_ons0';
+analysisName = 'dim_sl_ons0';
 betaid       = 'rsa_pulse_ons0';
-thisIsDim    = false;
+thisIsDim    = true;
 
 %% directories
 dir.rsaCod = pwd;

@@ -109,15 +109,7 @@ end
 %% THE BIG LOOP! %%
 
 for cMappingVoxI = 1:nVox_mappingMask_request
-    
-    if mod(cMappingVoxI,1000)==0
-        if monitor
-            progressMonitor(cMappingVoxI, nVox_mappingMask_request, 'Searchlight mapping Mahalanobis distance...', h_progressMonitor);
-        else
-            fprintf('.');
-        end
-    end
-    
+
     [x y z] = ind2sub(volSize_vox,mappingMask_request_INDs(cMappingVoxI));
     
     % compute (sub)indices of (vox)els (c)urrently (ill)uminated by the spherical searchlight
@@ -125,8 +117,8 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     
     % exclude out-of-volume voxels
     outOfVolIs = (cIllVoxSUBs(:,1)<1 | cIllVoxSUBs(:,1)>volSize_vox(1)|...
-        cIllVoxSUBs(:,2)<1 | cIllVoxSUBs(:,2)>volSize_vox(2)|...
-        cIllVoxSUBs(:,3)<1 | cIllVoxSUBs(:,3)>volSize_vox(3));
+                  cIllVoxSUBs(:,2)<1 | cIllVoxSUBs(:,2)>volSize_vox(2)|...
+                  cIllVoxSUBs(:,3)<1 | cIllVoxSUBs(:,3)>volSize_vox(3));
     
     cIllVoxSUBs = cIllVoxSUBs(~outOfVolIs,:);
     
@@ -141,12 +133,13 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     n(x,y,z) = length(cIllValidVox_YspaceINDs);
     
     if n(x,y,z) < 2, continue; end%if % This stops the function crashing if it accidentally encounters an out-of-brain floating voxel (these can occur if, for example, skull stripping fails)
-    
-    searchlightRDM_F = corr(t_F(:,cIllValidVox_YspaceINDs)');
-    searchlightRDM_B = corr(t_B(:,cIllValidVox_YspaceINDs)');
+        
+    searchlightRDM_F = corr(t_F(:,cIllValidVox_YspaceINDs)');   
+    searchlightRDM_B = corr(t_B(:,cIllValidVox_YspaceINDs)');   
     
     % take difference of correlations across context and within context
-    geomDiff(x,y,z,:) = single(vectorizeRDM(searchlightRDM_F - searchlightRDM_B));
+    geomDiff(x,y,z,:) = vectorizeRDM(searchlightRDM_F - searchlightRDM_B);
+    keyboard
 end
 
 %% END OF THE BIG LOOP! %%

@@ -45,7 +45,10 @@ filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePa
 load(filePatterns,'responsePatterns')
 
 % roi names
-roiNames = {'sphere_10-0_28_-14','sphere_10-0_41_10','sphere_10-0_48_12','sphere_10-0_32_34','sphere_10-0_7_43','sphere_10-0_18_48'};
+roiNames = {'sphere_6--4_-40_48','sphere_6--4_-28_46','sphere_6--4_-16_46','sphere_6--4_-4_42','sphere_6--4_8_38',...
+    'sphere_6--4_20_31','sphere_6--4_32_24','sphere_6--4_44_12'};
+
+roiNames = {'sphere_8-10_13_-17'};
 
 % apply mask
 for r = 1:length(roiNames)

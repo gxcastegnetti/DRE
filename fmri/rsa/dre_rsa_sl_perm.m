@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_choice';
+analysisName = 'rsa_sl_allModels';
 % analysisName = 'rsa_sl_pulse_ons0';
 
 %% directories
@@ -28,7 +28,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% specify model(s) to test
-models = {'dval'};
+models = {'conMed'};
 
 %% run batch for each model
 for m = 1:length(models)

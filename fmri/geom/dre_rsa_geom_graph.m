@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'geom_test_1';
+analysisName = 'geom_F';
 
 %% directories
 fs         = filesep;
@@ -36,6 +36,7 @@ taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
 %% properties
 propNames = {'distAvg','distVar','distSke','distKur','distVarCoeff'};
+propNames = {'effSize'};
 
 %% loop over subjects
 if true
@@ -52,11 +53,12 @@ if true
         load([dir.out,fs,analysisName,fs,'geom_SF',num2str(subs(s),'%03d')],'geomDiff');
         
         %% compute properties
-        distProp{1} = mean(geomDiff,4);
-        distProp{2} = var(geomDiff,0,4);
-        distProp{3} = skewness(geomDiff,1,4);
-        distProp{4} = kurtosis(geomDiff,1,4);
-        distProp{5} = distProp{2}./distProp{1};
+%         distProp{1} = mean(geomDiff,4);
+%         distProp{2} = var(geomDiff,0,4);
+%         distProp{3} = skewness(geomDiff,1,4);
+%         distProp{4} = kurtosis(geomDiff,1,4);
+%         distProp{5} = distProp{2}./distProp{1};
+        distProp{1} = mean(geomDiff,4)./var(geomDiff,0,4);
         
         %% loop over properties
         for p = 1:length(propNames)

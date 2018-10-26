@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'geom_test_1';
+analysisName = 'geom_F';
 
 %% directories
 fs         = filesep;

@@ -7,11 +7,11 @@ close all
 restoredefaultpath
 
 %% analysisName
-% analysisName = 'rsa_sl_allModels';
-% analysisName = 'rsa_sl_pulse_choice';
-analysisName = 'dim_sl_ons0';
+analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_choice';
+% analysisName = 'dim_sl_ons0';
 betaid       = 'rsa_pulse_ons0';
-thisIsDim    = true;
+thisIsDim    = false;
 
 %% directories
 dir.rsaCod = pwd;
@@ -44,7 +44,9 @@ userOptions.forcePromptReply = 'r';
 
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
-% modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
+modelNames = {'val','fam','oid','cxt'};
+
+modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
 if thisIsDim
     modelNames = {'dim'};
@@ -63,7 +65,7 @@ end
 dirBeta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% loop over subjects
-if true
+if false
     for s = 1:length(subs)
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -270,7 +272,7 @@ for m = 1:length(modelNames)
     % take r-map for current model
     rMaps = rMaps_all.(modelName);
     
-    impMask = ~isnan(sum(rMaps,4));
+%     impMask = ~isnan(sum(rMaps,4));
     
     % obtain a pMaps from applying a 1-sided signrank test and also t-test to
     % the model similarities:
@@ -280,14 +282,17 @@ for m = 1:length(modelNames)
     for x = 1:size(rMaps,1)
         for y = 1:size(rMaps,2)
             for z = 1:size(rMaps,3)
-                if impMask(x,y,z)
-                    [~, p1(x,y,z), ~, stats] = ttest(squeeze(rMaps(x,y,z,:)),0,0.05,'right');
+%                 if impMask(x,y,z)
+                    foo = squeeze(rMaps(x,y,z,:));
+                    foo(isnan(foo)) = [];
+                    if length(foo) < 15, continue, end
+                    [~, p1(x,y,z), ~, stats] = ttest(foo);
                     %                     if x == 32 && y == 60 && z == 28, keyboard, end
-                    if p1(x,y,z) < 0.5
+                    if p1(x,y,z) < 0.9999999
                         t1(x,y,z) = stats.tstat;
                     end
                     [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
-                end
+%                 end
             end
         end
         disp(x);
@@ -304,30 +309,20 @@ for m = 1:length(modelNames)
     
     % update user
     disp(['model: ',modelName])
-    
-    % apply FDR correction
-    pThrsh_t  = FDRthreshold(p1,0.05,impMask);
-    pThrsh_sr = FDRthreshold(p2,0.05,impMask);
-    
-    % mark the suprathreshold voxels in yellow
-    supraThreshMarked_t = zeros(size(p1));
-    supraThreshMarked_t(p1 <= pThrsh_t) = 1;
-    supraThreshMarked_sr = zeros(size(p2));
-    supraThreshMarked_sr(p2 <= pThrsh_sr) = 1;
-    
+        
     % write t-map
     swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
     tMapMetadataStruct_sS = spm_vol(swrMapFile);
     tMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'tMap_',modelName,'.nii'];
     tMapMetadataStruct_sS.descrip = 't-map';
-    tMapMetadataStruct_sS.dim = size(supraThreshMarked_t);
+    tMapMetadataStruct_sS.dim = size(p1);
     spm_write_vol(tMapMetadataStruct_sS, t1);
     
     % write p-map
     pMapMetadataStruct_sS = spm_vol(swrMapFile);
     pMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
     pMapMetadataStruct_sS.descrip = 'p-map';
-    pMapMetadataStruct_sS.dim = size(supraThreshMarked_t);
+    pMapMetadataStruct_sS.dim = size(p1);
     supraThreshMarked_t = p1 < 0.005;
     spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_t);
     
@@ -335,36 +330,35 @@ for m = 1:length(modelNames)
     % create cluster-specific masks %
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     
-    if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false % <------- true
-        
-        % find connected clusters
-        k = 1;
-        cluster = {};
-        L = bwlabeln(t1>0);
-        
-        % loop over such clusters
-        for i = 1:max(L(:))
-            cluster_foo{i} = L == i; %#ok<*SAGROW>
-            clusterSize(i) = sum(cluster_foo{i}(:));
-            
-            % take only clusters with size > number of conditions per session (60)
-            if clusterSize(i) >= 60
-                cluster{k} = cluster_foo{i};
-                
-                % create and save mask
-                maskMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/ba10.nii');
-                maskMetadataStruct_sS.fname = [dirSl,fs,'mask_sl_',modelName,'_',num2str(k),'.nii'];
-                maskMetadataStruct_sS.dim = size(supraThreshMarked_t);
-                spm_write_vol(maskMetadataStruct_sS, uint8(cluster{k}));
-                
-                % update index
-                k = k+1;
-            end
-        end, clear cluster_foo i k L
-    end
-    
+%     if sum(supraThreshMarked_sr(:)) > 0 && pThrsh_sr < Inf && false % <------- true
+%         
+%         % find connected clusters
+%         k = 1;
+%         cluster = {};
+%         L = bwlabeln(t1>0);
+%         
+%         % loop over such clusters
+%         for i = 1:max(L(:))
+%             cluster_foo{i} = L == i; %#ok<*SAGROW>
+%             clusterSize(i) = sum(cluster_foo{i}(:));
+%             
+%             % take only clusters with size > number of conditions per session (60)
+%             if clusterSize(i) >= 60
+%                 cluster{k} = cluster_foo{i};
+%                 
+%                 % create and save mask
+%                 maskMetadataStruct_sS = spm_vol('/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/ba10.nii');
+%                 maskMetadataStruct_sS.fname = [dirSl,fs,'mask_sl_',modelName,'_',num2str(k),'.nii'];
+%                 maskMetadataStruct_sS.dim = size(supraThreshMarked_t);
+%                 spm_write_vol(maskMetadataStruct_sS, uint8(cluster{k}));
+%                 
+%                 % update index
+%                 k = k+1;
+%             end
+%         end, clear cluster_foo i k L
+%     end
 end
-for i = 1:79
-    figure,
-    imagesc(t1(:,:,i)),colorbar
-end
+% for i = 1:79
+%     figure,
+%     imagesc(t1(:,:,i)),colorbar
+% end

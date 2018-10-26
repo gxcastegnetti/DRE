@@ -45,13 +45,13 @@ filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePa
 load(filePatterns,'responsePatterns')
 
 % roi names
-roiNames = {'sphere_6--4_-52_13','sphere_6--4_-51_20','sphere_6--4_-47_26','sphere_6--4_-41_31','sphere_6--4_-35_34',...
-    'sphere_6--4_-28_34','sphere_6--4_-20_37','sphere_6--4_-13_37','sphere_6--4_-6_39','sphere_6--4_2_38',...
-    'sphere_6--4_9_37','sphere_6--4_13_34','sphere_6--4_20_31','sphere_6--4_27_26','sphere_6--4_34_22',...
-    'sphere_6--4_37_16','sphere_6--4_40_9'};
+% roiNames = {'sphere_6--4_-52_13','sphere_6--4_-51_20','sphere_6--4_-47_26','sphere_6--4_-41_31','sphere_6--4_-35_34',...
+%     'sphere_6--4_-28_34','sphere_6--4_-20_37','sphere_6--4_-13_37','sphere_6--4_-6_39','sphere_6--4_2_38',...
+%     'sphere_6--4_9_37','sphere_6--4_13_34','sphere_6--4_20_31','sphere_6--4_27_26','sphere_6--4_34_22',...
+%     'sphere_6--4_37_16','sphere_6--4_40_9'};
 
-% roiNames = {'sphere_8--4_-57_15','sphere_8--4_-52_29','sphere_8--4_-39_35','sphere_8--4_-25_39','sphere_8--4_-11_41',...
-%     'sphere_8--4_3_40','sphere_8--4_17_34','sphere_8--4_29_26','sphere_8--4_40_15'};
+roiNames = {'sphere_8--4_-57_15','sphere_8--4_-52_29','sphere_8--4_-39_35','sphere_8--4_-25_39','sphere_8--4_-11_41',...
+    'sphere_8--4_3_40','sphere_8--4_17_34','sphere_8--4_29_26','sphere_8--4_40_15'};
 
 % apply mask
 for r = 1:length(roiNames)
@@ -84,7 +84,7 @@ for r = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2ses, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs

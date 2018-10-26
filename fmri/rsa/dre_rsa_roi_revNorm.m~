@@ -35,8 +35,7 @@ mkdir([dir.out,fs,analysisName])
 %     'sphere_6--4_9_37','sphere_6--4_13_34','sphere_6--4_20_31','sphere_6--4_27_26','sphere_6--4_34_22',...
 %     'sphere_6--4_37_16','sphere_6--4_40_9','sphere_6--4_42_1','sphere_6--4_38_-7','sphere_6--4_31_-10'};
 
-roiNames = {'sphere_8--4_-57_15','sphere_8--4_-52_29','sphere_8--4_-39_35','sphere_8--4_-25_39','sphere_8--4_-11_41',...
-    'sphere_8--4_3_40','sphere_8--4_17_34','sphere_8--4_29_26','sphere_8--4_40_15'};
+roiNames = {'sphere_8--4_-57_15',};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];

@@ -143,10 +143,11 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     if n(x,y,z) < 2, continue; end%if % This stops the function crashing if it accidentally encounters an out-of-brain floating voxel (these can occur if, for example, skull stripping fails)
     
     searchlightRDM_F = corr(t_F(:,cIllValidVox_YspaceINDs)');
-    searchlightRDM_B = corr(t_B(:,cIllValidVox_YspaceINDs)');
+%     searchlightRDM_B = corr(t_B(:,cIllValidVox_YspaceINDs)');
     
     % take difference of correlations across context and within context
-    geomDiff(x,y,z,:) = abs(single(vectorizeRDM(searchlightRDM_F - searchlightRDM_B)));
+%     geomDiff(x,y,z,:) = abs(single(vectorizeRDM(searchlightRDM_F - searchlightRDM_B)));
+    geomDiff(x,y,z,:) = single(vectorizeRDM(searchlightRDM_F));
 end
 
 %% END OF THE BIG LOOP! %%

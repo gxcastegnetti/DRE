@@ -93,7 +93,7 @@ for s = 1:length(subs)
                 valUnc(i) = NaN;
             end
         end
-        difVal = abs(Mday1(idxCho_day2_L,3) - Mday1(idxCho_day2_R,3)); % value difference
+        difVal = abs(valCho - valUnc); % value difference
         chMunc = valCho - valUnc; % value chosen - value unchosen
         
         % movement onset and side

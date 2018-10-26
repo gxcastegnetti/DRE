@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_allModels';
-% analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons0';
+% analysisName = 'rsa_sl_pulse_choice';
 
 %% directories
 dir.rsaCod = pwd;
@@ -64,7 +64,9 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.masking.im = 1;
     job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.005;
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/rgm.nii'};
-    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
+%     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
+%     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/front_temp.nii'};
+    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/front_hpc.nii'};
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {''};
     job{1}.spm.tools.snpm.des.OneSampT.globalc.g_omit = 1;
     job{1}.spm.tools.snpm.des.OneSampT.globalm.gmsca.gmsca_no = 1;

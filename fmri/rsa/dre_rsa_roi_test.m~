@@ -50,8 +50,20 @@ load(filePatterns,'responsePatterns')
 %     'sphere_6--4_9_37','sphere_6--4_13_34','sphere_6--4_20_31','sphere_6--4_27_26','sphere_6--4_34_22',...
 %     'sphere_6--4_37_16','sphere_6--4_40_9'};
 
-roiNames = {'sphere_8--4_-57_15','sphere_8--4_-52_29','sphere_8--4_-39_35','sphere_8--4_-25_39','sphere_8--4_-11_41',...
-    'sphere_8--4_3_40','sphere_8--4_17_34','sphere_8--4_29_26','sphere_8--4_40_15'};
+% roiNames = {'sphere_8--4_-57_15','sphere_8--4_-52_29','sphere_8--4_-39_35','sphere_8--4_-25_39','sphere_8--4_-11_41',...
+%     'sphere_8--4_3_40','sphere_8--4_17_34','sphere_8--4_29_26','sphere_8--4_40_15'};
+
+% roiNames = {'sphere_6--4_-40_48','sphere_6--4_-28_46','sphere_6--4_-16_46','sphere_6--4_-4_42','sphere_6--4_8_38',...
+%     'sphere_6--4_20_31','sphere_6--4_32_24','sphere_6--4_44_12'};
+
+roiNames = {'sphere_9-0_-61_25','sphere_9-0_-43_35','sphere_9-0_-25_39','sphere_9-0_-7_40',...
+    'sphere_9-0_11_37','sphere_9-0_28_29','sphere_9-0_41_20','sphere_9-0_47_11'};
+
+roiNames = {'box_w-16_16_16-0_-61_25','box_w-16_16_16-0_-43_35','box_w-16_16_16-0_-25_39','box_w-16_16_16-0_-7_40',...
+    'box_w-16_16_16-0_11_37','box_w-16_16_16-0_28_29','box_w-16_16_16-0_41_20','box_w-16_16_16-0_47_11'};
+
+roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
+    'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
 % apply mask
 for r = 1:length(roiNames)
@@ -114,7 +126,7 @@ end
 
 %% for every region and sub, correlate RDM and model
 scoreNames = {'val','con','fam','ID','cxt'};
-h = figure;
+% h = figure;
 for r = 1:length(roiNames)
     for s = 1:size(RDMs_data,2)
         for m = 1:size(RDMs_model,1)
@@ -136,17 +148,33 @@ sphe.fam = mean(squeeze(rL2(3,:,:)));
 sphe.oid = mean(squeeze(rL2(4,:,:)));
 sphe.cxt = mean(squeeze(rL2(5,:,:)));
 
-figure,plot(sphe.val)
-figure,plot(sphe.con)
-figure,plot(sphe.fam)
-figure,plot(sphe.oid)
-figure,plot(sphe.cxt)
-
+% linear models
 mdlVal = fitlm(1:length(sphe.val),sphe.val);
 mdlCon = fitlm(1:length(sphe.con),sphe.con);
 mdlFam = fitlm(1:length(sphe.fam),sphe.fam);
 mdlOid = fitlm(1:length(sphe.oid),sphe.oid);
 mdlCxt = fitlm(1:length(sphe.cxt),sphe.cxt);
+
+%% plot linear fits
+xspan = 1:length(sphe.val);
+figure('color',[1 1 1])
+
+subplot(1,3,1),hold on
+plot(xspan,sphe.val,'marker','.','markersize',30,'linestyle','none'),title('Value')
+xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
+plot(xspan,xspan*mdlVal.Coefficients{2,1}+mdlVal.Coefficients{1,1},'linestyle','--','color','k')
+
+subplot(1,3,2),hold on
+plot(xspan,sphe.oid,'marker','.','markersize',30,'linestyle','none'),title('Value')
+xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
+plot(xspan,xspan*mdlOid.Coefficients{2,1}+mdlOid.Coefficients{1,1},'linestyle','--','color','k')
+
+subplot(1,3,3),hold on
+plot(xspan,sphe.cxt,'marker','.','markersize',30,'linestyle','none'),title('Value')
+xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
+plot(xspan,xspan*mdlCxt.Coefficients{2,1}+mdlVal.Coefficients{1,1},'linestyle','--','color','k')
+
+
 
 %% ttest
 for r = 1:length(roiNames)

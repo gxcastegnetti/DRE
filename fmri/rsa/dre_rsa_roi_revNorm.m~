@@ -30,12 +30,11 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% load masks
-% roiNames = {'sphere_6--4_-52_13','sphere_6--4_-51_20','sphere_6--4_-47_26','sphere_6--4_-41_31','sphere_6--4_-35_34',...
-%     'sphere_6--4_-28_34','sphere_6--4_-20_37','sphere_6--4_-13_37','sphere_6--4_-6_39','sphere_6--4_2_38',...
-%     'sphere_6--4_9_37','sphere_6--4_13_34','sphere_6--4_20_31','sphere_6--4_27_26','sphere_6--4_34_22',...
-%     'sphere_6--4_37_16','sphere_6--4_40_9','sphere_6--4_42_1','sphere_6--4_38_-7','sphere_6--4_31_-10'};
+% roiNames = {'sphere_9-0_-61_25','sphere_9-0_-43_35','sphere_9-0_-25_39','sphere_9-0_-7_40',...
+%     'sphere_9-0_11_37','sphere_9-0_28_29','sphere_9-0_41_20','sphere_9-0_47_11'};
 
-roiNames = {'sphere_8--4_-57_15',};
+roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
+    'box_w-16_16_16-0_11_37','box_w-16_16_16-0_28_29','box_w-16_16_16-0_41_20','box_w-16_16_16-0_47_11'};
 
 %% subjects
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];

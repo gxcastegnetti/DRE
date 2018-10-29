@@ -20,7 +20,6 @@ fs = filesep;
 slicetiming = 1;
 realign     = 1;
 coregister  = 1;
-smoothNat   = 0;
 segment     = 1;
 normalise   = 1;
 smooth      = 1;

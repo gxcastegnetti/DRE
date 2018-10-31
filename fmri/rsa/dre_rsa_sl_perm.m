@@ -28,7 +28,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% specify model(s) to test
-models = {'val'};
+models = {'oid'};
 
 %% run batch for each model
 for m = 1:length(models)
@@ -59,7 +59,7 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.DesignFile = 'snpm_bch_ui_OneSampT';
     job{1}.spm.tools.snpm.des.OneSampT.cov = struct('c', {}, 'cname', {});
     job{1}.spm.tools.snpm.des.OneSampT.nPerm = 1000;
-    job{1}.spm.tools.snpm.des.OneSampT.vFWHM = [9 9 9];
+    job{1}.spm.tools.snpm.des.OneSampT.vFWHM = [0 0 0];
     job{1}.spm.tools.snpm.des.OneSampT.masking.tm.tm_none = 1;
     job{1}.spm.tools.snpm.des.OneSampT.masking.im = 1;
     job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.005;
@@ -67,7 +67,7 @@ for m = 1:length(models)
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/front_temp.nii'};
     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/front_hpc.nii'};
-%     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {''};
+    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {''};
     job{1}.spm.tools.snpm.des.OneSampT.globalc.g_omit = 1;
     job{1}.spm.tools.snpm.des.OneSampT.globalm.gmsca.gmsca_no = 1;
     job{1}.spm.tools.snpm.des.OneSampT.globalm.glonorm = 1;
@@ -91,10 +91,10 @@ for m = 1:length(models)
     %%%%%%%%%%%%%
     job{1}.spm.tools.snpm.inference.SnPMmat = cellstr([dirOut,fs,'SnPM.mat']);
     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.CFth = nan;
-%     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.FWEthC = 0.05;
-    job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.PthC = 0.05;
+    job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.FWEthC = 0.05;
+%     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.PthC = 0.5;
     job{1}.spm.tools.snpm.inference.Tsign = 1;
-    job{1}.spm.tools.snpm.inference.WriteFiltImg.name = 'SnPM_filtered';
+    job{1}.spm.tools.snpm.inference.WriteFiltImg.name = '_SnPM_filtered';
     job{1}.spm.tools.snpm.inference.Report = 'MIPtable';
     
     % run job

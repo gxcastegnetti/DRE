@@ -22,7 +22,7 @@ addpath(genpath(dir.spm))
 %% subjects
 subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 47:49];
 subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 45 47:49];
-subs = [7 20 50];
+subs = [50];
 %% input run types (fun: functional; struct: structural; fmapm: fmap magnitude; fmapp: fmap phase; loc: localiser)
 runType{1}  = {'loc','ignore','fun','fun','fmapm','fmapp','struct','fun'};
 runType{2}  = {};
@@ -73,7 +73,7 @@ runType{46} = {};
 runType{47} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 runType{48} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
 runType{49} = {'loc','ignore','fmapm','fmapp','fun','fun','fun','fun','struct'};
-runType{50} = {};
+runType{50} = {'loc','ignore','fmapm','fmapp','error','fun','fun','fun','fun','struct'};
 
 %% Import images
 DICOM_import(dir,subs,runType)

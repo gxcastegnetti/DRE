@@ -23,13 +23,13 @@ dir.beh = [dirNew,fs,'data',fs,'behaviour'];
 dir.psy = [dirNew,fs,'data',fs,'fmri',fs,'psychOut'];
 
 %% subjects and trials
-subs = [4:5 7 8 9 13:17 19 20 21 23 25:26 29:32 34:35 37 39:41 43 47:49];
-subs = [4:5 7 8 9 10 13:17 19 20 21 23 25:26 27 29:32 34:35 37 39:41 43 44 45 47:49 50];
+subs = [4:5 7 8 9 13:17 19:21 23 25:26 29:32 34:35 37 39:41 43 47:50];
+% subs = [4:5 7 8 9 10 13:17 19 20 21 23 25:26 27 29:32 34:35 37 39:41 43 44 45 47:49 50];
 ntrials = 120;
 
 %% task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
-taskOrd = [ones(1,11),2*ones(1,12),1,2,ones(1,4),2*ones(1,5) 1];
+taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% plots settings
 plot_rda_SS = false;
@@ -514,7 +514,7 @@ for s = 1:length(subs)
     cMat(:,:,s) = corr(all{s},'rows','complete');
     
     % plot
-    subplot(5,6,s)
+    subplot(6,6,s)
     imagesc(squeeze(cMat(:,:,s))), title(['sub#',num2str(subs(s))]), caxis([-1 1])
     set(gca,'XTick',1:5,'YTick',1:5,'fontsize',11,'XtickLabel',{'vF','vB','cF','cB','fm'},'YtickLabel',{'vF','vB','cF','cB','fm'})
 end
@@ -550,7 +550,7 @@ sigm_avg.BonB = sigmf(xspan,[slope_avg.BonB offset.BonB]);
 figure('color',[1 1 1])
 subplot(4,4,[1 2 5 6])
 plot(xspan,sigm_avg.FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Right)'),ylim([-0.025 1.025])
+set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),ylim([-0.025 1.025])
 
 subplot(4,4,[3 4 7 8])
 plot(xspan,sigm_avg.BonF,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
@@ -558,11 +558,11 @@ set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
 
 subplot(4,4,[9 10 13 14])
 plot(xspan,sigm_avg.FonB,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Right)'),xlabel('Value diff.'),ylim([-0.025 1.025])
+set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
 
 subplot(4,4,[11 12 15 16])
 plot(xspan,sigm_avg.BonB,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('Value diff.'),ylim([-0.025 1.025])
+set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
 
 %% lme
 

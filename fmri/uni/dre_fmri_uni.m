@@ -11,8 +11,8 @@ foodir  = pwd;
 fs      = filesep;
 idcs    = strfind(foodir,'/');
 dir.dre = foodir(1:idcs(end-2)-1);
-dir.data = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-dir.beh = [dir.dre,fs,'data',fs,'behaviour'];
+dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
+dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
 dir.phy = [dir.dre,fs,'data',fs,'physio'];
 dir.out = [dir.dre,fs,'out',fs,'fmri',fs,'uni'];
 newdir4 = foodir(1:idcs(end-4));
@@ -25,11 +25,14 @@ addpath(genpath([foodir,fs,'routines'])), clear foodir idcs newdir4 dirSPM
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
 
+subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
+
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
-if false
+if true
     analysisName = 'uni_pulse_iVCF_cS';
     
     % 1st level
@@ -75,7 +78,7 @@ if false
 end
 
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
-if false
+if true
     analysisName = 'uni_pulse_iV_cV';
     
     % 1st level
@@ -96,7 +99,7 @@ if false
 end
 
 %% pulse - value pmod of imagination; dV pmod of choice
-if true
+if false
     analysisName = 'uni_pulse_rfx_iV_cS';
     
     % 1st level
@@ -136,8 +139,8 @@ end
 % dre_L2(dir,analysisName,'choice_valueDiff',subs,4);
 
 %% pulse - value weighed by conf. pmod of imagination; value chosen - unchosen pmod of choice
-if false
-    analysisName = 'uni_pulse_iVw_cSs';
+if true
+    analysisName = 'uni_pulse_iVw_cU';
     
     % 1st level
     timing.iOns = 0; % onset for imagination

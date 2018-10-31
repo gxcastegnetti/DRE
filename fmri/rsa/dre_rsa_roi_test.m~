@@ -27,8 +27,8 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% subjects
-subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
-taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
+subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -96,7 +96,7 @@ for r = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt_acc2ses, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs
@@ -165,16 +165,16 @@ xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',
 plot(xspan,xspan*mdlVal.Coefficients{2,1}+mdlVal.Coefficients{1,1},'linestyle','--','color','k')
 
 subplot(1,3,2),hold on
-plot(xspan,sphe.oid,'marker','.','markersize',30,'linestyle','none'),title('Value')
+plot(xspan,sphe.oid,'marker','.','markersize',30,'linestyle','none'),title('Object ID')
 xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
 plot(xspan,xspan*mdlOid.Coefficients{2,1}+mdlOid.Coefficients{1,1},'linestyle','--','color','k')
 
 subplot(1,3,3),hold on
-plot(xspan,sphe.cxt,'marker','.','markersize',30,'linestyle','none'),title('Value')
+plot(xspan,sphe.cxt,'marker','.','markersize',30,'linestyle','none'),title('Context')
 xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
-plot(xspan,xspan*mdlCxt.Coefficients{2,1}+mdlVal.Coefficients{1,1},'linestyle','--','color','k')
+plot(xspan,xspan*mdlCxt.Coefficients{2,1}+mdlCxt.Coefficients{1,1},'linestyle','--','color','k')
 
-
+keyboard
 
 %% ttest
 for r = 1:length(roiNames)

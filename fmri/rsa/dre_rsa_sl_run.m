@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_allModels';
+analysisName = 'rsa_sl_pulse_ons0';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories
@@ -30,12 +30,10 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
+% subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+% taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
 taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
-% subsBest = sort([23 18 5 3 21 11 10 20 17 28 24  1 15 22]);
-% subsWors = sort([2  14 6 4  7  9 27 26 12 16 19 13  8 25]);
-% subs = subs(subsWors);
-% taskOrd = taskOrd(subsWors);
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -60,12 +58,12 @@ end
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
-if ~exist(filePatterns,'file') 
+% if ~exist(filePatterns,'file')
     responsePatterns = fMRIDataPreparation('SPM', userOptions);
     save(filePatterns,'responsePatterns','-v7.3')
-else
-    load(filePatterns,'responsePatterns')
-end
+% else
+%     load(filePatterns,'responsePatterns')
+% end
 
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
@@ -81,7 +79,9 @@ searchlightOptions.nConditions = 240;
 %% run searchlight for imagination
 % create matrix for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
-          diag(ones(120,1)), diag(ones(120,1))];
+    diag(ones(120,1)), diag(ones(120,1))];
+subs = [7 20 50];
+taskOrd = [1 2 1];
 for s = 1:length(subs)
     
     % update user
@@ -96,53 +96,53 @@ for s = 1:length(subs)
     model(1).name = 'val';
     model(1).RDM = RDMs{s}.val;
     model(1).color = [0 1 0];
-    model(2).name = 'con';
-    model(2).RDM = RDMs{s}.con;
+%     model(2).name = 'con';
+%     model(2).RDM = RDMs{s}.con;
+%     model(2).color = [0 1 0];
+    model(2).name = 'fam';
+    model(2).RDM = RDMs{s}.fam;
     model(2).color = [0 1 0];
-    model(3).name = 'fam';
-    model(3).RDM = RDMs{s}.fam;
-    model(3).color = [0 1 0];
     
     % object identity
-    model(4).name = 'oid';
-    model(4).RDM = 1-mat_ID;
-    model(4).color = [0 1 0];
+    model(3).name = 'oid';
+    model(3).RDM = 1-mat_ID;
+    model(3).color = [0 1 0];
     
     % context
-    model(5).name = 'cxt';
-    model(5).RDM = RDMs{s}.cxt;
-    model(5).color = [0 1 0];
+    model(4).name = 'cxt';
+    model(4).RDM = RDMs{s}.cxt;
+    model(4).color = [0 1 0];
     
-    % models with scores divided into low, high
-    model(6).name = 'valL';
-    model(6).RDM = RDMs{s}.valLow;
-    model(6).color = [0 1 0];
-    model(7).name = 'valH';
-    model(7).RDM = RDMs{s}.valHigh;
-    model(7).color = [0 1 0];
-    model(8).name = 'conL';
-    model(8).RDM = RDMs{s}.conLow;
-    model(8).color = [0 1 0];
-    model(9).name = 'conH';
-    model(9).RDM = RDMs{s}.conHigh;
-    model(9).color = [0 1 0];
-    model(10).name = 'famL';
-    model(10).RDM = RDMs{s}.famLow;
-    model(10).color = [0 1 0];
-    model(11).name = 'famH';
-    model(11).RDM = RDMs{s}.famHigh;
-    model(11).color = [0 1 0];
-    
-    % discretisation with median splits
-    model(12).name = 'valMed';
-    model(12).RDM = RDMs{s}.valMed;
-    model(12).color = [0 1 0];
-    model(13).name = 'conMed';
-    model(13).RDM = RDMs{s}.conMed;
-    model(13).color = [0 1 0];
-    model(14).name = 'famMed';
-    model(14).RDM = RDMs{s}.famMed;
-    model(14).color = [0 1 0];
+%     % models with scores divided into low, high
+%     model(6).name = 'valL';
+%     model(6).RDM = RDMs{s}.valLow;
+%     model(6).color = [0 1 0];
+%     model(7).name = 'valH';
+%     model(7).RDM = RDMs{s}.valHigh;
+%     model(7).color = [0 1 0];
+%     model(8).name = 'conL';
+%     model(8).RDM = RDMs{s}.conLow;
+%     model(8).color = [0 1 0];
+%     model(9).name = 'conH';
+%     model(9).RDM = RDMs{s}.conHigh;
+%     model(9).color = [0 1 0];
+%     model(10).name = 'famL';
+%     model(10).RDM = RDMs{s}.famLow;
+%     model(10).color = [0 1 0];
+%     model(11).name = 'famH';
+%     model(11).RDM = RDMs{s}.famHigh;
+%     model(11).color = [0 1 0];
+%     
+%     % discretisation with median splits
+%     model(12).name = 'valMed';
+%     model(12).RDM = RDMs{s}.valMed;
+%     model(12).color = [0 1 0];
+%     model(13).name = 'conMed';
+%     model(13).RDM = RDMs{s}.conMed;
+%     model(13).color = [0 1 0];
+%     model(14).name = 'famMed';
+%     model(14).RDM = RDMs{s}.famMed;
+%     model(14).color = [0 1 0];
     
     % run searchlight
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>

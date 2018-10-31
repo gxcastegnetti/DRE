@@ -56,11 +56,11 @@ load(filePatterns,'responsePatterns')
 % roiNames = {'sphere_6--4_-40_48','sphere_6--4_-28_46','sphere_6--4_-16_46','sphere_6--4_-4_42','sphere_6--4_8_38',...
 %     'sphere_6--4_20_31','sphere_6--4_32_24','sphere_6--4_44_12'};
 
-roiNames = {'sphere_9-0_-61_25','sphere_9-0_-43_35','sphere_9-0_-25_39','sphere_9-0_-7_40',...
-    'sphere_9-0_11_37','sphere_9-0_28_29','sphere_9-0_41_20','sphere_9-0_47_11'};
-
-roiNames = {'box_w-16_16_16-0_-61_25','box_w-16_16_16-0_-43_35','box_w-16_16_16-0_-25_39','box_w-16_16_16-0_-7_40',...
-    'box_w-16_16_16-0_11_37','box_w-16_16_16-0_28_29','box_w-16_16_16-0_41_20','box_w-16_16_16-0_47_11'};
+% roiNames = {'sphere_9-0_-61_25','sphere_9-0_-43_35','sphere_9-0_-25_39','sphere_9-0_-7_40',...
+%     'sphere_9-0_11_37','sphere_9-0_28_29','sphere_9-0_41_20','sphere_9-0_47_11'};
+% 
+% roiNames = {'box_w-16_16_16-0_-61_25','box_w-16_16_16-0_-43_35','box_w-16_16_16-0_-25_39','box_w-16_16_16-0_-7_40',...
+%     'box_w-16_16_16-0_11_37','box_w-16_16_16-0_28_29','box_w-16_16_16-0_41_20','box_w-16_16_16-0_47_11'};
 
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
@@ -96,7 +96,7 @@ for r = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2ses, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 
 %% plot RDMs

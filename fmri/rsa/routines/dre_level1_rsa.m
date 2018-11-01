@@ -71,7 +71,7 @@ for s = 1:length(subs)
     if strcmp(maskName,'none')
         mask = '';
     elseif strcmp(maskName,'gm')
-        mask = [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
+        mask = [dir.mskOut,fs,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     else
         mask = [dir.mskOut,fs,maskName,'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',maskName,'.nii'];      
     end    

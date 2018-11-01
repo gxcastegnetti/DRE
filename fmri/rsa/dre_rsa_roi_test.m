@@ -8,7 +8,6 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'rsa_roi_pulse_path';
-dirBeta = 'rsa_pulse_ons0';
 
 %% directories
 dir.rsaCod = pwd;
@@ -27,8 +26,8 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% subjects
-subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
-taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
+subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
+taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -65,18 +64,21 @@ load(filePatterns,'responsePatterns')
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-% apply mask
+% apply two masks: one for grey matter, one for ROI 
 for r = 1:length(roiNames)
     for s = 1:length(subs)
         subjName = ['SF',num2str(subs(s),'%03d')];
-        maskFile = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
-        mask = spm_read_vols(spm_vol(maskFile));
+        roiMaskFile = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
+        gmMaskFile = [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
+        roiMask = spm_read_vols(spm_vol(roiMaskFile));
+        gmMask = spm_read_vols(spm_vol(gmMaskFile));
         
         % vectorise it
-        mask = reshape(mask, 1, []);
-        mask = logical(mask');
+        roiMask = reshape(roiMask, 1, []);
+%         gmMask = reshape(gmMask, 1, []);
+%         totMask = logical(gmMask.*roiMask);
         
-        respPatt_foo = responsePatterns.(subjName)(mask,:);
+        respPatt_foo = responsePatterns.(subjName)(logical(roiMask),:);
         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
     end
 end
@@ -131,7 +133,7 @@ for r = 1:length(roiNames)
     for s = 1:size(RDMs_data,2)
         for m = 1:size(RDMs_model,1)
             a = vectorizeRDM(RDMs_data(r,s).RDM);
-            b = permute(unwrapRDMs(vectorizeRDM(RDMs_model(m,s).RDM)),[3 2 1]);
+            b = vectorizeRDM(RDMs_model(m,s).RDM);
             rL2(m,s,r) = corr(b',a','rows','pairwise','type','Spearman');
             rL2(m,s,r) = fisherTransform(rL2(m,s,r));
         end

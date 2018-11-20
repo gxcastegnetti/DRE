@@ -51,10 +51,10 @@ load(filePatterns,'responsePatterns')
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-roiNames = {'sphere_10--20_-54_-8'};
-% roiNames = {'box_w-16_16_16-0_36_23'};
+% roiNames = {'sphere_10--20_-54_-8'};
+roiNames = {'box_w-16_16_16-0_20_36'};
 % roiNames = {'l_hpc'};
-roiNames = {'ofc'};
+% roiNames = {'ofc'};
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -138,11 +138,11 @@ for r = 1:length(roiNames)
         %% svm
         
         % FF
-        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',1000);
+        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',10);
         cvmdl_FF = crossval(mdl_FF);
         
         % BB
-        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',1000);
+        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',10);
         cvmdl_BB = crossval(mdl_BB);
         
         % FB
@@ -173,3 +173,6 @@ for r = 1:length(roiNames)
     %     bar([mean(performance_within),mean(performance_betwee)])
     %     ylim([0.49 0.53])
 end
+
+aaa=mean([performance_FF;performance_BB]);
+[h,p,ci,stats] = ttest(aaa-0.5)

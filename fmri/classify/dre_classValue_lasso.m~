@@ -138,11 +138,14 @@ for r = 1:length(roiNames)
         %% svm
         
         % FF
-        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',100);
+        [coeff info] = lassoglm(X_F_red,Y_F_logic,'poisson','CV',10);
+        lassoPlot(B,FitInfo,'plottype','CV'); 
+legend('show') % Show legend
+
         cvmdl_FF = crossval(mdl_FF);
         
         % BB
-        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',100);
+        mdl_BB = fitcsvm(X_B_red,Y_B_logic);
         cvmdl_BB = crossval(mdl_BB);
         
         % FB

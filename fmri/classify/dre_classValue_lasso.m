@@ -108,8 +108,8 @@ for r = 1:length(roiNames)
         X_B = respPatt.(roiNames{r}).(subNames{s})(:,121:240)';
         
         % fix nans
-%         objVal_F(isnan(objVal_F)) = 50*rand;
-%         objVal_B(isnan(objVal_B)) = 50*rand;
+        %         objVal_F(isnan(objVal_F)) = 50*rand;
+        %         objVal_B(isnan(objVal_B)) = 50*rand;
         
         % add a constant for univoque determination of median
         Y_F = objVal_F + (0.00000001*(1:120))';
@@ -130,19 +130,24 @@ for r = 1:length(roiNames)
         Y_B_logic = Y_B_red > pl_B_66;
         
         % separate into two levels
-%         Y_F_logic = Y_F > median(Y_F);
-%         Y_B_logic = Y_B > median(Y_B);
+        %         Y_F_logic = Y_F > median(Y_F);
+        %         Y_B_logic = Y_B > median(Y_B);
         
         nTrials = 80;
         
         %% svm
         
         % FF
-        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',100);
+        [coef_plot, info] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10);
+%         lassoPlot(coef,info,'plottype','CV');
+%         legend('show') % Show legend
+        [coef, info] = lassoglm(X_F_red,Y_F_logic,'binomial','lambda',info.LambdaMinDeviance,'CV',10);
+        
+        
         cvmdl_FF = crossval(mdl_FF);
         
         % BB
-        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',100);
+        mdl_BB = fitcsvm(X_B_red,Y_B_logic);
         cvmdl_BB = crossval(mdl_BB);
         
         % FB

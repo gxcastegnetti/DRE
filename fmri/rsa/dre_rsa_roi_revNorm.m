@@ -8,7 +8,7 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'rsa_roi_pulse_sphere';
-analysisName = 'rsa_roi_pulse_cxt';
+% analysisName = 'rsa_roi_pulse_cxt';
 dirBeta = 'rsa_pulse_ons0';
 
 %% directories
@@ -36,10 +36,10 @@ mkdir([dir.out,fs,analysisName])
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23','box_w-16_16_16-0_46_7'};
 
-% roiNames = {'box_w-16_16_16-0_-76_18'};
+roiNames = {'ofc'};
 
 %% subjects
-subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
+subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 
 %% reverse normalise mask to subjective space and coregister
 if true

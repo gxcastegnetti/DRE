@@ -78,7 +78,7 @@ for r = 1:length(roiNames)
         gmMask = reshape(gmMask, 1, []);
 %         totMask = logical(gmMask.*roiMask);
         
-        respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
+        respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & ,:);
         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
     end
 end

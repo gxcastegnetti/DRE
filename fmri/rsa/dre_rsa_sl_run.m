@@ -43,8 +43,8 @@ userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
 %% 1st level
-roiName = 'gm';
-if true
+roiName = 'none';
+if false
     nameBeta = ['level1',fs,betaid,fs,roiName];
     bData = dre_extractData(dir,subs,taskOrd,0);
     timing.iOns = 0;

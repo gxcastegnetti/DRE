@@ -38,8 +38,9 @@ mkdir([dir.out,fs,analysisName])
 %% subjects
 subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
-
-% subs = [4 5 7];
+% subs = subs(6);
+% taskOrd = taskOrd(6);
+% subs = [4 5 7 8 9 13 14];
 
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -52,9 +53,9 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
 roiNames = {'sphere_10--20_-54_-8'};
-% roiNames = {'box_w-16_16_16-0_36_23'};
+roiNames = {'box_w-16_16_16-0_20_36'};
 % roiNames = {'l_hpc'};
-roiNames = {'ofc'};
+% roiNames = {'ofc'};
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -107,9 +108,14 @@ for r = 1:length(roiNames)
         X_F = respPatt.(roiNames{r}).(subNames{s})(:,1:120)';
         X_B = respPatt.(roiNames{r}).(subNames{s})(:,121:240)';
         
+        for i_F = 1:size(X_F)
+            X_F(i_F,:) = zscore(X_F(i_F,:));
+            X_B(i_F,:) = zscore(X_B(i_F,:));
+        end
+        
         % fix nans
-%         objVal_F(isnan(objVal_F)) = 50*rand;
-%         objVal_B(isnan(objVal_B)) = 50*rand;
+        objVal_F(isnan(objVal_F)) = 50*rand;
+        objVal_B(isnan(objVal_B)) = 50*rand;
         
         % add a constant for univoque determination of median
         Y_F = objVal_F + (0.00000001*(1:120))';
@@ -130,49 +136,83 @@ for r = 1:length(roiNames)
         Y_B_logic = Y_B_red > pl_B_66;
         
         % separate into two levels
-%         Y_F_logic = Y_F > median(Y_F);
-%         Y_B_logic = Y_B > median(Y_B);
+        %         Y_F_logic = Y_F > median(Y_F);
+        %         Y_B_logic = Y_B > median(Y_B);
         
         nTrials = 80;
         
         %% svm
         
         % FF
-        [coeff info] = lassoglm(X_F_red,Y_F_logic,'poisson','CV',10);
-        lassoPlot(B,FitInfo,'plottype','CV'); 
-legend('show') % Show legend
-
-        cvmdl_FF = crossval(mdl_FF);
+        %         [coef, info] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
+        %         lassoPlot(coef,info,'plottype','CV');
+        %         legend('show') % Show legend
         
-        % BB
-        mdl_BB = fitcsvm(X_B_red,Y_B_logic);
-        cvmdl_BB = crossval(mdl_BB);
+        nSweeps = 25;
+        acc_FF_foo = nan(nSweeps,1);
+        holdOutFraction = 0.1;
+        for k = 1:nSweeps
+            
+            c_F = cvpartition(Y_F_logic,'HoldOut',holdOutFraction);
+            c_B = cvpartition(Y_B_logic,'HoldOut',holdOutFraction);
+            
+            idxTrain_F = training(c_F);
+            idxTrain_B = training(c_B);
+            
+            idxTest_F = ~idxTrain_F;
+            idxTest_B = ~idxTrain_B;
+            
+            XTrain_F = X_F_red(idxTrain_F,:);
+            yTrain_F = Y_F_logic(idxTrain_F);
+            XTrain_B = X_B_red(idxTrain_B,:);
+            yTrain_B = Y_B_logic(idxTrain_B);
+            
+            XTest_F = X_F_red(idxTest_F,:);
+            yTest_F = Y_F_logic(idxTest_F);
+            XTest_B = X_B_red(idxTest_B,:);
+            yTest_B = Y_B_logic(idxTest_B);
+            
+            [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
+            [b_B,i_B] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
+            
+            for j = 1:round(holdOutFraction*nTrials)
+                
+                % take test samples
+                XTest_F_foo = XTest_F(j,:);
+                XTest_B_foo = XTest_B(j,:);
+                
+                % FF
+                foo = sum(b_F.*XTest_F_foo(:)) + i_F.Intercept;
+                label_FF(j) = round(1./(1+exp(-foo)));
+                
+                % BB
+                foo = sum(b_B.*XTest_B_foo(:)) + i_B.Intercept;
+                label_BB(j) = round(1./(1+exp(-foo)));
+                
+                % FB
+                foo = sum(b_F.*XTest_B_foo(:)) + i_F.Intercept;
+                label_FB(j) = round(1./(1+exp(-foo)));
+                
+                % BF
+                foo = sum(b_B.*XTest_F_foo(:)) + i_B.Intercept;
+                label_BF(j) = round(1./(1+exp(-foo)));
+            end
+            
+            acc_FF_foo(k) = mean(label_FF(:) == yTest_F);
+            acc_BB_foo(k) = mean(label_BB(:) == yTest_B);
+            acc_FB_foo(k) = mean(label_FB(:) == yTest_F);
+            acc_BF_foo(k) = mean(label_BF(:) == yTest_B);
+        end
         
-        % FB
-        %         mdl_FB = fitcsvm(X_F_train,Y_F_train);
-        %         foo = sum(mdl_FB.Beta.*X_B_test(:)) + mdl_FB.Bias;
-        %         prediction_FB(testTrl) = round(1/(1+exp(-foo)));
-        %
-        %         % BF
-        %         mdl_BF = fitcsvm(X_B_train,Y_B_train);
-        %         foo = sum(mdl_BF.Beta.*X_F_test(:)) + mdl_BF.Bias;
-        %         prediction_BF(testTrl) = round(1/(1+exp(-foo)));
+        acc_FF_mean(s) = mean(acc_FF_foo);
+        acc_BB_mean(s) = mean(acc_BB_foo);
+        acc_FB_mean(s) = mean(acc_FB_foo);
+        acc_BF_mean(s) = mean(acc_BF_foo);
         
-        
-        % compute performance
-        performance_FF(s) = 1 - kfoldLoss(cvmdl_FF);
-        performance_BB(s) = 1 - kfoldLoss(cvmdl_BB);
-        %         performance_FB(s) = 1 - kfoldLoss(cvmdl_FB);
-        %         performance_BF(s) = 1 - kfoldLoss(cvmdl_BF);
-        
-        subplot(6,6,s),bar([performance_FF(s),performance_BB(s)]),ylim([0.4 0.6])
+        %         clear prediction_FF prediction_BB objIdx_F objIdx_B
         
     end
-    
-    %     performance_within = mean([performance_FF;performance_BB]);
-    %     performance_betwee = mean([performance_FB;performance_BF]);
-    
-    %     figure('color',[1 1 1])
-    %     bar([mean(performance_within),mean(performance_betwee)])
-    %     ylim([0.49 0.53])
+    figure('color',[1 1 1]),bar([mean(acc_FF_mean),mean(acc_BB_mean);mean(acc_FB_mean),mean(acc_BF_mean)])
+    ylim([0.45 0.55])
+    aaa = acc_FF_mean + acc_BB_mean - acc_FB_mean - acc_BF_mean;
 end

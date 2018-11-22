@@ -53,7 +53,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 
 % roiNames = {'sphere_10--20_-54_-8'};
 roiNames = {'box_w-16_16_16-0_20_36'};
-% roiNames = {'l_hpc'};
+% roiNames = {'lingual'};
 % roiNames = {'ofc'};
 
 % apply two masks: one for grey matter, one for ROI
@@ -69,14 +69,14 @@ for r = 1:length(roiNames)
         roiMask = reshape(roiMask, 1, []);
         gmMask = reshape(gmMask, 1, []);
         
-        respPatt_foo = responsePatterns.(subjName)(logical(roiMask),:);
+        respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
     end
 end
 
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
-figure
+h = figure;
 for r = 1:length(roiNames)
     for s = 1:length(subs)
         
@@ -108,8 +108,8 @@ for r = 1:length(roiNames)
         X_B = respPatt.(roiNames{r}).(subNames{s})(:,121:240)';
         
         % fix nans
-%         objVal_F(isnan(objVal_F)) = 50*rand;
-%         objVal_B(isnan(objVal_B)) = 50*rand;
+        objVal_F(isnan(objVal_F)) = ceil(50*rand);
+        objVal_B(isnan(objVal_B)) = ceil(50*rand);
         
         % add a constant for univoque determination of median
         Y_F = objVal_F + (0.00000001*(1:120))';
@@ -129,50 +129,95 @@ for r = 1:length(roiNames)
         Y_B_red = Y_B(Y_B < pl_B_33 | Y_B > pl_B_66);
         Y_B_logic = Y_B_red > pl_B_66;
         
-        % separate into two levels
-%         Y_F_logic = Y_F > median(Y_F);
-%         Y_B_logic = Y_B > median(Y_B);
-        
         nTrials = 80;
         
-        %% svm
+        %% optimise models
+        Mdl_F = fitcsvm(X_F_red,Y_F_logic,'OptimizeHyperparameters','auto',...
+            'HyperparameterOptimizationOptions',struct('AcquisitionFunctionName',...
+            'expected-improvement-plus','ShowPlots',false));
+        bc_F = Mdl_F.HyperparameterOptimizationResults.XAtMinObjective.BoxConstraint;
+        ks_F = Mdl_F.HyperparameterOptimizationResults.XAtMinObjective.KernelScale;
         
-        % FF
-        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',10);
+        Mdl_B = fitcsvm(X_B_red,Y_B_logic,'OptimizeHyperparameters','auto',...
+            'HyperparameterOptimizationOptions',struct('AcquisitionFunctionName',...
+            'expected-improvement-plus','ShowPlots',false));
+        bc_B = Mdl_B.HyperparameterOptimizationResults.XAtMinObjective.BoxConstraint;
+        ks_B = Mdl_B.HyperparameterOptimizationResults.XAtMinObjective.KernelScale;
+        
+        %% automatic CV
+        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',bc_F,'KernelScale',ks_F);
+        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',bc_B,'KernelScale',ks_B);
         cvmdl_FF = crossval(mdl_FF);
-        
-        % BB
-        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',10);
         cvmdl_BB = crossval(mdl_BB);
+        perfAuto_FF(s) = 1 - kfoldLoss(cvmdl_FF);
+        perfAuto_BB(s) = 1 - kfoldLoss(cvmdl_BB);
         
-        % FB
-        %         mdl_FB = fitcsvm(X_F_train,Y_F_train);
-        %         foo = sum(mdl_FB.Beta.*X_B_test(:)) + mdl_FB.Bias;
-        %         prediction_FB(testTrl) = round(1/(1+exp(-foo)));
-        %
-        %         % BF
-        %         mdl_BF = fitcsvm(X_B_train,Y_B_train);
-        %         foo = sum(mdl_BF.Beta.*X_F_test(:)) + mdl_BF.Bias;
-        %         prediction_BF(testTrl) = round(1/(1+exp(-foo)));
-        
+        %% manual CV
+        nSweeps = 10;
+        for k = 1:nSweeps
+            
+            c_F = cvpartition(Y_F_logic,'holdOut',0.1);
+            c_B = cvpartition(Y_B_logic,'holdOut',0.1);
+            
+            idxTrain_F = training(c_F);
+            idxTrain_B = training(c_B);
+            
+            idxTest_F = ~idxTrain_F;
+            idxTest_B = ~idxTrain_B;
+            
+            % train F
+            XTrain_F = X_F_red(idxTrain_F,:);
+            yTrain_F = Y_F_logic(idxTrain_F);
+            
+            % train B
+            XTrain_B = X_B_red(idxTrain_B,:);
+            yTrain_B = Y_B_logic(idxTrain_B);
+            
+            % test F and B
+            XTest_F = X_F_red(idxTest_F,:);
+            yTest_F = Y_F_logic(idxTest_F);
+            XTest_B = X_B_red(idxTest_B,:);
+            yTest_B = Y_B_logic(idxTest_B);
+            
+            mdl_F = fitcsvm(XTrain_F,yTrain_F,'BoxConstraint',bc_F,'KernelScale',ks_F);
+            mdl_B = fitcsvm(XTrain_B,yTrain_B,'BoxConstraint',bc_B,'KernelScale',ks_B);
+            
+            % test within and between goals
+            label_FF = predict(mdl_F,XTest_F);
+            label_BB = predict(mdl_B,XTest_B);
+            label_FB = predict(mdl_F,XTest_B);
+            label_BF = predict(mdl_B,XTest_F);
+            
+            perf_foo_FF(k) = mean(label_FF(:) == yTest_F(:));
+            perf_foo_BB(k) = mean(label_BB(:) == yTest_B(:));
+            perf_foo_FB(k) = mean(label_FB(:) == yTest_B(:));
+            perf_foo_BF(k) = mean(label_BF(:) == yTest_F(:));
+            
+        end
         
         % compute performance
-        performance_FF(s) = 1 - kfoldLoss(cvmdl_FF);
-        performance_BB(s) = 1 - kfoldLoss(cvmdl_BB);
-        %         performance_FB(s) = 1 - kfoldLoss(cvmdl_FB);
-        %         performance_BF(s) = 1 - kfoldLoss(cvmdl_BF);
+        perfManu_FF(s) = mean(perf_foo_FF);
+        perfManu_BB(s) = mean(perf_foo_BB);
+        perfManu_FB(s) = mean(perf_foo_FB);
+        perfManu_BF(s) = mean(perf_foo_BF);
         
-        subplot(6,6,s),bar([performance_FF(s),performance_BB(s)]),ylim([0.4 0.6])
-        
+        figure(h)
+        subplot(6,6,s),bar([perfAuto_FF(s),perfManu_FF(s);perfAuto_BB(s),perfManu_BB(s)]),ylim([0.4 0.6])
     end
     
-    %     performance_within = mean([performance_FF;performance_BB]);
-    %     performance_betwee = mean([performance_FB;performance_BF]);
+    perfAuto_FF_mean = mean(perfAuto_FF);
+    perfAuto_BB_mean = mean(perfAuto_BB);
+    perfManu_FF_mean = mean(perfManu_FF);
+    perfManu_BB_mean = mean(perfManu_BB);
+    perfManu_FB_mean = mean(perfManu_FB);
+    perfManu_BF_mean = mean(perfManu_BF);
     
-    %     figure('color',[1 1 1])
-    %     bar([mean(performance_within),mean(performance_betwee)])
-    %     ylim([0.49 0.53])
+    figure('color',[1 1 1])
+    bar([perfAuto_FF_mean,perfManu_FF_mean;perfAuto_BB_mean,perfManu_BB_mean]),ylim([0.4 0.6])
+    ylim([0.4 0.6])
 end
 
-aaa=mean([performance_FF;performance_BB]);
+clear responsePatterns
+
+aaa=mean([perfManu_FF;perfManu_BB]);
 [h,p,ci,stats] = ttest(aaa-0.5)

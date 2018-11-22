@@ -10,7 +10,7 @@ restoredefaultpath
 analysisName = 'rsa_sl_pulse_ons0';
 analysisName = 'rsa_sl_pulse_choice';
 % analysisName = 'dim_sl_ons0';
-betaid       = 'rsa_pulse_choice';
+% betaid       = 'rsa_pulse_choice';
 thisIsDim    = false;
 
 %% directories

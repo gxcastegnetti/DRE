@@ -52,7 +52,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
 % roiNames = {'sphere_10--20_-54_-8'};
-roiNames = {'box_w-16_16_16-0_20_36'};
+% roiNames = {'sphere_9--28_34_-19'};
 % roiNames = {'lingual'};
 % roiNames = {'ofc'};
 
@@ -71,13 +71,16 @@ for r = 1:length(roiNames)
         
         respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
+        
+        clear subjName roiMaskFile gmMaskFile roiMask gmMask respPatt_foo
     end
-end
+end, clear r s
 
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
-h = figure;
+
 for r = 1:length(roiNames)
+    h = figure;
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -131,6 +134,9 @@ for r = 1:length(roiNames)
         
         nTrials = 80;
         
+        clear pl_F_33 pl_B_33 pl_F_66 pl_B_66
+        clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
+        
         %% optimise models
         Mdl_F = fitcsvm(X_F_red,Y_F_logic,'OptimizeHyperparameters','auto',...
             'HyperparameterOptimizationOptions',struct('AcquisitionFunctionName',...
@@ -144,16 +150,10 @@ for r = 1:length(roiNames)
         bc_B = Mdl_B.HyperparameterOptimizationResults.XAtMinObjective.BoxConstraint;
         ks_B = Mdl_B.HyperparameterOptimizationResults.XAtMinObjective.KernelScale;
         
-        %% automatic CV
-        mdl_FF = fitcsvm(X_F_red,Y_F_logic,'BoxConstraint',bc_F,'KernelScale',ks_F);
-        mdl_BB = fitcsvm(X_B_red,Y_B_logic,'BoxConstraint',bc_B,'KernelScale',ks_B);
-        cvmdl_FF = crossval(mdl_FF);
-        cvmdl_BB = crossval(mdl_BB);
-        perfAuto_FF(s) = 1 - kfoldLoss(cvmdl_FF);
-        perfAuto_BB(s) = 1 - kfoldLoss(cvmdl_BB);
+        clear Mdl_F Mdl_B
         
-        %% manual CV
-        nSweeps = 10;
+        %% CV
+        nSweeps = 100;
         for k = 1:nSweeps
             
             c_F = cvpartition(Y_F_logic,'holdOut',0.1);
@@ -188,36 +188,47 @@ for r = 1:length(roiNames)
             label_FB = predict(mdl_F,XTest_B);
             label_BF = predict(mdl_B,XTest_F);
             
-            perf_foo_FF(k) = mean(label_FF(:) == yTest_F(:));
-            perf_foo_BB(k) = mean(label_BB(:) == yTest_B(:));
-            perf_foo_FB(k) = mean(label_FB(:) == yTest_B(:));
-            perf_foo_BF(k) = mean(label_BF(:) == yTest_F(:));
+            acc_foo_FF(k) = mean(label_FF(:) == yTest_F(:));
+            acc_foo_BB(k) = mean(label_BB(:) == yTest_B(:));
+            acc_foo_FB(k) = mean(label_FB(:) == yTest_B(:));
+            acc_foo_BF(k) = mean(label_BF(:) == yTest_F(:));
             
         end
         
         % compute performance
-        perfManu_FF(s) = mean(perf_foo_FF);
-        perfManu_BB(s) = mean(perf_foo_BB);
-        perfManu_FB(s) = mean(perf_foo_FB);
-        perfManu_BF(s) = mean(perf_foo_BF);
+        acc_FF(s) = mean(acc_foo_FF);
+        acc_BB(s) = mean(acc_foo_BB);
+        acc_FB(s) = mean(acc_foo_FB);
+        acc_BF(s) = mean(acc_foo_BF);
         
         figure(h)
-        subplot(6,6,s),bar([perfAuto_FF(s),perfManu_FF(s);perfAuto_BB(s),perfManu_BB(s)]),ylim([0.4 0.6])
+        subplot(6,6,s)
+        bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
+        bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
+        set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
+        plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+        ylim([0.4 0.6]),xlim([0 5.5])
+        
+        clear acc_foo_FF acc_foo_BB acc_foo_FB acc_foo_BF label_FF label_BB label_FB label_BF c_F c_B
+        clear XTest_F XTest_B XTrain_F XTrain_B bc_F bc_B ks_F ks_B idxTest_F idxTest_B idxTrain_F idxTrain_B
     end
     
-    perfAuto_FF_mean = mean(perfAuto_FF);
-    perfAuto_BB_mean = mean(perfAuto_BB);
-    perfManu_FF_mean = mean(perfManu_FF);
-    perfManu_BB_mean = mean(perfManu_BB);
-    perfManu_FB_mean = mean(perfManu_FB);
-    perfManu_BF_mean = mean(perfManu_BF);
+    acc_FF_mean(r) = mean(acc_FF);
+    acc_BB_mean(r) = mean(acc_BB);
+    acc_FB_mean(r) = mean(acc_FB);
+    acc_BF_mean(r) = mean(acc_BF);
     
     figure('color',[1 1 1])
-    bar([perfAuto_FF_mean,perfManu_FF_mean;perfAuto_BB_mean,perfManu_BB_mean]),ylim([0.4 0.6])
-    ylim([0.4 0.6])
-end
+    bar([1,2],[acc_FF_mean,acc_BB_mean],'facecolor',[0.15 0.45 0.75]),hold on
+    bar([3.5,4.5],[acc_FB_mean,acc_BF_mean],'facecolor',[0.55 0.55 0.55])
+    set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',14)
+    title(roiNames{r},'fontsize',18)
+    plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+    ylim([0.4 0.6]),xlim([0 5.5])
+    
+end, clear r k s
 
 clear responsePatterns
 
-aaa=mean([perfManu_FF;perfManu_BB]);
+aaa=mean([acc_FF;acc_BB]);
 [h,p,ci,stats] = ttest(aaa-0.5)

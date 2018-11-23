@@ -55,7 +55,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'box_w-16_16_16-0_20_36'};
 % roiNames = {'l_hpc'};
-% roiNames = {'sphere_9--28_34_-19'};
+roiNames = {'sphere_9--28_34_-19'};
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -144,10 +144,10 @@ for r = 1:length(roiNames)
         %% svm
         
         % FF
-        [coef, info] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
-        lassoPlot(coef,info,'plottype','CV');
-        legend('show') % Show legend
-        
+%         [coef, info] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
+%         lassoPlot(coef,info,'plottype','CV');
+%         legend('show') % Show legend
+%         
         nSweeps = 25;
         acc_FF_foo = nan(nSweeps,1);
         holdOutFraction = 0.1;

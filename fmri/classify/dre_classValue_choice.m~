@@ -1,4 +1,4 @@
-%% dre_classValue
+%% dre_classValue_choice
 % ~~~
 % GX Castegnetti --- 2018
 
@@ -7,13 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'class_v0';
-
-% ROIs here are:
-%   - ACC
-%   - insulae
-%   - pHPC
-%   - lOFC
+analysisName = 'classChoice_v0';
 
 %% directories
 fs         = filesep;
@@ -54,7 +48,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 % roiNames = {'sphere_10--20_-54_-8'};
 roiNames = {'sphere_9--28_34_-19'};
 % roiNames = {'lingual'};
-% roiNames = {'ofc'};
+roiNames = {'l_hpc'};
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -87,28 +81,16 @@ for r = 1:length(roiNames)
         
         % extract presentation indices
         if taskOrd(s) == 1
-            objIdx_F = [bData(subs(s)).imagination(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
-            objIdx_B = [bData(subs(s)).imagination(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
-            objVal_F = [bData(subs(s)).imagination(1).val; bData(subs(s)).imagination(3).val];
-            objVal_B = [bData(subs(s)).imagination(2).val; bData(subs(s)).imagination(4).val];
+            objVal_F = [bData(subs(s)).choice(1).chMunc;  bData(subs(s)).choice(3).chMunc];
+            objVal_B = [bData(subs(s)).choice(2).chMunc;  bData(subs(s)).choice(4).chMunc];
         elseif taskOrd(s) == 2
-            objIdx_F = [bData(subs(s)).imagination(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
-            objIdx_B = [bData(subs(s)).imagination(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
-            objVal_F = [bData(subs(s)).imagination(2).val; bData(subs(s)).imagination(4).val];
-            objVal_B = [bData(subs(s)).imagination(1).val; bData(subs(s)).imagination(3).val];
+            objVal_F = [bData(subs(s)).choice(2).chMunc;  bData(subs(s)).choice(4).chMunc];
+            objVal_B = [bData(subs(s)).choice(1).chMunc;  bData(subs(s)).choice(3).chMunc];
         end
         
-        % sort indices
-        [~, objIdx_sort_F] = sort(objIdx_F);
-        [~, objIdx_sort_B] = sort(objIdx_B);
-        
-        % sort values accordingly
-        objVal_F = objVal_F(objIdx_sort_F);
-        objVal_B = objVal_B(objIdx_sort_B);
-        
         % take activation patterns
-        X_F = respPatt.(roiNames{r}).(subNames{s})(:,1:120)';
-        X_B = respPatt.(roiNames{r}).(subNames{s})(:,121:240)';
+        X_F = respPatt.(roiNames{r}).(subNames{s})(:,1:48)';
+        X_B = respPatt.(roiNames{r}).(subNames{s})(:,49:96)';
         
         % fix nans
         objVal_F(isnan(objVal_F)) = ceil(50*rand);
@@ -174,24 +156,28 @@ for r = 1:length(roiNames)
             yTrain_B = Y_B_logic(idxTrain_B);
             
             % test F and B
-            XTest_F = X_F_red(idxTest_F,:);
-            yTest_F = Y_F_logic(idxTest_F);
-            XTest_B = X_B_red(idxTest_B,:);
-            yTest_B = Y_B_logic(idxTest_B);
+            XTest_same_F = X_F_red(idxTest_F,:);
+            yTest_same_F = Y_F_logic(idxTest_F);
+            XTest_same_B = X_B_red(idxTest_B,:);
+            yTest_same_B = Y_B_logic(idxTest_B);
+            XTest_diff_F = X_F_red(idxTest_B,:);
+            yTest_diff_F = Y_F_logic(idxTest_B);
+            XTest_diff_B = X_B_red(idxTest_F,:);
+            yTest_diff_B = Y_B_logic(idxTest_F);
             
             mdl_F = fitcsvm(XTrain_F,yTrain_F,'BoxConstraint',bc_F,'KernelScale',ks_F);
             mdl_B = fitcsvm(XTrain_B,yTrain_B,'BoxConstraint',bc_B,'KernelScale',ks_B);
             
             % test within and between goals
-            label_FF = predict(mdl_F,XTest_F);
-            label_BB = predict(mdl_B,XTest_B);
-            label_FB = predict(mdl_F,XTest_B);
-            label_BF = predict(mdl_B,XTest_F);
+            label_FF = predict(mdl_F,XTest_same_F);
+            label_BB = predict(mdl_B,XTest_same_B);
+            label_FB = predict(mdl_F,XTest_diff_B);
+            label_BF = predict(mdl_B,XTest_diff_F);
             
-            acc_foo_FF(k) = mean(label_FF(:) == yTest_F(:));
-            acc_foo_BB(k) = mean(label_BB(:) == yTest_B(:));
-            acc_foo_FB(k) = mean(label_FB(:) == yTest_B(:));
-            acc_foo_BF(k) = mean(label_BF(:) == yTest_F(:));
+            acc_foo_FF(k) = mean(label_FF(:) == yTest_same_F(:));
+            acc_foo_BB(k) = mean(label_BB(:) == yTest_same_B(:));
+            acc_foo_FB(k) = mean(label_FB(:) == yTest_diff_B(:));
+            acc_foo_BF(k) = mean(label_BF(:) == yTest_diff_F(:));
             
         end
         

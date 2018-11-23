@@ -52,9 +52,9 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
 % roiNames = {'sphere_10--20_-54_-8'};
-roiNames = {'sphere_9--28_34_-19'};
+% roiNames = {'sphere_9--28_34_-19'};
 % roiNames = {'lingual'};
-roiNames = {'l_hpc'};
+% roiNames = {'l_hpc'};
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -223,10 +223,10 @@ for r = 1:length(roiNames)
     acc_BF_mean(r) = mean(acc_BF);
     
     figure('color',[1 1 1])
-    bar([1,2],[acc_FF_mean(r),acc_BB_mean(r)],'facecolor',[0.15 0.45 0.75]),hold on
-    bar([3.5,4.5],[acc_FB_mean(r),acc_BF_mean(r)],'facecolor',[0.55 0.55 0.55])
+    bar([1,2],[acc_FF_mean(1),acc_BB_mean(1)],'facecolor',[0.15 0.45 0.75]),hold on
+    bar([3.5,4.5],[acc_FB_mean(1),acc_BF_mean(1)],'facecolor',[0.55 0.55 0.55])
     set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',14)
-    title('OFC - left','fontsize',18)
+    title('HPC - left','fontsize',18)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     

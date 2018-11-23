@@ -47,7 +47,8 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 
 % roiNames = {'sphere_10--20_-54_-8'};
 roiNames = {'sphere_9--28_34_-19'};
-% roiNames = {'lingual'};
+roiNamesTrue = roiNames;
+roiNames = {'lingual'};
 roiNames = {'l_hpc'};
 
 % apply two masks: one for grey matter, one for ROI
@@ -81,64 +82,36 @@ for r = 1:length(roiNames)
         
         % extract presentation indices
         if taskOrd(s) == 1
-            objIdx_F = [bData(subs(s)).choce(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
-            objIdx_B = [bData(subs(s)).choce(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
-            objVal_F = [bData(subs(s)).choce(1).val; bData(subs(s)).imagination(3).val];
-            objVal_B = [bData(subs(s)).choce(2).val; bData(subs(s)).imagination(4).val];
+            objVal_F = [bData(subs(s)).choice(1).chMunc;  bData(subs(s)).choice(3).chMunc];
+            objVal_B = [bData(subs(s)).choice(2).chMunc;  bData(subs(s)).choice(4).chMunc];
         elseif taskOrd(s) == 2
-            objIdx_F = [bData(subs(s)).choce(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
-            objIdx_B = [bData(subs(s)).choce(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
-            objVal_F = [bData(subs(s)).choce(2).val; bData(subs(s)).imagination(4).val];
-            objVal_B = [bData(subs(s)).choce(1).val; bData(subs(s)).imagination(3).val];
+            objVal_F = [bData(subs(s)).choice(2).chMunc;  bData(subs(s)).choice(4).chMunc];
+            objVal_B = [bData(subs(s)).choice(1).chMunc;  bData(subs(s)).choice(3).chMunc];
         end
         
-        % sort indices
-        [~, objIdx_sort_F] = sort(objIdx_F);
-        [~, objIdx_sort_B] = sort(objIdx_B);
-        
-        % sort values accordingly
-        objVal_F = objVal_F(objIdx_sort_F);
-        objVal_B = objVal_B(objIdx_sort_B);
-        
         % take activation patterns
-        X_F = respPatt.(roiNames{r}).(subNames{s})(:,1:120)';
-        X_B = respPatt.(roiNames{r}).(subNames{s})(:,121:240)';
-        
-        % fix nans
-        objVal_F(isnan(objVal_F)) = ceil(50*rand);
-        objVal_B(isnan(objVal_B)) = ceil(50*rand);
+        X_F = respPatt.(roiNames{r}).(subNames{s})(:,1:48)';
+        X_B = respPatt.(roiNames{r}).(subNames{s})(:,49:96)';
         
         % add a constant for univoque determination of median
-        Y_F = objVal_F + (0.00000001*(1:120))';
-        Y_B = objVal_B + (0.00000001*(1:120))';
+        Y_F = objVal_F + (0.00000001*(1:48))';
+        Y_B = objVal_B + (0.00000001*(1:48))';
+
+        Y_F_logic = Y_F > median(Y_F);
+        Y_B_logic = Y_B > median(Y_B);
         
-        % find percentiles
-        pl_F_33 = prctile(Y_F,100/3);
-        pl_F_66 = prctile(Y_F,200/3);
-        pl_B_33 = prctile(Y_B,100/3);
-        pl_B_66 = prctile(Y_B,200/3);
+        nTrials = length(Y_F_logic);
         
-        X_F_red = X_F(Y_F < pl_F_33 | Y_F > pl_F_66,:);
-        Y_F_red = Y_F(Y_F < pl_F_33 | Y_F > pl_F_66);
-        Y_F_logic = Y_F_red > pl_F_66;
-        
-        X_B_red = X_B(Y_B < pl_B_33 | Y_B > pl_B_66,:);
-        Y_B_red = Y_B(Y_B < pl_B_33 | Y_B > pl_B_66);
-        Y_B_logic = Y_B_red > pl_B_66;
-        
-        nTrials = 80;
-        
-        clear pl_F_33 pl_B_33 pl_F_66 pl_B_66
-        clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
+        clear objVal_F objVal_B
         
         %% optimise models
-        Mdl_F = fitcsvm(X_F_red,Y_F_logic,'OptimizeHyperparameters','auto',...
+        Mdl_F = fitcsvm(X_F,Y_F_logic,'OptimizeHyperparameters','auto',...
             'HyperparameterOptimizationOptions',struct('AcquisitionFunctionName',...
             'expected-improvement-plus','ShowPlots',false,'UseParallel',true));
         bc_F = Mdl_F.HyperparameterOptimizationResults.XAtMinObjective.BoxConstraint;
         ks_F = Mdl_F.HyperparameterOptimizationResults.XAtMinObjective.KernelScale;
         
-        Mdl_B = fitcsvm(X_B_red,Y_B_logic,'OptimizeHyperparameters','auto',...
+        Mdl_B = fitcsvm(X_B,Y_B_logic,'OptimizeHyperparameters','auto',...
             'HyperparameterOptimizationOptions',struct('AcquisitionFunctionName',...
             'expected-improvement-plus','ShowPlots',false,'UseParallel',true));
         bc_B = Mdl_B.HyperparameterOptimizationResults.XAtMinObjective.BoxConstraint;
@@ -160,21 +133,21 @@ for r = 1:length(roiNames)
             idxTest_B = ~idxTrain_B;
             
             % train F
-            XTrain_F = X_F_red(idxTrain_F,:);
+            XTrain_F = X_F(idxTrain_F,:);
             yTrain_F = Y_F_logic(idxTrain_F);
             
             % train B
-            XTrain_B = X_B_red(idxTrain_B,:);
+            XTrain_B = X_B(idxTrain_B,:);
             yTrain_B = Y_B_logic(idxTrain_B);
             
             % test F and B
-            XTest_same_F = X_F_red(idxTest_F,:);
+            XTest_same_F = X_F(idxTest_F,:);
             yTest_same_F = Y_F_logic(idxTest_F);
-            XTest_same_B = X_B_red(idxTest_B,:);
+            XTest_same_B = X_B(idxTest_B,:);
             yTest_same_B = Y_B_logic(idxTest_B);
-            XTest_diff_F = X_F_red(idxTest_B,:);
+            XTest_diff_F = X_F(idxTest_B,:);
             yTest_diff_F = Y_F_logic(idxTest_B);
-            XTest_diff_B = X_B_red(idxTest_F,:);
+            XTest_diff_B = X_B(idxTest_F,:);
             yTest_diff_B = Y_B_logic(idxTest_F);
             
             mdl_F = fitcsvm(XTrain_F,yTrain_F,'BoxConstraint',bc_F,'KernelScale',ks_F);
@@ -220,7 +193,7 @@ for r = 1:length(roiNames)
     bar([1,2],[acc_FF_mean(r),acc_BB_mean(r)],'facecolor',[0.15 0.45 0.75]),hold on
     bar([3.5,4.5],[acc_FB_mean(r),acc_BF_mean(r)],'facecolor',[0.55 0.55 0.55])
     set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',14)
-    title('OFC - left','fontsize',18)
+    title(roiNamesTrue{r},'fontsize',18)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     

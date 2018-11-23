@@ -1,4 +1,4 @@
-%% dre_classValue
+%% dre_classValue_choice
 % ~~~
 % GX Castegnetti --- 2018
 
@@ -7,13 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'class_v0';
-
-% ROIs here are:
-%   - ACC
-%   - insulae
-%   - pHPC
-%   - lOFC
+analysisName = 'classChoice_v0';
 
 %% directories
 fs         = filesep;
@@ -46,7 +40,7 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
 filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
-load(filePatterns,'responsePatterns'), clear filePatterns
+load(filePatterns,'responsePatterns')
 
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
@@ -87,15 +81,15 @@ for r = 1:length(roiNames)
         
         % extract presentation indices
         if taskOrd(s) == 1
-            objIdx_F = [bData(subs(s)).imagination(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
-            objIdx_B = [bData(subs(s)).imagination(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
-            objVal_F = [bData(subs(s)).imagination(1).val; bData(subs(s)).imagination(3).val];
-            objVal_B = [bData(subs(s)).imagination(2).val; bData(subs(s)).imagination(4).val];
+            objIdx_F = [bData(subs(s)).choce(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
+            objIdx_B = [bData(subs(s)).choce(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
+            objVal_F = [bData(subs(s)).choce(1).val; bData(subs(s)).imagination(3).val];
+            objVal_B = [bData(subs(s)).choce(2).val; bData(subs(s)).imagination(4).val];
         elseif taskOrd(s) == 2
-            objIdx_F = [bData(subs(s)).imagination(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
-            objIdx_B = [bData(subs(s)).imagination(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
-            objVal_F = [bData(subs(s)).imagination(2).val; bData(subs(s)).imagination(4).val];
-            objVal_B = [bData(subs(s)).imagination(1).val; bData(subs(s)).imagination(3).val];
+            objIdx_F = [bData(subs(s)).choce(2).objIdx'; bData(subs(s)).imagination(4).objIdx'];
+            objIdx_B = [bData(subs(s)).choce(1).objIdx'; bData(subs(s)).imagination(3).objIdx'];
+            objVal_F = [bData(subs(s)).choce(2).val; bData(subs(s)).imagination(4).val];
+            objVal_B = [bData(subs(s)).choce(1).val; bData(subs(s)).imagination(3).val];
         end
         
         % sort indices
@@ -205,13 +199,13 @@ for r = 1:length(roiNames)
         acc_FB(s) = mean(acc_foo_FB);
         acc_BF(s) = mean(acc_foo_BF);
         
-%         figure(h)
-%         subplot(6,6,s)
-%         bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
-%         bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
-%         set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
-%         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
-%         ylim([0.4 0.6]),xlim([0 5.5])
+        figure(h)
+        subplot(6,6,s)
+        bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
+        bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
+        set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
+        plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+        ylim([0.4 0.6]),xlim([0 5.5])
         
         clear acc_foo_FF acc_foo_BB acc_foo_FB acc_foo_BF label_FF label_BB label_FB label_BF c_F c_B
         clear XTest_F XTest_B XTrain_F XTrain_B bc_F bc_B ks_F ks_B idxTest_F idxTest_B idxTrain_F idxTrain_B

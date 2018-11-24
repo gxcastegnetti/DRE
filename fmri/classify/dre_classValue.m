@@ -53,8 +53,6 @@ roiNamesTrue = roiNames;
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'sphere_9--28_34_-19'};
 
-% roiNames = {'l_hpc'};
-
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
     for s = 1:length(subs)
@@ -229,8 +227,8 @@ for r = 1:length(roiNames)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     
-    aaa=mean([acc_FB]);
-    [h,p,ci,stats] = ttest(acc_BF-0.5)
+    aaa=mean([acc_FF;acc_BB]);
+    [h,p,ci,stats] = ttest(aaa-0.5)
     
 end, clear r k s
 

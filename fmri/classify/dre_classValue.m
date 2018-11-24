@@ -39,8 +39,6 @@ mkdir([dir.out,fs,analysisName])
 subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
-% subs = [4 5 7];
-
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,0);
 
@@ -50,10 +48,11 @@ load(filePatterns,'responsePatterns'), clear filePatterns
 
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
-
+roiNames = {'lingual'};
+roiNamesTrue = roiNames;
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'sphere_9--28_34_-19'};
-% roiNames = {'lingual'};
+
 % roiNames = {'l_hpc'};
 
 % apply two masks: one for grey matter, one for ROI
@@ -80,7 +79,7 @@ roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
 
 for r = 1:length(roiNames)
-    h = figure;
+    h{r} = figure;
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -205,13 +204,13 @@ for r = 1:length(roiNames)
         acc_FB(s) = mean(acc_foo_FB);
         acc_BF(s) = mean(acc_foo_BF);
         
-%         figure(h)
-%         subplot(6,6,s)
-%         bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
-%         bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
-%         set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
-%         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
-%         ylim([0.4 0.6]),xlim([0 5.5])
+        figure(h{r})
+        subplot(6,6,s)
+        bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
+        bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
+        set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
+        plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+        ylim([0.4 0.6]),xlim([0 5.5])
         
         clear acc_foo_FF acc_foo_BB acc_foo_FB acc_foo_BF label_FF label_BB label_FB label_BF c_F c_B
         clear XTest_F XTest_B XTrain_F XTrain_B bc_F bc_B ks_F ks_B idxTest_F idxTest_B idxTrain_F idxTrain_B
@@ -223,10 +222,10 @@ for r = 1:length(roiNames)
     acc_BF_mean(r) = mean(acc_BF);
     
     figure('color',[1 1 1])
-    bar([1,2],[acc_FF_mean(1),acc_BB_mean(1)],'facecolor',[0.15 0.45 0.75]),hold on
-    bar([3.5,4.5],[acc_FB_mean(1),acc_BF_mean(1)],'facecolor',[0.55 0.55 0.55])
+    bar([1,2],[acc_FF_mean(r),acc_BB_mean(r)],'facecolor',[0.15 0.45 0.75]),hold on
+    bar([3.5,4.5],[acc_FB_mean(r),acc_BF_mean(r)],'facecolor',[0.55 0.55 0.55])
     set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',14)
-    title('HPC - left','fontsize',18)
+    title(roiNamesTrue{r},'fontsize',18)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     
@@ -234,5 +233,5 @@ end, clear r k s
 
 clear responsePatterns
 
-aaa=mean([acc_FF;acc_BB]);
-[h,p,ci,stats] = ttest(aaa-0.5)
+aaa=mean([acc_FB]);
+[h,p,ci,stats] = ttest(acc_BF-0.5)

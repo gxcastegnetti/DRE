@@ -215,9 +215,8 @@ for s = 1:length(subs)
         bData(subs(s)).choice(r).valUnc = valUnc;
         bData(subs(s)).choice(r).chMunc = chMunc;
         bData(subs(s)).choice(r).movOnset = movCho;
-        bData(subs(s)).choice(r).movSide = sidCho;
-        bData(subs(s)).choice(r).objPresented = choObjPresented;
-        bData(subs(s)).choice(r).objChosen = chosenChoice_day2;
+        bData(subs(s)).choice(r).movSide = sidCho;choObjPresented
+        bData(subs(s)).choice(r).objPresented = movCho;
         
         % median splits
         bData(subs(s)).choice(r).k_valDiff.low.onset = onsCho(idxDV_L);

@@ -79,7 +79,7 @@ roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
 
 for r = 1:length(roiNames)
-    h{r} = figure;
+    hfig{r} = figure;
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -204,7 +204,7 @@ for r = 1:length(roiNames)
         acc_FB(s) = mean(acc_foo_FB);
         acc_BF(s) = mean(acc_foo_BF);
         
-        figure(h{r})
+        figure(hfig{r})
         subplot(6,6,s)
         bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
         bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
@@ -229,9 +229,10 @@ for r = 1:length(roiNames)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     
+    aaa=mean([acc_FB]);
+    [h,p,ci,stats] = ttest(acc_BF-0.5)
+    
 end, clear r k s
 
 clear responsePatterns
 
-aaa=mean([acc_FB]);
-[h,p,ci,stats] = ttest(acc_BF-0.5)

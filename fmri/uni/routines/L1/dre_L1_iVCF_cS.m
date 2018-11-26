@@ -52,7 +52,7 @@ for s = 1:length(subs)
         
         % parametric modulations of value
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).name = 'imagin. value';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = bData(subs(s)).imagination(r).val;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).param = 50*rand(length(bData(subs(s)).imagination(r).val),1) + 0*bData(subs(s)).imagination(r).val;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(1).poly = 1;
         
         % parametric modulations of confidence

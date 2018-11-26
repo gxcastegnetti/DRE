@@ -146,7 +146,7 @@ for cMappingVoxI = 1:nVox_mappingMask_request
     searchlightRDM_s3s4 = corr(t_s3(:,cIllValidVox_YspaceINDs)', t_s4(:,cIllValidVox_YspaceINDs)');
     
     % take difference of correlations across context and within context
-    smm_t2(x,y,z) = -(mean(searchlightRDM_s1s3(:)) + mean(searchlightRDM_s2s4(:)) - mean(searchlightRDM_s1s2(:)) - mean(searchlightRDM_s3s4(:)));
+    smm_t2(x,y,z) = mean(searchlightRDM_s1s3(:)) + mean(searchlightRDM_s2s4(:)) - mean(searchlightRDM_s1s2(:)) - mean(searchlightRDM_s3s4(:));
     
 end
 

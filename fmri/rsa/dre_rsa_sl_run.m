@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_SlGoal';
+analysisName = 'rsa_sl_pulse_ons0_off';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories
@@ -142,7 +142,6 @@ for s = 1:length(subs)
     
     % run searchlight
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
-%     rs = searchlightGoal(responsePatterns.(thisSubject), binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
     
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

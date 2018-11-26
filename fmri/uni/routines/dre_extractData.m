@@ -103,7 +103,7 @@ for s = 1:length(subs)
         movCho = Mday2(Mday2(:,3)==1,8);
         sidCho = Mday2(Mday2(:,3)==1,7);
         
-        % familiarity and value
+        % familiarity and price
         Mday1F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);
         
         % imagination

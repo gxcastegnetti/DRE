@@ -29,9 +29,11 @@ for s = 1:length(subs)
         if taskOrd(s) == 1
             day2Order = {'F','B','F','B'};
             day1Order = {'1','2','1','2'};
+            day1Order = {'2','1','2','1'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
         elseif taskOrd(s) == 2
             day2Order = {'B','F','B','F'};
             day1Order = {'2','1','2','1'};
+            day1Order = {'1','2','1','2'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
         end
         
         %% subject directories

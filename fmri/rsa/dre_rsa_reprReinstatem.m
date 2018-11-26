@@ -30,8 +30,8 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% load response patterns during choice and during imagination
 filePattIma = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
@@ -43,9 +43,9 @@ respPattCho_unmasked = responsePatterns; clear responsePatterns
 
 %% ROI
 roiNames = {'sphere_9--28_34_-19'};
-roiNames = {'l_hpc'};
-roiNames = {'lingual'};
-roiNames = {'vmpfc'};
+% roiNames = {'l_hpc'};
+% roiNames = {'lingual'};
+% roiNames = {'vmpfc'};
 
 %% apply grey matter and ROI masks
 for r = 1:length(roiNames)
@@ -127,5 +127,6 @@ for r = 1:length(roiNames)
         end
         corr_choiceVSchosen_sub(s) = mean(corr_choiceVSchosen);
         corr_choiceVSunchos_sub(s) = mean(corr_choiceVSunchos);
+        corr_choiceVdiffere_sub(s) = mean(corr_choiceVSchosen - corr_choiceVSunchos);
     end
 end

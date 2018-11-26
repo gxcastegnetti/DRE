@@ -9,8 +9,8 @@ restoredefaultpath
 %% analysisName
 analysisName = 'rsa_sl_pulse_ons0';
 analysisName = 'rsa_sl_pulse_choice';
-% analysisName = 'dim_sl_ons0';
-% betaid       = 'rsa_pulse_choice';
+analysisName = 'rsa_sl_pulse_ons0_Mahlanobis';
+betaid       = 'rsa_pulse_ons0';
 thisIsDim    = false;
 
 %% directories
@@ -44,9 +44,9 @@ userOptions.forcePromptReply = 'r';
 
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
-% modelNames = {'val','fam','oid','cxt'};
+modelNames = {'val','fam','oid','cxt'};
 
-modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
+% modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
 if thisIsDim
     modelNames = {'dim'};

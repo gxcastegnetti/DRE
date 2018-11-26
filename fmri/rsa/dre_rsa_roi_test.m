@@ -64,7 +64,7 @@ load(filePatterns,'responsePatterns')
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-roiNames = {'hpc_lr'};
+roiNames = {'lingual'};
 
 % apply two masks: one for grey matter, one for ROI 
 for r = 1:length(roiNames)

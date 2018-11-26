@@ -55,7 +55,9 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'box_w-16_16_16-0_20_36'};
 % roiNames = {'l_hpc'};
-roiNames = {'sphere_9--28_34_-19'};
+roiNames = {'lingual','l_hpc','sphere_9--28_34_-19','box_w-16_16_16-0_20_36'};
+% roiNames = {'lingual'};
+roiNamesTrue = roiNames;
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -77,7 +79,7 @@ end
 
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
-figure
+h=figure('color',[1 1 1]);
 for r = 1:length(roiNames)
     for s = 1:length(subs)
         
@@ -141,14 +143,19 @@ for r = 1:length(roiNames)
         
         nTrials = 80;
         
-        %% svm
+        %% logistic regression
         
         % FF
-%         [coef, info] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
-%         lassoPlot(coef,info,'plottype','CV');
-%         legend('show') % Show legend
-%         
-        nSweeps = 25;
+        [~, info_F] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
+        %         lassoPlot(coef,info,'plottype','CV');
+        %         legend('show') % Show legend
+        
+        % FF
+        [~, info_B] = lassoglm(X_B_red,Y_B_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
+        %         lassoPlot(coef,info,'plottype','CV');
+        %         legend('show') % Show legend
+        
+        nSweeps = 100;
         acc_FF_foo = nan(nSweeps,1);
         holdOutFraction = 0.1;
         for k = 1:nSweeps
@@ -167,52 +174,59 @@ for r = 1:length(roiNames)
             XTrain_B = X_B_red(idxTrain_B,:);
             yTrain_B = Y_B_logic(idxTrain_B);
             
-            XTest_F = X_F_red(idxTest_F,:);
-            yTest_F = Y_F_logic(idxTest_F);
-            XTest_B = X_B_red(idxTest_B,:);
-            yTest_B = Y_B_logic(idxTest_B);
+            XTest_same_F = X_F_red(idxTest_F,:);
+            yTest_same_F = Y_F_logic(idxTest_F);
+            XTest_same_B = X_B_red(idxTest_B,:);
+            yTest_same_B = Y_B_logic(idxTest_B);
+            XTest_diff_F = X_F_red(idxTest_B,:);
+            yTest_diff_F = Y_F_logic(idxTest_B);
+            XTest_diff_B = X_B_red(idxTest_F,:);
+            yTest_diff_B = Y_B_logic(idxTest_F);
             
-            [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
-            [b_B,i_B] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
-            
+            %             [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
+            %             [b_B,i_B] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
+            [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',info_F.LambdaMinDeviance);
+            [b_B,i_B] = lassoglm(XTrain_B,yTrain_B,'binomial','lambda',info_B.LambdaMinDeviance);
             for j = 1:round(holdOutFraction*nTrials)
                 
                 % take test samples
-                XTest_F_foo = XTest_F(j,:);
-                XTest_B_foo = XTest_B(j,:);
+                XTest_same_F_foo = XTest_same_F(j,:);
+                XTest_same_B_foo = XTest_same_B(j,:);
+                XTest_diff_B_foo = XTest_diff_B(j,:);
+                XTest_diff_F_foo = XTest_diff_F(j,:);
                 
                 % FF
-                foo = sum(b_F.*XTest_F_foo(:)) + i_F.Intercept;
+                foo = sum(b_F.*XTest_same_F_foo(:)) + i_F.Intercept;
                 label_FF(j) = round(1./(1+exp(-foo)));
                 
                 % BB
-                foo = sum(b_B.*XTest_B_foo(:)) + i_B.Intercept;
+                foo = sum(b_B.*XTest_same_B_foo(:)) + i_B.Intercept;
                 label_BB(j) = round(1./(1+exp(-foo)));
                 
                 % FB
-                foo = sum(b_F.*XTest_B_foo(:)) + i_F.Intercept;
+                foo = sum(b_F.*XTest_diff_B_foo(:)) + i_F.Intercept;
                 label_FB(j) = round(1./(1+exp(-foo)));
                 
                 % BF
-                foo = sum(b_B.*XTest_F_foo(:)) + i_B.Intercept;
+                foo = sum(b_B.*XTest_diff_F_foo(:)) + i_B.Intercept;
                 label_BF(j) = round(1./(1+exp(-foo)));
             end
             
-            acc_FF_foo(k) = mean(label_FF(:) == yTest_F);
-            acc_BB_foo(k) = mean(label_BB(:) == yTest_B);
-            acc_FB_foo(k) = mean(label_FB(:) == yTest_F);
-            acc_BF_foo(k) = mean(label_BF(:) == yTest_B);
+            acc_foo_FF(k) = mean(label_FF(:) == yTest_same_F(:));
+            acc_foo_BB(k) = mean(label_BB(:) == yTest_same_B(:));
+            acc_foo_FB(k) = mean(label_FB(:) == yTest_diff_B(:));
+            acc_foo_BF(k) = mean(label_BF(:) == yTest_diff_F(:));
         end
         
-        acc_FF_mean(s) = mean(acc_FF_foo);
-        acc_BB_mean(s) = mean(acc_BB_foo);
-        acc_FB_mean(s) = mean(acc_FB_foo);
-        acc_BF_mean(s) = mean(acc_BF_foo);
+        acc_FF_mean(s) = mean(acc_foo_FF);
+        acc_BB_mean(s) = mean(acc_foo_BB);
+        acc_FB_mean(s) = mean(acc_foo_FB);
+        acc_BF_mean(s) = mean(acc_foo_BF);
         
         %         clear prediction_FF prediction_BB objIdx_F objIdx_B
         
     end
-    figure('color',[1 1 1]),bar([mean(acc_FF_mean),mean(acc_BB_mean);mean(acc_FB_mean),mean(acc_BF_mean)])
-    ylim([0.45 0.55])
+    figure(h),subplot(2,3,r),bar([mean(acc_FF_mean),mean(acc_BB_mean);mean(acc_FB_mean),mean(acc_BF_mean)])
+    ylim([0.45 0.57]),title(roiNamesTrue{r})
     aaa = acc_FF_mean + acc_BB_mean - acc_FB_mean - acc_BF_mean;
 end

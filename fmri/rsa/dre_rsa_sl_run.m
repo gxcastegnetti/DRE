@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
+analysisName = 'rsa_sl_pulse_ons0_SlGoal';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories
@@ -56,12 +56,12 @@ end
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,roiName];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
-% if ~exist(filePatterns,'file')
-responsePatterns = fMRIDataPreparation('SPM', userOptions);
-save(filePatterns,'responsePatterns','-v7.3')
-% else
-%     load(filePatterns,'responsePatterns')
-% end
+if ~exist(filePatterns,'file')
+    responsePatterns = fMRIDataPreparation('SPM', userOptions);
+    save(filePatterns,'responsePatterns','-v7.3')
+else
+    load(filePatterns,'responsePatterns')
+end
 
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
@@ -78,8 +78,6 @@ searchlightOptions.nConditions = 240;
 % create matrix for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
     diag(ones(120,1)), diag(ones(120,1))];
-subs = [7 20 50];
-taskOrd = [1 2 1];
 for s = 1:length(subs)
     
     % update user
@@ -144,6 +142,8 @@ for s = 1:length(subs)
     
     % run searchlight
     [rs,~,~,~] = searchlightMapping_fMRI(responsePatterns.(thisSubject), model, binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
+%     rs = searchlightGoal(responsePatterns.(thisSubject), binaryMask, userOptions, searchlightOptions); %#ok<*ASGLU>
+    
     save([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

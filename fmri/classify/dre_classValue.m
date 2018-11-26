@@ -49,7 +49,8 @@ load(filePatterns,'responsePatterns'), clear filePatterns
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 roiNames = {'lingual'};
-roiNamesTrue = roiNames;
+roiNames = {'lingual','l_hpc','sphere_9--28_34_-19','box_w-16_16_16-0_20_36','phc','insula_atlas'};
+roiNamesTrue = {'lingual gyrus (atlas)','left HPC (atlas)','left OFC (activ.)','ACC (activ.)','PHC (atlas)','insula (atlas)'};
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'sphere_9--28_34_-19'};
 
@@ -76,8 +77,9 @@ end, clear r s
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
 
+figAllRois = figure('color',[1 1 1]);
 for r = 1:length(roiNames)
-    hfig{r} = figure;
+%     hfig{r} = figure;
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -202,13 +204,13 @@ for r = 1:length(roiNames)
         acc_FB(s) = mean(acc_foo_FB);
         acc_BF(s) = mean(acc_foo_BF);
         
-        figure(hfig{r})
-        subplot(6,6,s)
-        bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
-        bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
-        set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
-        plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
-        ylim([0.4 0.6]),xlim([0 5.5])
+%         figure(hfig{r})
+%         subplot(6,6,s)
+%         bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
+%         bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
+%         set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
+%         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+%         ylim([0.4 0.6]),xlim([0 5.5])
         
         clear acc_foo_FF acc_foo_BB acc_foo_FB acc_foo_BF label_FF label_BB label_FB label_BF c_F c_B
         clear XTest_F XTest_B XTrain_F XTrain_B bc_F bc_B ks_F ks_B idxTest_F idxTest_B idxTrain_F idxTrain_B
@@ -219,7 +221,7 @@ for r = 1:length(roiNames)
     acc_FB_mean(r) = mean(acc_FB);
     acc_BF_mean(r) = mean(acc_BF);
     
-    figure('color',[1 1 1])
+    figure(figAllRois),subplot(2,3,r)
     bar([1,2],[acc_FF_mean(r),acc_BB_mean(r)],'facecolor',[0.15 0.45 0.75]),hold on
     bar([3.5,4.5],[acc_FB_mean(r),acc_BF_mean(r)],'facecolor',[0.55 0.55 0.55])
     set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',14)

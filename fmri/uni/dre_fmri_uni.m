@@ -22,10 +22,7 @@ addpath(genpath(dir.spm))
 addpath(genpath([foodir,fs,'routines'])), clear foodir idcs newdir4 dirSPM
 
 %% Subjects
-subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49];
-taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
-
-subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% extract behavioural data
@@ -33,7 +30,7 @@ bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCF_cS';
+    analysisName = 'uni_pulse_iVCF_cS_off';
     
     % 1st level
     timing.iOns = 0; % onset for imagination
@@ -53,7 +50,7 @@ if true
     dre_L2(dir,analysisName,'choice_onset',subs,5);
     dre_L2(dir,analysisName,'choice_valueChosen',subs,6);
 end
-
+keyboard
 %% box - value, confid, famil, pmod of imagination; value selected pmod of choice
 if false
     analysisName = 'uni_box_iVCF_cS';

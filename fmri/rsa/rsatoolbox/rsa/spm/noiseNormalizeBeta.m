@@ -28,7 +28,7 @@ function [u_hat,resMS,Sw_hat,beta_hat,shrinkage,trRR]=noiseNormalizeBeta(Y,SPM,v
 % 2/2015
 Opt.normmode = 'overall';  % Either runwise or overall
 Opt.shrinkage = []; 
-Opt = rsa.getUserOptions(varargin,Opt);
+Opt = getUserOptions(varargin,Opt);
 [T,P]=size(Y);                                             %%% number of time points and voxels
 
 %%% Discard NaN voxels
@@ -66,7 +66,7 @@ switch (Opt.normmode)
             idxQ    = partQ==i;             % Regressors for this partition 
             numFilt = size(xX.K(i).X0,2);   % Number of filter variables for this run 
 
-            [Sw_reg(:,:,i),shrinkage(i),Sw_hat(:,:,i)]=rsa.stat.covdiag(res(idxT,:),sum(idxT)-sum(idxQ)-numFilt-1,'shrinkage',Opt.shrinkage);                    %%% regularize Sw_hat through optimal shrinkage
+            [Sw_reg(:,:,i),shrinkage(i),Sw_hat(:,:,i)]=covdiag(res(idxT,:),sum(idxT)-sum(idxQ)-numFilt-1,'shrinkage',Opt.shrinkage);                    %%% regularize Sw_hat through optimal shrinkage
             % Postmultiply by the inverse square root of the estimated matrix 
             [V,L]=eig(Sw_reg(:,:,i));       % This is overall faster and numerical more stable than Sw_hat.^-1/2
             l=diag(L);
@@ -77,7 +77,7 @@ switch (Opt.normmode)
         Sw_hat = mean(Sw_hat,3); 
         Sw_reg = mean(Sw_reg,3); 
     case 'overall'              %%% do overall noise normalization
-        [Sw_reg,shrinkage,Sw_hat]=rsa.stat.covdiag(res,SPM.xX.erdf,'shrinkage',Opt.shrinkage);   %%% regularize Sw_hat through optimal shrinkage
+        [Sw_reg,shrinkage,Sw_hat]=covdiag(res,SPM.xX.erdf,'shrinkage',Opt.shrinkage);   %%% regularize Sw_hat through optimal shrinkage
 
         % Postmultiply by the inverse square root of the estimated matrix 
         [V,L]=eig(Sw_reg);

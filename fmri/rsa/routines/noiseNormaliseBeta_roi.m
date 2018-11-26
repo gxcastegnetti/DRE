@@ -66,7 +66,7 @@ for i=1:length(volIn)
 end
  
 %% compute the white betas
-B = rsa.spm.noiseNormalizeBeta(Y',SPM);
+B = noiseNormalizeBeta(Y',SPM);
 
 function roi = defineSphericalROI(peakCoords,rad_mm,voxSize_mm,mapDim,monitor)
 % creates a binary spherical ROI centred at a given location.

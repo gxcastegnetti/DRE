@@ -12,7 +12,7 @@ function [sigma,shrinkage,sample]=covdiag(x,df,varargin)
 % 
 
 Opt.shrinkage = []; 
-Opt = rsa.getUserOptions(varargin,Opt);
+Opt = getUserOptions(varargin,Opt);
 
 % de-mean returns
 [t,n]=size(x);

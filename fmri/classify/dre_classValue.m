@@ -8,12 +8,7 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'class_v0';
-
-% ROIs here are:
-%   - ACC
-%   - insulae
-%   - pHPC
-%   - lOFC
+betaid       = 'rsa_pulse_ons0';
 
 %% directories
 fs         = filesep;
@@ -49,31 +44,76 @@ load(filePatterns,'responsePatterns'), clear filePatterns
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 roiNames = {'lingual'};
-roiNames = {'lingual','l_hpc','sphere_9--28_34_-19','box_w-16_16_16-0_20_36','phc','insula_atlas'};
-roiNamesTrue = {'lingual gyrus (atlas)','left HPC (atlas)','left OFC (activ.)','ACC (activ.)','PHC (atlas)','insula (atlas)'};
+roiNamesTrue = {'lingual gyrus (atlas)','PHC (atlas)','insula (atlas)'};
+roiNames = {'lingual'};
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'sphere_9--28_34_-19'};
 
+%% apply two masks: one for grey matter, one for ROI
+% for r = 1:length(roiNames)
+%     for s = 1:length(subs)
+%         subjName = ['SF',num2str(subs(s),'%03d')];
+%         roiMaskFile = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
+%         gmMaskFile =  [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
+%         roiMask = spm_read_vols(spm_vol(roiMaskFile));
+%         gmMask = spm_read_vols(spm_vol(gmMaskFile));
+%         
+%         % vectorise it
+%         roiMask = reshape(roiMask, 1, []);
+%         gmMask = reshape(gmMask, 1, []);
+%         
+%         respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
+%         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
+%         
+%         clear subjName roiMaskFile gmMaskFile roiMask gmMask respPatt_foo
+%     end
+% end, clear r s
+
+%%
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
     for s = 1:length(subs)
-        subjName = ['SF',num2str(subs(s),'%03d')];
-        roiMaskFile = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
-        gmMaskFile =  [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
-        roiMask = spm_read_vols(spm_vol(roiMaskFile));
-        gmMask = spm_read_vols(spm_vol(gmMaskFile));
         
-        % vectorise it
-        roiMask = reshape(roiMask, 1, []);
-        gmMask = reshape(gmMask, 1, []);
-        
-        respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
-        respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
-        
-        clear subjName roiMaskFile gmMaskFile roiMask gmMask respPatt_foo
-    end
-end, clear r s
+        if taskOrd(s) == 1
+            for obj = 1:120
+                objIdx_sess_F = [bData(subs(s)).imagination(1).objIdx'; nan(60,1); bData(subs(s)).imagination(3).objIdx'; nan(60,1)];
+                objIdx_sess_B = [nan(60,1); bData(subs(s)).imagination(2).objIdx'; nan(60,1); bData(subs(s)).imagination(4).objIdx'];
+                objIdx_F(obj) = find(objIdx_sess_F == obj);
+                objIdx_B(obj) = find(objIdx_sess_B == obj);
+            end
+        elseif taskOrd(s) == 2
+            for obj = 1:120
+                objIdx_sess_B = [bData(subs(s)).imagination(1).objIdx'; nan(60,1); bData(subs(s)).imagination(3).objIdx'; nan(60,1)];
+                objIdx_sess_F = [nan(60,1); bData(subs(s)).imagination(2).objIdx'; nan(60,1); bData(subs(s)).imagination(4).objIdx'];
+                objIdx_F(obj) = find(objIdx_sess_F == obj);
+                objIdx_B(obj) = find(objIdx_sess_B == obj);
+            end
+        end
+        toNormalOrder = [objIdx_F,objIdx_B];
 
+        % SPM file from 1st level analysis
+        subjSPMFile = [dir.beta,fs,'SF',num2str(subs(s),'%03d'),fs,'SPM.mat'];
+        load(subjSPMFile)
+        
+        % subjective mask
+        subjMaskFile.fname = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
+        
+        % whiten betas
+        B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
+        
+        subjName = ['SF',num2str(subs(s),'%03d')];
+        
+        % take only those corresponding to conditions
+        B = real(B([1:60,67:126,133:192,199:258],:));
+        B = B(toNormalOrder,:);
+        
+        respPatt.(['roi',num2str(r)]).(subjName) = B;
+
+    end
+end
+
+%%
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
 

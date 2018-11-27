@@ -75,12 +75,12 @@ for r = 1:length(roiNames)
         B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
         
         % take only those corresponding to conditions
-        B = (B([1:60,67:126,133:192,199:258],:));
-        B = B(toNormalOrder,:);
-        B = B(ordData(subs(s)).norm2val_cont,:);
+        B = real(B([1:60,67:126,133:192,199:258],:));
+%         B = B(toNormalOrder,:);
+%         B = B(ordData(subs(s)).norm2val_cont,:);
         
         % construct RDM
-        rdm = squareform(pdist(B,'euclidean'));
+        rdm = squareform(pdist(B,'correlation'));
         RDM_struct(s).RDM = rdm;
         RDM_struct(s).name = ['sub#',num2str(subs(s),'%03d')];
         RDM_struct(s).color = [0 0 1];
@@ -90,6 +90,6 @@ for r = 1:length(roiNames)
 end
 
 RDM_mean.RDM = mean(RDM_all,3);
-RDM_mean.name = 'Average';
+RDM_mean.name = 'Pearson after prewhitening';
 RDM_mean.color = [0 0 1];
 figureRDMs(RDM_mean,userOptions)

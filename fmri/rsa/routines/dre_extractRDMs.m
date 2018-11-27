@@ -69,8 +69,8 @@ for s = 1:length(subs)
     
     %% load behavioural data from day 1
     dirBeha = [dirData,fs,'behaviour',fs,'SF',num2str(subs(s),'%03d')];
-    Mday1_B = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B1_DRE.csv']); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WRONG
-    Mday1_F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B2_DRE.csv']); %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% WRONG
+    Mday1_F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B1_DRE.csv']);
+    Mday1_B = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B2_DRE.csv']);
     Mday1_p = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);
     
     %% assign scores to imagination trials

@@ -9,7 +9,7 @@ restoredefaultpath
 %% analysisName
 analysisName = 'rsa_sl_pulse_ons0';
 analysisName = 'rsa_sl_pulse_choice';
-analysisName = 'rsa_sl_pulse_ons0_Mahlanobis';
+analysisName = 'rsa_sl_pulse_ons0_off';
 betaid       = 'rsa_pulse_ons0';
 thisIsDim    = false;
 

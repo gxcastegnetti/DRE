@@ -29,11 +29,11 @@ for s = 1:length(subs)
         if taskOrd(s) == 1
             day2Order = {'F','B','F','B'};
             day1Order = {'1','2','1','2'};
-            day1Order = {'2','1','2','1'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
+%             day1Order = {'2','1','2','1'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
         elseif taskOrd(s) == 2
             day2Order = {'B','F','B','F'};
             day1Order = {'2','1','2','1'};
-            day1Order = {'1','2','1','2'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
+%             day1Order = {'1','2','1','2'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
         end
         
         %% subject directories
@@ -108,7 +108,7 @@ for s = 1:length(subs)
         
         % imagination
         for i = 1:length(idIma_day2)
-            idxFam_day2(i) = find(Mday1F(:,2)==idIma_day2(i)); %#ok<*AGROW>
+            idxFam_day2(i) = find(Mday1F(:,2) == idIma_day2(i)); %#ok<*AGROW>
         end
         objFam = Mday1F(idxFam_day2,3); % familiarity
         objPri = Mday1F(idxFam_day2,4); % monetary value

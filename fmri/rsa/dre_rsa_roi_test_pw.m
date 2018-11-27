@@ -41,7 +41,7 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 
 %% define betas and apply mask
-roiNames = {'lingual'};
+roiNames = {'l_hpc'};
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
@@ -80,14 +80,14 @@ for r = 1:length(roiNames)
 %         B = B(ordData(subs(s)).norm2val_cont,:);
         
         % construct RDM
-        rdm = squareform(pdist(B,'correlation'));
+        rdm = squareform(pdist(B,'euclidean'));
         RDM_struct(s).RDM = rdm;
         RDM_struct(s).name = ['sub#',num2str(subs(s),'%03d')];
         RDM_struct(s).color = [0 0 1];
         RDM_all(:,:,s) = rdm;
-%         figureRDMs(RDM_struct,userOptions)
     end
 end
+        figureRDMs(RDM_struct,userOptions)
 
 RDM_mean.RDM = mean(RDM_all,3);
 RDM_mean.name = 'Pearson after prewhitening';

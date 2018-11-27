@@ -45,7 +45,8 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 roiNames = {'lingual'};
 roiNamesTrue = {'lingual gyrus (atlas)','PHC (atlas)','insula (atlas)'};
-roiNames = {'lingual'};
+roiNames = {'l_hpc'};
+roiNamesTrue = {'left HPC'};
 % roiNames = {'sphere_10--20_-54_-8'};
 % roiNames = {'sphere_9--28_34_-19'};
 
@@ -106,7 +107,7 @@ for r = 1:length(roiNames)
         
         % take only those corresponding to conditions
         B = real(B([1:60,67:126,133:192,199:258],:));
-        B = B(toNormalOrder,:);
+        B = B(toNormalOrder,:)';
         
         respPatt.(['roi',num2str(r)]).(subjName) = B;
 

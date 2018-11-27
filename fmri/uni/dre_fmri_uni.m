@@ -28,39 +28,16 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,1);
 
-%% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
+%% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCF_cS_offRand';
+    analysisName = 'uni_pulse_iVCF_cU';
     
     % 1st level
     timing.iOns = 0; % onset for imagination
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-    dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
-    
-    % contrasts
-    dre_con_i3_c1(dir,analysisName,subs,taskOrd);
-    
-    % 2nd level
-    dre_L2(dir,analysisName,'imagination_onset',subs,1);
-    dre_L2(dir,analysisName,'imagination_value',subs,2);
-    dre_L2(dir,analysisName,'imagination_confid',subs,3);
-    dre_L2(dir,analysisName,'imagination_famil',subs,4);
-    dre_L2(dir,analysisName,'choice_onset',subs,5);
-    dre_L2(dir,analysisName,'choice_valueChosen',subs,6);
-end
-keyboard
-%% box - value, confid, famil, pmod of imagination; value selected pmod of choice
-if false
-    analysisName = 'uni_box_iVCF_cS';
-    
-    % 1st level
-    timing.iOns = 0; % onset for imagination
-    timing.cOns = 0; % onset for choice
-    timing.iDur = 5; % duration for imagination
-    timing.cDur = 3.5; % duration for choice
-    dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
+    dre_L1_iVCF_cU(dir,analysisName,subs,timing,bData,{'F','B'});
     
     % contrasts
     dre_con_i3_c1(dir,analysisName,subs,taskOrd);
@@ -74,28 +51,7 @@ if false
     dre_L2(dir,analysisName,'choice_valueChosen',subs,6);
 end
 
-%% pulse - value, confid, famil, pmod of imagination; value selected pmod of choice
-if true
-    analysisName = 'uni_pulse_iV_cV';
-    
-    % 1st level
-    timing.iOns = 0; % onset for imagination
-    timing.cOns = 0; % onset for choice
-    timing.iDur = 0; % duration for imagination
-    timing.cDur = 0; % duration for choice
-    dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
-    
-    % contrasts
-    dre_con_i1_c1(dir,analysisName,subs);
-    
-    % 2nd level
-    dre_L2(dir,analysisName,'imagination_onset',subs,1);
-    dre_L2(dir,analysisName,'imagination_value',subs,2);
-    dre_L2(dir,analysisName,'choice_onset',subs,3);
-    dre_L2(dir,analysisName,'choice_dV',subs,4);
-end
-
-%% pulse - value pmod of imagination; dV pmod of choice
+%% FOR RFXPLOT
 if false
     analysisName = 'uni_pulse_rfx_iV_cS';
     
@@ -115,66 +71,6 @@ if false
     dre_L2(dir,analysisName,'choice_onset',subs,3);
     dre_L2(dir,analysisName,'choice_valueChosen',subs,4);
 end
-
-%% box - value, confid, famil, pmod of imagination; value selected pmod of choice
-% analysisName = 'uni_box_iV_cV';
-%
-% % 1st level
-% timing.iOns = 0; % onset for imagination
-% timing.cOns = 0; % onset for choice
-% timing.iDur = 5; % duration for imagination
-% timing.cDur = 3.5; % duration for choice
-% dre_L1_iV_cV(dir,analysisName,subs,timing,bData);
-%
-% % contrasts
-% dre_con_i1_c1(dir,analysisName,subs);
-%
-% % 2nd level
-% dre_L2(dir,analysisName,'imagination_onset',subs,1);
-% dre_L2(dir,analysisName,'imagination_value',subs,2);
-% dre_L2(dir,analysisName,'choice_onset',subs,3);
-% dre_L2(dir,analysisName,'choice_valueDiff',subs,4);
-
-%% pulse - value weighed by conf. pmod of imagination; value chosen - unchosen pmod of choice
-if true
-    analysisName = 'uni_pulse_iVw_cU';
-    
-    % 1st level
-    timing.iOns = 0; % onset for imagination
-    timing.cOns = 0; % onset for choice
-    timing.iDur = 0; % duration for imagination
-    timing.cDur = 0; % duration for choice
-    dre_L1_iVw_cU(dir,analysisName,subs,timing,bData);
-    
-    % contrasts
-    dre_con_i1_c1(dir,analysisName,subs);
-    
-    % 2nd level
-    dre_L2(dir,analysisName,'imag. onset',subs,1);
-    dre_L2(dir,analysisName,'imag. value weighed by conf.',subs,2);
-    dre_L2(dir,analysisName,'choice onset',subs,3);
-    dre_L2(dir,analysisName,'choice value ch. - unch.',subs,4);
-end
-
-%% box - price pmod of imagination; value WRONG GOAL chosen - unchosen pmod of choice
-% analysisName = 'uni_box_iVw_cSs_opp';
-%
-% % 1st level
-% timing.iOns = 0; % onset for imagination
-% timing.cOns = 0; % onset for choice
-% timing.iDur = 5; % duration for imagination
-% timing.cDur = 3.5; % duration for choice
-% dre_L1_iVw_cSs_opp(dir,analysisName,subs,timing,bData);
-%
-% % contrasts
-% dre_con_i1_c1(dir,analysisName,subs);
-%
-% % 2nd level
-% dre_L2(dir,analysisName,'imag. onset',subs,1);
-% dre_L2(dir,analysisName,'imag. price',subs,2);
-% dre_L2(dir,analysisName,'choice onset',subs,3);
-% dre_L2(dir,analysisName,'choice value ch. - unch. OPP',subs,4);
-
 
 %% median splits
 if false

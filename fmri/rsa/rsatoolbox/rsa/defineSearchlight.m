@@ -54,9 +54,9 @@ function L = defineSearchlight(Structures,Mask,varargin)
 %                   belong to
 
 Opt.progressstep = 100;   % Progress step reporting 
-Opt.writeMask     = 0;    % Save the full mask image for included voxels? 
+Opt.writeMask     = 1;    % Save the full mask image for included voxels? 
 
-rsa.getUserOptions(varargin,Opt,{'progressstep','saveMask'}); 
+getUserOptions(varargin,Opt,{'progressstep','saveMask'}); 
 
 %% 1. Input checking
 if isempty(Structures) && isempty(Mask)
@@ -96,7 +96,7 @@ for i=1:length(idxVol)
     if (isfield(Structures{idxVol(i)},'sphere')); 
         currentOpt.sphere=Structures{idxVol(i)}.sphere;
     end; 
-    [Li,exclMask]   = rsa.defineSearchlight_volume(Structures{idxVol(i)},exclMask,currentOpt);
+    [Li,exclMask]   = defineSearchlight_volume(Structures{idxVol(i)},exclMask,currentOpt);
     Li.structure    = numStruct*ones(size(Li.LI,1),1);
     L = addstruct(L,Li);
     numStruct = numStruct+1; 
@@ -116,7 +116,7 @@ for i=1:length(idxVol)
     if (isfield(Structures{idxVol(i)},'distance')); 
         currentOpt.sphere=Structures{idxVol(i)}.distance;
     end; 
-    [Li,exclMask]   = rsa.defineSearchlight_surface(Structures{idxVol(i)},exclMask,currentOpt);
+    [Li,exclMask]   = defineSearchlight_surface(Structures{idxVol(i)},exclMask,currentOpt);
     Li.structure    = (numStruct)*ones(size(Li.LI,1),1);
     L = addstruct(L,Li);
     numStruct = numStruct+1; 

@@ -43,13 +43,10 @@ load(filePatterns,'responsePatterns'), clear filePatterns
 
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
+roiNames = {'lingual','l_hpc','phc','insula_atlas','sphere_9--28_34_-19','box_w-16_16_16-0_36_23'};
+roiNamesTrue = {'lingual gyrus (atlas)','left HPC (atlas)','PHC (atlas)','insula (atlas)','left OFC (activ.)','ACC (activ.)'};
 roiNames = {'lingual'};
-roiNamesTrue = {'lingual gyrus (atlas)','PHC (atlas)','insula (atlas)'};
-roiNames = {'l_hpc'};
-roiNamesTrue = {'left HPC'};
-% roiNames = {'sphere_10--20_-54_-8'};
-% roiNames = {'sphere_9--28_34_-19'};
-
+roiNamesTrue = {'random'};
 %% apply two masks: one for grey matter, one for ROI
 % for r = 1:length(roiNames)
 %     for s = 1:length(subs)
@@ -155,8 +152,8 @@ for r = 1:length(roiNames)
         objVal_B(isnan(objVal_B)) = ceil(50*rand);
         
         % add a constant for univoque determination of median
-        Y_F = objVal_F + (0.00000001*(1:120))';
-        Y_B = objVal_B + (0.00000001*(1:120))';
+        Y_F = 0*objVal_F + 50*rand(120,1) + (0.00000001*(1:120))';
+        Y_B = 0*objVal_B + 50*rand(120,1) + (0.00000001*(1:120))';
         
         % find percentiles
         pl_F_33 = prctile(Y_F,100/3);

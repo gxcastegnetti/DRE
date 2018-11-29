@@ -1,4 +1,4 @@
-function spmMat_name = dre_L1_iVCF_cU(dir,analysisName,subs,timing,bData,context)
+function spmMat_name = dre_L1_iVCF_cU(dir,analysisName,subs,timing,bData)
 %% function dre_L1_iVCF_cV(dirSub,sub,runType)
 % ~~~
 % First level analysis with conditions:
@@ -11,9 +11,6 @@ function spmMat_name = dre_L1_iVCF_cU(dir,analysisName,subs,timing,bData,context
 
 fs = filesep;
 n_sess = 4;
-
-%% which contexts to consider?
-
 
 %% loop subjects
 for s = 1:length(subs)
@@ -30,15 +27,14 @@ for s = 1:length(subs)
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
     dirOut = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
-    %     dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
-    %     dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
-    %     if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
+%     dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
+%     dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
+%     if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
     if ~exist(dirOut,'dir'), mkdir(dirOut), end
     
     job1LM{1}.spm.stats.fmri_spec.dir = {dirOut};
     
     for r = 1:n_sess
-        
         %% select EPI files
         dirFun = [dirSub,'/fun/S',num2str(r)];
         d = spm_select('List', dirFun, '^swuaf.*\.nii$');
@@ -47,11 +43,6 @@ for s = 1:length(subs)
         
         %% extract session type
         sessType = bData(subs(s)).sessType{r};
-        
-        % see if this session must be considered
-        if ~any(ismember(sessType,context)) == 0
-            continue
-        end
         
         %% imagination
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).name = ['ima. ',sessType];
@@ -108,35 +99,35 @@ for s = 1:length(subs)
         % use this if also physiological regressors required %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-        %         % load rp file to concatenate with physio regressors
-        %         rp = load(rp_file{1});
-        %
-        %         % see which file is correct
-        %         fileF = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'F_R_S1.mat'];
-        %         fileB = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'B_R_S1.mat'];
-        %         try
-        %             try
-        %                 mov = load(fileF);
-        %             catch
-        %                 mov = load(fileB);
-        %             end
-        %             mov = mov.R;
-        %         catch
-        %             mov = [];
-        %         end
-        %
-        %
-        %         % concatenate movement and physiological regressors
-        %         R = [rp, mov]; %#ok<NASGU>
-        %
-        %         % save
-        %         allRegr_file = [dirPhyOut,fs,'body_r_SF',num2str(subs(s),'%03d'),'_S',num2str(r),'.mat'];
-        %         save(allRegr_file,'R');
-        %
-        %         job1LM{1}.spm.stats.fmri_spec.sess(r).multi = {''};
-        %         job1LM{1}.spm.stats.fmri_spec.sess(r).regress = struct('name', {}, 'val', {});
-        %         job1LM{1}.spm.stats.fmri_spec.sess(r).multi_reg = {allRegr_file};
-        %         job1LM{1}.spm.stats.fmri_spec.sess(r).hpf = 128;
+%         % load rp file to concatenate with physio regressors
+%         rp = load(rp_file{1});
+%         
+%         % see which file is correct
+%         fileF = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'F_R_S1.mat'];
+%         fileB = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'B_R_S1.mat'];
+%         try
+%             try
+%                 mov = load(fileF);
+%             catch
+%                 mov = load(fileB);
+%             end
+%             mov = mov.R;
+%         catch
+%             mov = [];
+%         end
+%         
+%         
+%         % concatenate movement and physiological regressors
+%         R = [rp, mov]; %#ok<NASGU>
+%         
+%         % save
+%         allRegr_file = [dirPhyOut,fs,'body_r_SF',num2str(subs(s),'%03d'),'_S',num2str(r),'.mat'];
+%         save(allRegr_file,'R');
+%         
+%         job1LM{1}.spm.stats.fmri_spec.sess(r).multi = {''};
+%         job1LM{1}.spm.stats.fmri_spec.sess(r).regress = struct('name', {}, 'val', {});
+%         job1LM{1}.spm.stats.fmri_spec.sess(r).multi_reg = {allRegr_file};
+%         job1LM{1}.spm.stats.fmri_spec.sess(r).hpf = 128;
         
     end
     

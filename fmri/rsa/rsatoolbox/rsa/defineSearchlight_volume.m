@@ -51,8 +51,8 @@ import rsa.spm.*
 
 %% 1. Checking inputs
 Opt.sphere    = [30 160]; % 30mm radius volumetric sphere, 160 voxels
-Opt.writeMask = 0;        % Optional writing of the mask.  
-Opt         = rsa.getUserOptions(varargin,Opt); 
+Opt.writeMask = 1;        % Optional writing of the mask.  
+Opt         = getUserOptions(varargin,Opt); 
 
 if isempty(ROIMask) && isempty(Mask)
     error('provide functional mask image');

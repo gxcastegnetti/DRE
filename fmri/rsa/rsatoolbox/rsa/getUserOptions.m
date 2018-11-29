@@ -27,6 +27,7 @@ function options=getUserOptions(newOptions,defOptions,allowed);
 % j.diedrichsen@ucl.ac.uk
 % 2/2015
 
+allowed = [];
 if (nargin<3)
     allowed=[];
 end;

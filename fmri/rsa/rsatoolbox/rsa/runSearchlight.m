@@ -1,4 +1,4 @@
-function rs = runSearchlight(Searchlight,inFiles,outFiles,model,rsaFunction,varargin)
+function rs = runSearchlight(Searchlight,inFiles,outFiles,model,subNum,rsaFunction,varargin)
 % function runSearchlight(Searchlight,infiles,outfiles,rsaFunction,varargin)
 % Main analysis engine for searchlight-based analysis
 % The function deals with data loading from the infiles, concatinates the
@@ -179,9 +179,18 @@ fprintf('%d total: %f\n',k,toc);
 delete('temp*.mat');
 
 %% compute correlation with model
+
+% load indices for normal ordering
+dirdre = '/Users/gcastegnetti/Desktop/stds/DRE';
+fooDir = [dirdre,filesep,'out',filesep,'fmri',filesep,'rsa'];
+load([fooDir,filesep,'toNormalOrder',filesep,'SF',num2str(subNum,'%03d')],'toNormalOrder')
+
 modelRDMs_ltv = permute(unwrapRDMs(vectorizeRDMs(model)), [3 2 1]);
 for vx = 1:size(Result,2)
     searchlightRDM_ltv = Result(:,vx);
+    foo_1 = squareform(searchlightRDM_ltv);
+    foo_2 = foo_1(toNormalOrder,toNormalOrder);
+    searchlightRDM_ltv = vectorizeRDM(foo_2);
     [rs_vx(vx), ~] = corr(searchlightRDM_ltv(:), modelRDMs_ltv(:), 'type', 'Spearman', 'rows', 'pairwise');
 end
 rs = nan(VolIn(1).dim);
@@ -197,7 +206,7 @@ rs(Searchlight.voxel) = rs_vx;
 % for i=1:size(Result,1)
 %     Z=NaN(VolIn(1).dim);
 %     [d f t m]=spm_fileparts(outFiles{i});
-%     
+%
 %     Vo      = struct(...
 %         'fname',    fullfile(d,[f t]),...
 %         'dim',      VolIn(1).dim,...

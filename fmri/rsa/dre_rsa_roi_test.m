@@ -64,7 +64,7 @@ load(filePatterns,'responsePatterns')
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-roiNames = {'lingual'};
+roiNames = {'box_w-16_16_16-0_36_23'};
 
 % apply two masks: one for grey matter, one for ROI 
 for r = 1:length(roiNames)
@@ -100,7 +100,7 @@ for r = 1:length(roiNames)
 end
 
 %% construct RDMs
-RDMs_data = constructRDMs(respPatt_acc2ses, 'SPM', userOptions);
+RDMs_data = constructRDMs(respPatt, 'SPM', userOptions);
 RDM_average = averageRDMs_subjectSession(RDMs_data,'subject');
 RDM_average.name = 'Pearson';
 
@@ -147,39 +147,39 @@ for r = 1:length(roiNames)
 %     ylim([-0.01 0.01]),title(roiNames{r})
 end
 
-sphe.val = mean(squeeze(rL2(1,:,:)));
-sphe.con = mean(squeeze(rL2(2,:,:)));
-sphe.fam = mean(squeeze(rL2(3,:,:)));
-sphe.oid = mean(squeeze(rL2(4,:,:)));
-sphe.cxt = mean(squeeze(rL2(5,:,:)));
-
-% linear models
-mdlVal = fitlm(1:length(sphe.val),sphe.val);
-mdlCon = fitlm(1:length(sphe.con),sphe.con);
-mdlFam = fitlm(1:length(sphe.fam),sphe.fam);
-mdlOid = fitlm(1:length(sphe.oid),sphe.oid);
-mdlCxt = fitlm(1:length(sphe.cxt),sphe.cxt);
-
-%% plot linear fits
-xspan = 1:length(sphe.val);
-figure('color',[1 1 1])
-
-subplot(1,3,1),hold on
-plot(xspan,sphe.val,'marker','.','markersize',30,'linestyle','none'),title('Value')
-xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
-plot(xspan,xspan*mdlVal.Coefficients{2,1}+mdlVal.Coefficients{1,1},'linestyle','--','color','k')
-
-subplot(1,3,2),hold on
-plot(xspan,sphe.oid,'marker','.','markersize',30,'linestyle','none'),title('Object ID')
-xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
-plot(xspan,xspan*mdlOid.Coefficients{2,1}+mdlOid.Coefficients{1,1},'linestyle','--','color','k')
-
-subplot(1,3,3),hold on
-plot(xspan,sphe.cxt,'marker','.','markersize',30,'linestyle','none'),title('Context')
-xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
-plot(xspan,xspan*mdlCxt.Coefficients{2,1}+mdlCxt.Coefficients{1,1},'linestyle','--','color','k')
-
-keyboard
+% sphe.val = mean(squeeze(rL2(1,:,:)));
+% sphe.con = mean(squeeze(rL2(2,:,:)));
+% sphe.fam = mean(squeeze(rL2(3,:,:)));
+% sphe.oid = mean(squeeze(rL2(4,:,:)));
+% sphe.cxt = mean(squeeze(rL2(5,:,:)));
+% 
+% % linear models
+% mdlVal = fitlm(1:length(sphe.val),sphe.val);
+% mdlCon = fitlm(1:length(sphe.con),sphe.con);
+% mdlFam = fitlm(1:length(sphe.fam),sphe.fam);
+% mdlOid = fitlm(1:length(sphe.oid),sphe.oid);
+% mdlCxt = fitlm(1:length(sphe.cxt),sphe.cxt);
+% 
+% %% plot linear fits
+% xspan = 1:length(sphe.val);
+% figure('color',[1 1 1])
+% 
+% subplot(1,3,1),hold on
+% plot(xspan,sphe.val,'marker','.','markersize',30,'linestyle','none'),title('Value')
+% xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
+% plot(xspan,xspan*mdlVal.Coefficients{2,1}+mdlVal.Coefficients{1,1},'linestyle','--','color','k')
+% 
+% subplot(1,3,2),hold on
+% plot(xspan,sphe.oid,'marker','.','markersize',30,'linestyle','none'),title('Object ID')
+% xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
+% plot(xspan,xspan*mdlOid.Coefficients{2,1}+mdlOid.Coefficients{1,1},'linestyle','--','color','k')
+% 
+% subplot(1,3,3),hold on
+% plot(xspan,sphe.cxt,'marker','.','markersize',30,'linestyle','none'),title('Context')
+% xlabel('ROI number'),ylabel('r'),set(gca,'fontsize',16,'xtick',1:7,'xticklabel',1:7)
+% plot(xspan,xspan*mdlCxt.Coefficients{2,1}+mdlCxt.Coefficients{1,1},'linestyle','--','color','k')
+% 
+% keyboard
 
 %% ttest
 for r = 1:length(roiNames)

@@ -36,10 +36,10 @@ mkdir([dir.out,fs,analysisName])
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23','box_w-16_16_16-0_46_7'};
 
-roiNames = {'phc','insula_atlas'};
+roiNames = {'imaginationValue'};
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39:41 43 47:50];
 
 %% reverse normalise mask to subjective space and coregister
 if true

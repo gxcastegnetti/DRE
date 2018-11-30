@@ -34,7 +34,7 @@ userOptions.conditionColours = kron([1 0 0; 0 0 1], ones(120,1));
 userOptions.convexHulls = [ones(1,16) 2*ones(1,16) 3*ones(1,16) 4*ones(1,16)];
 
 % metric to use when calculating first-order RDMs
-userOptions.distance = 'mahalanobis';
+userOptions.distance = 'correlation';
 
 %% Second-order analysis
 

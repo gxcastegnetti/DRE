@@ -41,12 +41,12 @@ end
 %     condVecs{r} = vec;
 % end
 condVecs{1} = [true(1,60),false(1,6),true(1,60),false(1,6),true(1,60),false(1,6),true(1,60),false(1,10)];
-rs = runSearchlight(L,SPM.xY.VY,outFiles,model,@rsaFunc,'optionalParams',{SPM,condVecs});
+rs = runSearchlight(L,SPM.xY.VY,outFiles,model,subNum,@rsaFunc,'optionalParams',{SPM,condVecs});
 
 function out = rsaFunc(Y,SPM,condVecs)
 B = noiseNormalizeBeta(Y,SPM);      % Get prewhitened beta weights
 for r = 1:1
     thisB = B(condVecs{r},:);
-    RDM = pdist(real(thisB),'Euclidean');
+    RDM = pdist(real(thisB),'correlation');
     out = RDM(:);     % Arrange the outputs in a vector, as they are written to files
 end

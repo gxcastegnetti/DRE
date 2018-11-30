@@ -7,9 +7,9 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_allModels';
-% analysisName = 'rsa_sl_pulse_choice';
 analysisName = 'rsa_sl_pulse_ons0_off';
+% analysisName = 'rsa_sl_pulse_choice';
+% analysisName = 'rsa_sl_pulse_ons0_off';
 
 %% directories
 dir.rsaCod = pwd;
@@ -92,8 +92,8 @@ for m = 1:length(models)
     %%%%%%%%%%%%%
     job{1}.spm.tools.snpm.inference.SnPMmat = cellstr([dirOut,fs,'SnPM.mat']);
     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.CFth = nan;
-%     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.FWEthC = 0.05;
-    job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.PthC = 0.25;
+%     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.FWEthC = 0.25;
+    job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.PthC = 0.2;
     job{1}.spm.tools.snpm.inference.Tsign = 1;
     job{1}.spm.tools.snpm.inference.WriteFiltImg.name = '_SnPM_filtered';
     job{1}.spm.tools.snpm.inference.Report = 'MIPtable';

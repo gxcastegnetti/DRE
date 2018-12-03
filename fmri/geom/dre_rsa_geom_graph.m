@@ -36,7 +36,7 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 50];
 
 %% properties
 propNames = {'distAvg','distVar','distSke','distKur','distVarCoeff'};
-propNames = {'corrFB'};
+propNames = {'corrCxtNeg'};
 
 %% loop over subjects
 if true
@@ -58,7 +58,7 @@ if true
         %         distProp{3} = skewness(geomDiff,1,4);
         %         distProp{4} = kurtosis(geomDiff,1,4);
         %         distProp{5} = distProp{2}./distProp{1};
-        distProp{1} = geomDiff;
+        distProp{1} = -geomDiff;
         
         %% loop over properties
         for p = 1:length(propNames)
@@ -212,7 +212,7 @@ for p = 1:length(propNames)
     tMapMetadataStruct_sS.fname = [dir.out,fs,analysisName,fs,propNames{p},fs,'neg_meanMap_',propNames{p},'.nii'];
     tMapMetadataStruct_sS.descrip = 'g-map';
     tMapMetadataStruct_sS.dim = size(t1);
-    spm_write_vol(tMapMetadataStruct_sS, mean(gMaps,4));
+    spm_write_vol(tMapMetadataStruct_sS, nanmean(gMaps,4));
     
     % write t-map
     tMapMetadataStruct_sS = spm_vol(swMapFile);

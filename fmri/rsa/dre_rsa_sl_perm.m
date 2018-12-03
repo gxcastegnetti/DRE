@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_pw';
+analysisName = 'rsa_sl_pulse_FvB';
 % analysisName = 'rsa_sl_pulse_choice';
 % analysisName = 'rsa_sl_pulse_ons0_off';
 
@@ -29,7 +29,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% specify model(s) to test
-models = {'cxt'};
+models = {'corrCxtPos'};
 
 %% run batch for each model
 for m = 1:length(models)
@@ -47,7 +47,7 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.dir = {dirOut};
     
     % files
-    d = spm_select('List', dirData, '^swr.*\.nii$');
+    d = spm_select('List', dirData, '^sw.*\.nii$');
     files  = cellstr([repmat([dirData fs],size(d,1),1) d]);
     job{1}.spm.tools.snpm.des.OneSampT.P = files;
     
@@ -63,7 +63,7 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.vFWHM = [9 9 9];
     job{1}.spm.tools.snpm.des.OneSampT.masking.tm.tm_none = 1;
     job{1}.spm.tools.snpm.des.OneSampT.masking.im = 1;
-    job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.001;
+    job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.005;
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/rgm.nii'};
     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/front_temp.nii'};

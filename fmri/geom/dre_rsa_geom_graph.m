@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'geom_corr';
+analysisName = 'rsa_sl_pulse_FvB';
 
 %% directories
 fs         = filesep;
@@ -19,7 +19,7 @@ dir.rsaCod = [dir.dre,fs,'codes',fs,'fmri',fs,'rsa'];
 dir.mskOut = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'gm_subj'];
 dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
 dir.datScn = [dir.dre,fs,'data',fs,'fmri',fs,'scanner'];
-dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'geom',fs,'sl'];
+dir.out    = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'sl'];
 dir.rsaOut = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
 
 % paths
@@ -36,7 +36,7 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 50];
 
 %% properties
 propNames = {'distAvg','distVar','distSke','distKur','distVarCoeff'};
-propNames = {'FvB_correlation'};
+propNames = {'corrFB'};
 
 %% loop over subjects
 if true
@@ -50,14 +50,14 @@ if true
         subjectMetadataStruct = spm_vol(epi_file);
         
         % load geometry maps
-        load([dir.out,fs,analysisName,fs,'geom_SF',num2str(subs(s),'%03d')],'geomDiff');
+        load([dir.out,fs,analysisName,fs,'sl_SF',num2str(subs(s),'%03d')],'geomDiff');
         
         %% compute properties
-%         distProp{1} = mean(geomDiff,4);
-%         distProp{2} = var(geomDiff,0,4);
-%         distProp{3} = skewness(geomDiff,1,4);
-%         distProp{4} = kurtosis(geomDiff,1,4);
-%         distProp{5} = distProp{2}./distProp{1};
+        %         distProp{1} = mean(geomDiff,4);
+        %         distProp{2} = var(geomDiff,0,4);
+        %         distProp{3} = skewness(geomDiff,1,4);
+        %         distProp{4} = kurtosis(geomDiff,1,4);
+        %         distProp{5} = distProp{2}./distProp{1};
         distProp{1} = geomDiff;
         
         %% loop over properties
@@ -153,10 +153,10 @@ for s = 1:length(subs)
         % concatenate across subjects
         rMaps_all.(propNames{p})(:,:,:,s) = swMap;
         
-%         for i = 1:79
-%             figure
-%             subplot(1,2,1),imagesc(swMap(:,:,i))
-%         end
+        %         for i = 1:79
+        %             figure
+        %             subplot(1,2,1),imagesc(swMap(:,:,i))
+        %         end
         
     end
 end
@@ -181,23 +181,16 @@ for p = 1:length(propNames)
     for x = 1:size(gMaps,1)
         for y = 1:size(gMaps,2)
             for z = 1:size(gMaps,3)
-                if impMask(x,y,z)
-                    [~, p1(x,y,z), ~, stats] = ttest(squeeze(gMaps(x,y,z,:)));
-                    t1(x,y,z) = stats.tstat;
-                    [p2(x,y,z)] = signrank_onesided(squeeze(gMaps(x,y,z,:)));
-                end
+                foo = squeeze(gMaps(x,y,z,:));
+                foo(isnan(foo)) = [];
+                if length(foo) < 15, continue, end
+                [~, p1(x,y,z), ~, stats] = ttest(squeeze(gMaps(x,y,z,:)));
+                t1(x,y,z) = stats.tstat;
+%                 [p2(x,y,z)] = signrank_onesided(squeeze(gMaps(x,y,z,:)));
+                
             end
         end
         disp(x);
-    end
-    
-    % plot p-values
-    if false
-        for i = 1:79
-            figure,
-            subplot(1,2,1),imagesc(p1(:,:,i))
-            subplot(1,2,2),imagesc(p1(:,:,i)<0.05)
-        end
     end
     
     % update user
@@ -216,8 +209,15 @@ for p = 1:length(propNames)
     % write g-map
     swMapFile = [dir.out,fs,analysisName,fs,propNames{p},fs,'swMap_',propNames{p},'_SF',num2str(subs(s),'%03d'),'.nii'];
     tMapMetadataStruct_sS = spm_vol(swMapFile);
-    tMapMetadataStruct_sS.fname = [dir.out,fs,analysisName,fs,propNames{p},fs,'meanMap_',propNames{p},'.nii'];
+    tMapMetadataStruct_sS.fname = [dir.out,fs,analysisName,fs,propNames{p},fs,'neg_meanMap_',propNames{p},'.nii'];
     tMapMetadataStruct_sS.descrip = 'g-map';
+    tMapMetadataStruct_sS.dim = size(t1);
+    spm_write_vol(tMapMetadataStruct_sS, mean(gMaps,4));
+    
+    % write t-map
+    tMapMetadataStruct_sS = spm_vol(swMapFile);
+    tMapMetadataStruct_sS.fname = [dir.out,fs,analysisName,fs,propNames{p},fs,'neg_tMap_',propNames{p},'.nii'];
+    tMapMetadataStruct_sS.descrip = 't-map';
     tMapMetadataStruct_sS.dim = size(t1);
     spm_write_vol(tMapMetadataStruct_sS, t1);
     

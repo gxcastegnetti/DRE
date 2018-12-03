@@ -9,7 +9,7 @@ restoredefaultpath
 %% analysisName
 analysisName = 'rsa_sl_pulse_ons0';
 analysisName = 'rsa_sl_pulse_choice';
-analysisName = 'rsa_sl_pulse_ons0_pw';
+analysisName = 'rsa_sl_pulse_ons0_cxtAndSingleGoals';
 betaid       = 'rsa_pulse_ons0';
 thisIsDim    = false;
 
@@ -32,7 +32,6 @@ addpath(genpath(dir.spm))
 
 %% Subjects
 subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-subs = [4 5 7 8];
 % subsBest = sort([23 18 5 3 21 11 10 20 17 28 24  1 15 22]);
 % subsWors = sort([2  14 6 4  7  9 27 26 12 16 19 13  8 25]);
 % subs = subs(subsBest);
@@ -46,7 +45,7 @@ userOptions.forcePromptReply = 'r';
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 modelNames = {'val','fam','oid','cxt'};
-modelNames = {'val'};
+modelNames = {'goal'};
 
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
@@ -85,7 +84,7 @@ if true
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
         if ~thisIsDim
-            load([dirSl,fs,'sl_val_SF',num2str(subs(s),'%03d'),'.mat']);
+            load([dirSl,fs,'sl_goal_SF',num2str(subs(s),'%03d'),'.mat']);
         else
             load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
         end
@@ -287,10 +286,10 @@ for m = 1:length(modelNames)
                 %                 if impMask(x,y,z)
                 foo = squeeze(rMaps(x,y,z,:));
                 foo(isnan(foo)) = [];
-                if length(foo) < 2, continue, end
+                if length(foo) < 15, continue, end
                 [~, p1(x,y,z), ~, stats] = ttest(foo);
                 t1(x,y,z) = stats.tstat;
-                [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
+%                 [p2(x,y,z)] = signrank_onesided(squeeze(rMaps(x,y,z,:)));
                 %                 end
             end
         end

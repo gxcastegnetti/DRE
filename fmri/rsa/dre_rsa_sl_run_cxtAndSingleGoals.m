@@ -64,28 +64,28 @@ searchlightOptions.nConditions = 240;
 
 %% run separate searchlights for the two goals
 
-subNames = fieldnames(responsePatterns);
-for s = 1:length(subNames)
-    
-    % update user
-    disp(['Computing correlation (separate goals) for sub#',num2str(s),' of ',num2str(length(subs))])
-    
-    % define (subjective) mask
-    binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
-    binaryMask = logical(binaryMask);
-    
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    % take two reduced RDMs for the two goals %
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-    
-    RDM_F{s} = RDMs{s}.val(1:120,1:120);
-    RDM_B{s} = RDMs{s}.val(121:240,121:240);
-    
-    % run searchlight
-    rs_F = searchlightGoal(responsePatterns.(subNames(s))(:,1:120), binaryMask, userOptions, searchlightOptions);
-    save([dir.out,fs,analysisName,fs,'onlyFire',fs,'sl__SF',num2str(subs(ss),'%03d')],'rs_F')
-    
-end
+% subNames = fieldnames(responsePatterns);
+% for s = 1:length(subNames)
+%     
+%     % update user
+%     disp(['Computing correlation (separate goals) for sub#',num2str(s),' of ',num2str(length(subs))])
+%     
+%     % define (subjective) mask
+%     binaryMask = niftiread([dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii']);
+%     binaryMask = logical(binaryMask);
+%     
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     % take two reduced RDMs for the two goals %
+%     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%     
+%     RDM_F{s} = RDMs{s}.val(1:120,1:120);
+%     RDM_B{s} = RDMs{s}.val(121:240,121:240);
+%     
+%     % run searchlight
+%     rs_F = searchlightGoal(responsePatterns.(subNames(s))(:,1:120), binaryMask, userOptions, searchlightOptions);
+%     save([dir.out,fs,analysisName,fs,'onlyFire',fs,'sl__SF',num2str(subs(ss),'%03d')],'rs_F')
+%     
+% end
 
 %% run searchlight for goal
 
@@ -142,6 +142,6 @@ for s = 1:length(subNames)
     
     % run searchlight
     rs = searchlightGoal(respPatt_presentOrder{s}, binaryMask, userOptions, searchlightOptions);
-    save([dir.out,fs,analysisName,fs,'goal',fs,'sl_goal_SF',num2str(subs(ss),'%03d')],'rs')
+    save([dir.out,fs,analysisName,fs,'goal',fs,'sl_goal_SF',num2str(subs(s),'%03d')],'rs')
     
 end

@@ -24,12 +24,12 @@ cd(subjDir);
 load('SPM.mat')
 
 numCond = size(model,1);
-numDissims = numCond*(numCond-1)/2;
+numDissims = numCond*(numCon)
 
 % Define output images
 outFiles={};
 for r = 1:1 % number of runs
-    for k = 1:numDissims % number of dissims
+    for k = 1:28680 % number of dissims
         outFiles{end+1} = sprintf('dists_run%d.nii,%d',r,k); % these are the name of the files that will be written in the subject's folder (where the SPM.mat of your subject is)
     end
 end
@@ -43,11 +43,7 @@ end
 %     vec(idx) = 1:60;
 %     condVecs{r} = vec;
 % end
-if numCond == 240
-    condVecs{1} = [true(1,60),false(1,6),true(1,60),false(1,6),true(1,60),false(1,6),true(1,60),false(1,10)];
-elseif numCond == 96
-    condVecs{1} = [true(1,24),false(1,6),true(1,24),false(1,6),true(1,24),false(1,6),true(1,24),false(1,10)];
-end
+condVecs{1} = [true(1,60),false(1,6),true(1,60),false(1,6),true(1,60),false(1,6),true(1,60),false(1,10)];
 rs = runSearchlight(L,SPM.xY.VY,outFiles,model,subNum,@rsaFunc,'optionalParams',{SPM,condVecs});
 
 function out = rsaFunc(Y,SPM,condVecs)

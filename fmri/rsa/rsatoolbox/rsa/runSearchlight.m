@@ -189,7 +189,11 @@ modelRDMs_ltv = permute(unwrapRDMs(vectorizeRDMs(model)), [3 2 1]);
 for vx = 1:size(Result,2)
     searchlightRDM_ltv = Result(:,vx);
     foo_1 = squareform(searchlightRDM_ltv);
-    foo_2 = foo_1(toNormalOrder,toNormalOrder);
+    if size(foo_1,1) == 240
+        foo_2 = foo_1(toNormalOrder,toNormalOrder);
+    elseif size(foo_1,1) == 96
+        foo_2 = foo_1;
+    end
     searchlightRDM_ltv = vectorizeRDM(foo_2);
     [rs_vx(vx), ~] = corr(searchlightRDM_ltv(:), modelRDMs_ltv(:), 'type', 'Spearman', 'rows', 'pairwise');
 end

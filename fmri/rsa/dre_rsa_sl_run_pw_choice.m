@@ -1,4 +1,4 @@
-%% dre_rsa_sl_run
+%% dre_rsa_sl_run_pw_choice
 % ~~~
 % GX Castegnetti --- 2018
 
@@ -7,8 +7,8 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_pw';
-betaid       = 'rsa_pulse_ons0';
+analysisName = 'rsa_sl_pulse_pw_choice';
+betaid       = 'rsa_pulse_choice';
 
 %% directories
 fs         = filesep;
@@ -31,9 +31,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-% subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-% taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
-subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
+subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% user options
@@ -43,22 +41,37 @@ userOptions.rootPath = dir.out;
 userOptions.forcePromptReply = 'r';
 userOptions.overwriteflag = 'r';
 
+%% modify condition names
+objsName = 1:48;
+for i = 1:length(objsName)
+    objsF{i} = ['F-',num2str(objsName(i))]; %#ok<*SAGROW>
+    objsB{i} = ['B-',num2str(objsName(i))];
+end
+condLabels = [objsF';objsB'];
+
+% text lables which may be attached to the conditions for MDS plots
+userOptions.conditionLabels = condLabels;
+
+% colours for the conditions
+userOptions.conditionColours = kron([1 0 0; 0 0 1], ones(48,1));
+
 %% 1st level
-roiName = 'none';
+roiNames = {'none'};
 if false
-    nameBeta = ['level1',fs,betaid,fs,roiName];
-    bData = dre_extractData(dir,subs,taskOrd,0);
-    timing.iOns = 0;
-    timing.iDur = 0;
-    dre_level1_rsa(dir,nameBeta,subs,bData,timing,roiName);
+    for i = 1:length(roiNames)
+        nameBeta = ['level1',fs,betaid,fs,roiNames{i}];
+        bData = dre_extractData(dir,subs,taskOrd,0);
+        dre_level1_rsa_choice(dir,nameBeta,subs,bData,roiNames{i});
+    end
 end
 
 %% load betas
-dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,roiName];
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
 filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
 if ~exist(filePatterns,'file')
     responsePatterns = fMRIDataPreparation('SPM', userOptions);
+    if ~exist([dir.out,fs,'_responsePatterns',fs,betaid],'dir'),mkdir([dir.out,fs,'_responsePatterns',fs,betaid]),end
     save(filePatterns,'responsePatterns','-v7.3')
 else
     load(filePatterns,'responsePatterns')
@@ -73,45 +86,33 @@ userOptions.searchlightRadius = 9;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
-searchlightOptions.nConditions = 240;
+searchlightOptions.nConditions = 96;
 
-%% run searchlight for imagination
-% create matrix for object ID
-mat_ID = [diag(ones(120,1)), diag(ones(120,1));
-    diag(ones(120,1)), diag(ones(120,1))];
+%% run searchlight for choice
 for s = 1:length(subs)
-    
-    % update user
     disp(['Computing correlation for sub#',num2str(s),' of ',num2str(length(subs))])
     
     % prepare mask
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     thisSubject = userOptions.subjectNames{s};
     
-    %% models
-    
-    % value
-    model(1).name = 'val';
-    model(1).RDM = RDMs{s}.val;
+    model(1).name = 'dval';
+    model(1).RDM = RDMs{s}.choice.dVal;
     model(1).color = [0 1 0];
-    
-    % familiarity
-    model(2).name = 'fam';
-    model(2).RDM = RDMs{s}.fam;
+    model(2).name = 'vCho';
+    model(2).RDM = RDMs{s}.choice.Chos;
     model(2).color = [0 1 0];
-    
-    % object identity
-    model(3).name = 'oid';
-    model(3).RDM = 1-mat_ID;
+    model(3).name = 'vUnc';
+    model(3).RDM = RDMs{s}.choice.Unch;
     model(3).color = [0 1 0];
-    
-    % context
-    model(4).name = 'cxt';
-    model(4).RDM = RDMs{s}.cxt;
+    model(4).name = 'cMun';
+    model(4).RDM = RDMs{s}.choice.cMun;
     model(4).color = [0 1 0];
+    model(5).name = 'ccxt';
+    model(5).RDM = RDMs{s}.choice.ccxt;
+    model(5).color = [0 1 0];
     
-    %% run searchlight
-    model = 1-mat_ID;
+    model = RDMs{s}.choice.cMun;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_oid_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

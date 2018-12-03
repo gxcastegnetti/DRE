@@ -112,8 +112,8 @@ for s = 1:length(subs)
     model(5).RDM = RDMs{s}.choice.ccxt;
     model(5).color = [0 1 0];
     
-    model = RDMs{s}.choice.cMun;
+    model = RDMs{s}.choice.Chos;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_oid_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_chos_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

@@ -6,8 +6,8 @@ clear
 close all
 
 %% analysis and contrast name
-analysisName = 'rsa_sl_choice';
-contrastName = 'chos';
+analysisName = 'rsa_sl_ima';
+contrastName = 'val';
 
 %% directories
 dir.mskCod = pwd;
@@ -100,20 +100,20 @@ clear jobR
 % seòect coregistered masks
 rmaskHpc_l = [dir.mskOut,fs,'_useNow',fs,'rl_hpc.nii'];
 rmaskHpc_r = [dir.mskOut,fs,'_useNow',fs,'rr_hpc.nii'];
-maskHpc_l_mat = spm_read_vols(spm_vol(rmaskHpc_l));
-maskHpc_r_mat = spm_read_vols(spm_vol(rmaskHpc_r));
+maskHpc_l_mat = logical(spm_read_vols(spm_vol(rmaskHpc_l)));
+maskHpc_r_mat = logical(spm_read_vols(spm_vol(rmaskHpc_r)));
 
 %% now set to zero HPC voxels in lingual mask and only retain HPC voxels in HPC mask
 for i = 1:numel(cluster)
     
     % overlay clusters with HPC cluster
     clusMat = cluster{i};
-    clusMat_lHpc = clusMat.*maskHpc_l_mat;
-    clusMat_rHpc = clusMat.*maskHpc_r_mat;
+    clusMat_lHpc = clusMat(maskHpc_l_mat);
+    clusMat_rHpc = clusMat(maskHpc_r_mat);
     
     % consider only those in which there is something in HPC
-    thereIsSmth_l = sum(clusMat_lHpc(:)) > 10;
-    thereIsSmth_r = sum(clusMat_rHpc(:)) > 10;
+    thereIsSmth_l = ~isempty(find(clusMat_lHpc,1));
+    thereIsSmth_r = ~isempty(find(clusMat_rHpc,1));
     
     % if there is something, separate hippocampal cluster and append it at
     % the end of the cluster cell array
@@ -124,14 +124,16 @@ for i = 1:numel(cluster)
     end
     
     % now update the current cluster to exclude HPC
-    cluster{i} = clusMat.*(1-maskHpc_l_mat).*(1-maskHpc_r_mat);
+    cluster{i} = clusMat()
+    
+    % create and save mask
+    maskMetadataStruct_sS = spm_vol(sw_epi);
+    maskMetadataStruct_sS.fname = [dir.mskOut,fs,'fromRSA',fs,contrastName,fs,'mask_sl_',contrastName,'_',num2str(k),'.nii'];
+    maskMetadataStruct_sS.dim = size(cluMatrix);
+    spm_write_vol(maskMetadataStruct_sS, cluster{k});
+    
+    % update index
+    k = k+1;
     
 end, clear i
 
-%% write masks
-for i = 1:numel(cluster)
-    maskMetadataStruct_sS = spm_vol(sw_epi);
-    maskMetadataStruct_sS.fname = [dir.mskOut,fs,'fromRSA',fs,contrastName,fs,'mask_sl_',contrastName,'_',num2str(i),'.nii'];
-    maskMetadataStruct_sS.dim = size(cluMatrix);
-    spm_write_vol(maskMetadataStruct_sS, cluster{i});
-end

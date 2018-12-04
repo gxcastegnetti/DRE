@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_pw_choice';
+analysisName = 'rsa_sl_pw_choice';
 betaid       = 'rsa_pulse_choice';
 
 %% directories

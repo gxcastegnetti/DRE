@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_pw';
+analysisName = 'rsa_sl_pulse_pw_choice';
 % analysisName = 'rsa_sl_pulse_choice';
 % analysisName = 'rsa_sl_pulse_ons0_off';
 
@@ -29,7 +29,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% specify model(s) to test
-models = {'val'};
+models = {'chos'};
 
 %% run batch for each model
 for m = 1:length(models)
@@ -90,7 +90,7 @@ for m = 1:length(models)
     %%%%%%%%%%%%%
     job{1}.spm.tools.snpm.inference.SnPMmat = cellstr([dirOut,fs,'SnPM.mat']);
     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.CFth = nan;
-    job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.FWEthC = 0.05;
+    job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.FWEthC = 0.099;
 %     job{1}.spm.tools.snpm.inference.Thr.Clus.ClusSize.ClusSig.PthC = 0.05;
     job{1}.spm.tools.snpm.inference.Tsign = 1;
     job{1}.spm.tools.snpm.inference.WriteFiltImg.name = '_SnPM_filtered';

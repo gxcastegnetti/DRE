@@ -8,7 +8,7 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'class_v0';
-betaid       = 'rsa_pulse_ons0';
+betaid       = 'rsa_pulse_ima';
 
 %% directories
 fs         = filesep;
@@ -38,15 +38,15 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
+filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ima/rsaPatterns_sl.mat';
 load(filePatterns,'responsePatterns'), clear filePatterns
 
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 roiNames = {'lingual','l_hpc','phc','insula_atlas','sphere_9--28_34_-19','box_w-16_16_16-0_36_23'};
 roiNamesTrue = {'lingual gyrus (atlas)','left HPC (atlas)','PHC (atlas)','insula (atlas)','left OFC (activ.)','ACC (activ.)'};
-roiNames = {'lingual'};
-roiNamesTrue = {'random'};
+roiNames = {'pcc'};
+roiNamesTrue = {'PCC'};
 %% apply two masks: one for grey matter, one for ROI
 % for r = 1:length(roiNames)
 %     for s = 1:length(subs)

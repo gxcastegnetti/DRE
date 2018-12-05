@@ -34,7 +34,7 @@ subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% load response patterns during choice and during imagination
-filePattIma = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
+filePattIma = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ima/rsaPatterns_sl.mat';
 filePattCho = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_choice/rsaPatterns_sl.mat';
 load(filePattIma,'responsePatterns'), clear filePattIma
 respPattIma_unmasked = responsePatterns; clear responsePatterns
@@ -42,7 +42,7 @@ load(filePattCho,'responsePatterns'), clear filePattCho
 respPattCho_unmasked = responsePatterns; clear responsePatterns
 
 %% ROI
-roiNames = {'sphere_9--28_34_-19'};
+roiNames = {'lingual','l_hpc','r_hpc','pcc','mcc','pfc_vm','ofc'};
 % roiNames = {'l_hpc'};
 % roiNames = {'lingual'};
 % roiNames = {'vmpfc'};
@@ -125,8 +125,14 @@ for r = 1:length(roiNames)
             corr_choiceVSchosen(trlCho) = corr(respPattCho_trl,respPattIma_trl_chosen);
             corr_choiceVSunchos(trlCho) = corr(respPattCho_trl,respPattIma_trl_unchos);
         end
-        corr_choiceVSchosen_sub(s) = mean(corr_choiceVSchosen);
-        corr_choiceVSunchos_sub(s) = mean(corr_choiceVSunchos);
-        corr_choiceVdiffere_sub(s) = mean(corr_choiceVSchosen - corr_choiceVSunchos);
+%         corr_choiceVSchosen_sub(r,s) = mean(corr_choiceVSchosen);
+%         corr_choiceVSunchos_sub(r,s) = mean(corr_choiceVSunchos);
+        corr_choiceVdiffere_sub(r,s) = mean(corr_choiceVSchosen - corr_choiceVSunchos);
     end
+end
+
+%% ttest
+for r = 1:length(roiNames)
+        scores = corr_choiceVdiffere_sub(r,:);
+        [h,p(r),~,~] = ttest(scores,0,'Tail','right');
 end

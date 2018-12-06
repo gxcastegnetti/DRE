@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_cxtAndSingleGoals';
+analysisName = 'rsa_sl_sepGoals';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories

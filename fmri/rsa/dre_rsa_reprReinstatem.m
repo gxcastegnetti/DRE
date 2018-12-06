@@ -38,7 +38,8 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% ROI
 roiNames = {'lingual','l_hpc','r_hpc','pcc','mcc','pfc_vm','ofc'};
-roiNames = {'lingual','itc','phpc','l_hpc','r_hpc','angular','par_inf','ins_la','pcc','mcc','acc','caudate','putamen','subgenual','pfc_vm','ofc'};
+% roiNames = {'lingual','itc','phpc','l_hpc','r_hpc','angular','par_inf','ins_la','pcc','mcc','acc','caudate','putamen','subgenual','pfc_vm','ofc'};
+roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
 
 %% betas for imagination and choice
 dir.betaIma = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,'rsa_pulse_ima',fs,'none'];

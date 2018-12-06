@@ -7,9 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0';
-analysisName = 'rsa_sl_pulse_choice';
-analysisName = 'rsa_sl_pw_choice';
+analysisName = 'rsa_sl_pw_ima';
 betaid       = 'rsa_pulse_choice';
 thisIsDim    = false;
 
@@ -45,7 +43,7 @@ userOptions.forcePromptReply = 'r';
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 modelNames = {'val','fam','oid','cxt'};
-modelNames = {'unch'};
+modelNames = {'oid'};
 
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
@@ -84,7 +82,7 @@ if true
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
         if ~thisIsDim
-            load([dirSl,fs,'sl_unch_SF',num2str(subs(s),'%03d'),'.mat']);
+            load([dirSl,fs,'sl_oid_SF',num2str(subs(s),'%03d'),'.mat']);
         else
             load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
         end

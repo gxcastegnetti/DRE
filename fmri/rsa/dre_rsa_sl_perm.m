@@ -29,7 +29,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% specify model(s) to test
-models = {'cxt'};
+models = {'oid'};
 
 %% run batch for each model
 for m = 1:length(models)
@@ -60,12 +60,12 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.DesignFile = 'snpm_bch_ui_OneSampT';
     job{1}.spm.tools.snpm.des.OneSampT.cov = struct('c', {}, 'cname', {});
     job{1}.spm.tools.snpm.des.OneSampT.nPerm = 1000;
-    job{1}.spm.tools.snpm.des.OneSampT.vFWHM = [0 0 0];
+    job{1}.spm.tools.snpm.des.OneSampT.vFWHM = [9 9 9];
     job{1}.spm.tools.snpm.des.OneSampT.masking.tm.tm_none = 1;
     job{1}.spm.tools.snpm.des.OneSampT.masking.im = 1;
-    job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.01;
-    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
-    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/pfc_ofc_hpc.nii'};
+    job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.001;
+%     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
+%     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/pfc_ofc_hpc.nii'};
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {''};
     job{1}.spm.tools.snpm.des.OneSampT.globalc.g_omit = 1;
     job{1}.spm.tools.snpm.des.OneSampT.globalm.gmsca.gmsca_no = 1;

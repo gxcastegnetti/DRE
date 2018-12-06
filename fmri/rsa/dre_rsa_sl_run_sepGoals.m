@@ -1,4 +1,4 @@
-%% dre_rsa_sl_run_cxtAndSingleGoals
+%% dre_rsa_sl_run_sepGoals
 % ~~~
 % GX Castegnetti --- 2018
 

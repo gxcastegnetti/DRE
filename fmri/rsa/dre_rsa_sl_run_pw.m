@@ -88,31 +88,9 @@ for s = 1:length(subs)
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     thisSubject = userOptions.subjectNames{s};
     
-    %% models
-    
-    % value
-    model(1).name = 'val';
-    model(1).RDM = RDMs{s}.val;
-    model(1).color = [0 1 0];
-    
-    % familiarity
-    model(2).name = 'fam';
-    model(2).RDM = RDMs{s}.fam;
-    model(2).color = [0 1 0];
-    
-    % object identity
-    model(3).name = 'oid';
-    model(3).RDM = 1-mat_ID;
-    model(3).color = [0 1 0];
-    
-    % context
-    model(4).name = 'cxt';
-    model(4).RDM = RDMs{s}.cxt;
-    model(4).color = [0 1 0];
-    
     %% run searchlight
-    model = RDMs{s}.val.*RDMs{s}.fam;
+    model = RDMs{s}.con;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_valxfam_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_con_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

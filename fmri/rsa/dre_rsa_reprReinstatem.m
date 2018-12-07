@@ -37,9 +37,9 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% ROI
-roiNames = {'lingual','l_hpc','r_hpc','pcc','mcc','pfc_vm','ofc'};
+roiNames = {'midOcc','lingual','imaginationValue','lp_hpc','la_hpc','rp_hpc','ra_hpc','pcc','mcc','acc','ofc'};
 % roiNames = {'lingual','itc','phpc','l_hpc','r_hpc','angular','par_inf','ins_la','pcc','mcc','acc','caudate','putamen','subgenual','pfc_vm','ofc'};
-roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
+% roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
 
 %% betas for imagination and choice
 dir.betaIma = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,'rsa_pulse_ima',fs,'none'];
@@ -168,3 +168,15 @@ for r = 1:length(roiNames)
     scores = corr_choiceVdiffere_sub(r,:);
     [h,p(r),~,~] = ttest(scores,0,'Tail','right');
 end
+
+%% plot
+figure('color',[1 1 1])
+roiNamesTrue = {'MidOcc','Lingual','Lingual (uni)','lp HPC','la HPC','rp HPC','ra HPC','PCC','MCC','ACC','OFC'};
+corrMean = mean(corr_choiceVdiffere_sub,2);
+corrSem = std(corr_choiceVdiffere_sub,0,2)/sqrt(numel(subs));
+bar(1:numel(roiNames),mean(corr_choiceVdiffere_sub,2),0.4), hold on
+errorbar(1:numel(roiNames),corrMean,corrSem,'k.')
+set(gca,'fontsize',18,'xtick',1:numel(roiNames),'xticklabels',roiNamesTrue)
+ylabel('r(choice,chosObj)-r(choice,unchObj)')
+
+

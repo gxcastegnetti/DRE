@@ -117,7 +117,7 @@ subNames = fieldnames(respPatt.roi1);
 
 figAllRois = figure('color',[1 1 1]);
 for r = 1:length(roiNames)
-%     hfig{r} = figure;
+    hfig{r} = figure;
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -152,8 +152,11 @@ for r = 1:length(roiNames)
         objVal_B(isnan(objVal_B)) = ceil(50*rand);
         
         % add a constant for univoque determination of median
-        Y_F = 0*objVal_F + 50*rand(120,1) + (0.00000001*(1:120))';
-        Y_B = 0*objVal_B + 50*rand(120,1) + (0.00000001*(1:120))';
+%         Y_F = randn(120,1);%objVal_F + (0.00001*(1:120))';
+%         Y_B = randn(120,1);%objVal_B + (0.00001*(1:120))';
+        
+        Y_F = objVal_F + (0.00001*(1:120))';
+        Y_B = objVal_B + (0.00001*(1:120))';
         
         % find percentiles
         pl_F_33 = prctile(Y_F,100/3);
@@ -190,7 +193,7 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 100;
+        nSweeps = 10;
         for k = 1:nSweeps
             
             c_F = cvpartition(Y_F_logic,'holdOut',0.1);

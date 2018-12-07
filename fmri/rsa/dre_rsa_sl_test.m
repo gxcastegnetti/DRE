@@ -8,7 +8,7 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'rsa_sl_pw_ima';
-betaid       = 'rsa_pulse_choice';
+betaid       = 'rsa_pulse_ima';
 thisIsDim    = false;
 
 %% directories
@@ -43,7 +43,7 @@ userOptions.forcePromptReply = 'r';
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 modelNames = {'val','fam','oid','cxt'};
-modelNames = {'oid'};
+modelNames = {'val'};
 
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
@@ -82,7 +82,7 @@ if true
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
         if ~thisIsDim
-            load([dirSl,fs,'sl_oid_SF',num2str(subs(s),'%03d'),'.mat']);
+            load([dirSl,fs,'sl_val_SF',num2str(subs(s),'%03d'),'.mat']);
         else
             load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
         end
@@ -206,8 +206,8 @@ if true
             wrData = spm_read_vols(wrMetadataStruct_sS);
             
             % apply mask
-            swrData(mask_sS == 0) = nan;
-            wrData(mask_sS == 0) = nan;
+            swrData(mask_sS == 0) = 0;
+            wrData(mask_sS == 0) = 0;
             
             % write again
             spm_write_vol(swrMetadataStruct_sS, swrData);
@@ -316,11 +316,10 @@ for m = 1:length(modelNames)
     
     % write p-map
     pMapMetadataStruct_sS = spm_vol(swrMapFile);
-    pMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'pMap_',modelName,'.nii'];
-    pMapMetadataStruct_sS.descrip = 'p-map';
+    pMapMetadataStruct_sS.fname = [dirSl,fs,modelName,fs,'mean_rMap_',modelName,'.nii'];
+    pMapMetadataStruct_sS.descrip = 'mean r-map';
     pMapMetadataStruct_sS.dim = size(p1);
-    supraThreshMarked_t = p1 < 0.005;
-    spm_write_vol(pMapMetadataStruct_sS, supraThreshMarked_t);
+    spm_write_vol(pMapMetadataStruct_sS, nanmean(rMaps,4));
     
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     % create cluster-specific masks %

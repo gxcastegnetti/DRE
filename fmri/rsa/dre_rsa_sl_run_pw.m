@@ -111,8 +111,8 @@ for s = 1:length(subs)
     model(4).color = [0 1 0];
     
     %% run searchlight
-    model = RDMs{s}.val.*RDMs{s}.con;
+    model = RDMs{s}.val.*RDMs{s}.fam;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_valxconf_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_valxfam_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

@@ -30,8 +30,8 @@ bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCF_cU';
-    context = 'B';
+    analysisName = 'uni_pulse_iVCF_cS';
+    context = 'F';
     
     % 1st level
     timing.iOns = 0; % onset for imagination

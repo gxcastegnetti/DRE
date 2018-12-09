@@ -8,6 +8,7 @@ restoredefaultpath
 
 %% analysisName
 analysisName = 'class_v0';
+betaid       = 'rsa_pulse_ima';
 
 % ROIs here are:
 %   - ACC
@@ -56,24 +57,50 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 % roiNames = {'box_w-16_16_16-0_20_36'};
 % roiNames = {'l_hpc'};
 roiNames = {'midOcc','lingual','imaginationValue','lp_hpc','rp_hpc','la_hpc','ra_hpc','pcc','mcc','acc','ofc'};
+roiNames = {'ofc'};
 % roiNames = {'lingual'};
 roiNamesTrue = roiNames;
 
+dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)
     for s = 1:length(subs)
+        
+        if taskOrd(s) == 1
+            for obj = 1:120
+                objIdx_sess_F = [bData(subs(s)).imagination(1).objIdx'; nan(60,1); bData(subs(s)).imagination(3).objIdx'; nan(60,1)];
+                objIdx_sess_B = [nan(60,1); bData(subs(s)).imagination(2).objIdx'; nan(60,1); bData(subs(s)).imagination(4).objIdx'];
+                objIdx_F(obj) = find(objIdx_sess_F == obj);
+                objIdx_B(obj) = find(objIdx_sess_B == obj);
+            end
+        elseif taskOrd(s) == 2
+            for obj = 1:120
+                objIdx_sess_B = [bData(subs(s)).imagination(1).objIdx'; nan(60,1); bData(subs(s)).imagination(3).objIdx'; nan(60,1)];
+                objIdx_sess_F = [nan(60,1); bData(subs(s)).imagination(2).objIdx'; nan(60,1); bData(subs(s)).imagination(4).objIdx'];
+                objIdx_F(obj) = find(objIdx_sess_F == obj);
+                objIdx_B(obj) = find(objIdx_sess_B == obj);
+            end
+        end
+        toNormalOrder = [objIdx_F,objIdx_B];
+
+        % SPM file from 1st level analysis
+        subjSPMFile = [dir.beta,fs,'SF',num2str(subs(s),'%03d'),fs,'SPM.mat'];
+        load(subjSPMFile)
+        
+        % subjective mask
+        subjMaskFile.fname = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
+        
+        % whiten betas
+        B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
+        
         subjName = ['SF',num2str(subs(s),'%03d')];
-        roiMaskFile = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
-        gmMaskFile =  [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
-        roiMask = spm_read_vols(spm_vol(roiMaskFile));
-        gmMask = spm_read_vols(spm_vol(gmMaskFile));
         
-        % vectorise it
-        roiMask = reshape(roiMask, 1, []);
-        gmMask = reshape(gmMask, 1, []);
+        % take only those corresponding to conditions
+        B = real(B([1:60,67:126,133:192,199:258],:));
+        B = B(toNormalOrder,:)';
         
-        respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
-        respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
+        respPatt.(['roi',num2str(r)]).(subjName) = B;
+
     end
 end
 
@@ -235,10 +262,10 @@ for r = 1:length(roiNames)
         
         
     end
-    acc_FF_meanRoi(r) = mean(acc_FF);
-    acc_BB_meanRoi(r) = mean(acc_BB);
-    acc_FB_meanRoi(r) = mean(acc_FB);
-    acc_BF_meanRoi(r) = mean(acc_BF);
+    acc_FF_meanRoi(r) = mean(acc_FF_meanSub);
+    acc_BB_meanRoi(r) = mean(acc_BB_meanSub);
+    acc_FB_meanRoi(r) = mean(acc_FB_meanSub);
+    acc_BF_meanRoi(r) = mean(acc_BF_meanSub);
     
     figure(hMean),subplot(2,3,r)
     bar([1,2],[acc_FF_meanRoi(r),acc_BB_meanRoi(r)],'facecolor',[0.15 0.45 0.75]),hold on
@@ -248,7 +275,7 @@ for r = 1:length(roiNames)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     
-    [~,pSame(r),~,~] = ttest(mean([acc_FF_meanRoi;acc_BB_meanRoi])-0.5)
-    [~,pOppo(r),~,~] = ttest(mean([acc_FB_meanRoi;acc_BF_meanRoi])-0.5)
+    [~,pSame(r),~,~] = ttest(mean([acc_FF_meanSub(:);acc_BB_meanSub(:)],2)-0.5)
+    [~,pOppo(r),~,~] = ttest(mean([acc_FB_meanSub(:);acc_BF_meanSub(:)],2)-0.5)
     
 end

@@ -186,8 +186,7 @@ for r = 1:length(roiNames)
             [b_B,i_B] = lassoglm(XTrain_B,yTrain_B,'binomial','lambda',0.001);
             %             [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',info_F.LambdaMinDeviance);
             %             [b_B,i_B] = lassoglm(XTrain_B,yTrain_B,'binomial','lambda',info_B.LambdaMinDeviance);
-            
-            for j = 1:round(nTrials/numFolds)
+            for j = 1:numFolds)
                 
                 % take test samples
                 XTest_same_F_foo = XTest_same_F(j,:);
@@ -248,7 +247,7 @@ for r = 1:length(roiNames)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     
-    [~,pSame(r),~,~] = ttest(mean([acc_FF_meanRoi;acc_BB_meanRoi])-0.5)
-    [~,pOppo(r),~,~] = ttest(mean([acc_FB_meanRoi;acc_BF_meanRoi])-0.5)
+    [~,pSame(r),~,~] = ttest(mean([acc_FF;acc_BB])-0.5)
+    [~,pOppo(r),~,~] = ttest(mean([acc_BF;acc_FB])-0.5)
     
 end

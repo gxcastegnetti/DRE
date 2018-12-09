@@ -6,8 +6,8 @@ clear
 close all
 
 %% analysis and contrast name
-analysisName = 'rsa_sl_choice';
-contrastName = 'chos';
+analysisName = 'rsa_sl_ima';
+contrastName = 'val';
 
 %% directories
 dir.mskCod = pwd;
@@ -97,7 +97,7 @@ spm_jobman('run',jobR);
 clear jobR
 
 %% then reload the masks back in
-% seòect coregistered masks
+% select coregistered masks
 rmaskHpc_l = [dir.mskOut,fs,'_useNow',fs,'rl_hpc.nii'];
 rmaskHpc_r = [dir.mskOut,fs,'_useNow',fs,'rr_hpc.nii'];
 maskHpc_l_mat = spm_read_vols(spm_vol(rmaskHpc_l));

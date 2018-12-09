@@ -194,19 +194,19 @@ ylabel('r(choice,chosObj)-r(choice,unchObj)')
 
 % compute correlation between performance and...
 % ...chosen
-[r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(2,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(3,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(4,:),subjectPerformance);
-
-% ...unchos
-[r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(1,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(2,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(3,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(4,:),subjectPerformance);
-
-[r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:)-corr_choiceVSunchos_sub(1,:),subjectPerformance)
-[r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(2,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(3,:),subjectPerformance);
-[r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(4,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(2,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(3,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(4,:),subjectPerformance);
+% 
+% % ...unchos
+% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(1,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(2,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(3,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(4,:),subjectPerformance);
+% 
+% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:)-corr_choiceVSunchos_sub(1,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(2,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(3,:),subjectPerformance);
+% [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(4,:),subjectPerformance);
 

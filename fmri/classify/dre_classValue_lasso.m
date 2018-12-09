@@ -46,7 +46,7 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ons0/rsaPatterns_sl.mat';
+filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ima/rsaPatterns_sl.mat';
 load(filePatterns,'responsePatterns')
 
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
@@ -56,7 +56,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 % roiNames = {'box_w-16_16_16-0_20_36'};
 % roiNames = {'l_hpc'};
 roiNames = {'lingual','l_hpc','sphere_9--28_34_-19','box_w-16_16_16-0_20_36'};
-% roiNames = {'lingual'};
+roiNames = {'lingual'};
 roiNamesTrue = roiNames;
 
 % apply two masks: one for grey matter, one for ROI
@@ -79,7 +79,8 @@ end
 
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
-h=figure('color',[1 1 1]);
+hMean = figure('color',[1 1 1]);
+hSub = figure('color',[1 1 1]);
 for r = 1:length(roiNames)
     for s = 1:length(subs)
         
@@ -120,8 +121,8 @@ for r = 1:length(roiNames)
         objVal_B(isnan(objVal_B)) = 50*rand;
         
         % add a constant for univoque determination of median
-        Y_F = objVal_F + (0.00000001*(1:120))';
-        Y_B = objVal_B + (0.00000001*(1:120))';
+        Y_F = objVal_F + (0.00001*(1:120))';
+        Y_B = objVal_B + (0.00001*(1:120))';
         
         % find percentiles
         pl_F_33 = prctile(Y_F,100/3);
@@ -146,16 +147,16 @@ for r = 1:length(roiNames)
         %% logistic regression
         
         % FF
-        [~, info_F] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
+        %         [~, info_F] = lassoglm(X_F_red,Y_F_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
         %         lassoPlot(coef,info,'plottype','CV');
         %         legend('show') % Show legend
         
         % FF
-        [~, info_B] = lassoglm(X_B_red,Y_B_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
+        %         [~, info_B] = lassoglm(X_B_red,Y_B_logic,'binomial','CV',10,'LambdaRatio',0.2,'NumLambda',50);
         %         lassoPlot(coef,info,'plottype','CV');
         %         legend('show') % Show legend
         
-        nSweeps = 100;
+        nSweeps = 10;
         acc_FF_foo = nan(nSweeps,1);
         holdOutFraction = 0.1;
         for k = 1:nSweeps
@@ -183,10 +184,10 @@ for r = 1:length(roiNames)
             XTest_diff_B = X_B_red(idxTest_F,:);
             yTest_diff_B = Y_B_logic(idxTest_F);
             
-            %             [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
-            %             [b_B,i_B] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.01);
-            [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',info_F.LambdaMinDeviance);
-            [b_B,i_B] = lassoglm(XTrain_B,yTrain_B,'binomial','lambda',info_B.LambdaMinDeviance);
+            [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.001);
+            [b_B,i_B] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',0.001);
+            %             [b_F,i_F] = lassoglm(XTrain_F,yTrain_F,'binomial','lambda',info_F.LambdaMinDeviance);
+            %             [b_B,i_B] = lassoglm(XTrain_B,yTrain_B,'binomial','lambda',info_B.LambdaMinDeviance);
             for j = 1:round(holdOutFraction*nTrials)
                 
                 % take test samples
@@ -225,8 +226,17 @@ for r = 1:length(roiNames)
         
         %         clear prediction_FF prediction_BB objIdx_F objIdx_B
         
+        figure(hSub)
+        subplot(6,6,s)
+        bar([1,2],[acc_FF_mean(s),acc_BB_mean(s)],'facecolor',[0.15 0.45 0.75]),hold on
+        bar([3.5,4.5],[acc_FB_mean(s),acc_BF_mean(s)],'facecolor',[0.55 0.55 0.55])
+        set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
+        plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+        ylim([0.4 0.6]),xlim([0 5.5])
+        
+        
     end
-    figure(h),subplot(2,3,r),bar([mean(acc_FF_mean),mean(acc_BB_mean);mean(acc_FB_mean),mean(acc_BF_mean)])
+    figure(hMean),subplot(2,3,r),bar([mean(acc_FF_mean),mean(acc_BB_mean);mean(acc_FB_mean),mean(acc_BF_mean)])
     ylim([0.45 0.57]),title(roiNamesTrue{r})
     aaa = acc_FF_mean + acc_BB_mean - acc_FB_mean - acc_BF_mean;
 end

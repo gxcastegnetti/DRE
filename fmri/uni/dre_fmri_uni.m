@@ -30,15 +30,15 @@ bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCF_cS';
-    context = 'F';
+    analysisName = 'uni_pulse_iVCF_cS_off';
+    context = 'all';
     
     % 1st level
     timing.iOns = 0; % onset for imagination
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-%     dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
+    dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
     
     % contrasts
     dre_con_i3_c1(dir,analysisName,subs,taskOrd,context);

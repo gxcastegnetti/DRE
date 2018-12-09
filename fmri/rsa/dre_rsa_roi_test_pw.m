@@ -337,8 +337,8 @@ xtickangle(45),ytickangle(45),title('t-values')
 % xtickangle(45),ytickangle(45)
 
 %% Compare good and bad subjects
-% subsBest = [25 20 6 4 23 13 11 22 19 30 26  1 17 24];
-% subsWors = [2  16 7 5  8 10 29 28 14 18 21 15 10 27];
+% subsBest = [16,2,24,17,1,26,30,19,22,11,13,23,4,6,20,25];
+% subsWors = [31,27,9,15,21,18,14,28,29,12,10,3,8,5,7];
 %
 % corrRoiRoi_mean_best = mean(corrRoiRoi(:,:,subsBest),3);
 % figure,imagesc(corrRoiRoi_mean_best,[0 0.18])

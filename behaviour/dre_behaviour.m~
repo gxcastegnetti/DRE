@@ -569,7 +569,7 @@ set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('v_{right} - v_{left}'),ylim
 
 clear xspan slope_avg offset
 %% separate worst subjects from best subjects
-subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
+mean(slopes.FonF)
 keyboard
 
 %% lme

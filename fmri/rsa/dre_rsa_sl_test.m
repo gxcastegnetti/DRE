@@ -43,7 +43,7 @@ userOptions.forcePromptReply = 'r';
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 modelNames = {'val','fam','oid','cxt'};
-modelNames = {'val'};
+modelNames = {'con'};
 
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
@@ -82,7 +82,7 @@ if true
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
         if ~thisIsDim
-            load([dirSl,fs,'sl_val_SF',num2str(subs(s),'%03d'),'.mat']);
+            load([dirSl,fs,'sl_con_SF',num2str(subs(s),'%03d'),'.mat']);
         else
             load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
         end

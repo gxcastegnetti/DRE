@@ -38,7 +38,7 @@ if true
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-%     dre_L1_iVCF_cU(dir,analysisName,subs,timing,bData);
+%     dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
     
     % contrasts
     dre_con_i3_c1(dir,analysisName,subs,taskOrd,context);
@@ -49,7 +49,7 @@ if true
     dre_L2(dir,analysisName,[context,'_imagination_confid'],subs,3);
     dre_L2(dir,analysisName,[context,'_imagination_famil'],subs,4);
     dre_L2(dir,analysisName,[context,'_choice_onset'],subs,5);
-    dre_L2(dir,analysisName,[context,'_choice_vChosen-vUnchosen'],subs,6);
+    dre_L2(dir,analysisName,[context,'_choice_vChosen'],subs,6);
 end
 
 %% FOR RFXPLOT

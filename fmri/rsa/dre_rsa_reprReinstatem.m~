@@ -35,7 +35,7 @@ taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 subjectPerformance = [0.122322024086225,0.111973420430063,0.104265818963093,0.200390550760437,0.107325561450143,0.263606651221993,0.111131356536965,0.107132574596395,0.0569356612625340,0.104072750329748,0.151948233527118,0.0989363068400909,0.155438087107738,0.0787478537444945,0.0615413716871817,0.111629725764643,0.116521094236080,0.0673474151090243,0.139266278029877,0.274225138374715,0.0642293398052977,0.143301853060085,0.166534822317758,0.113621624095970,0.325275596011275,0.131400908853378,0.0417606997518145,0.0817217943015241,0.0961469078160667,0.138164677679371,0.0330499066561577];
 subsBest = sort([16,2,24,17,1,26,30,19,22,11,13,23,4,6,20,25]);
 subsWors = sort([31,27,9,15,21,18,14,28,29,12,10,3,8,5,7]);
-%
+% 
 % subs = subs(subsWors);
 % taskOrd = taskOrd(subsWors);
 
@@ -136,7 +136,7 @@ for r = 1:length(roiNames)
             bData(subs(s)).choice(3).objPresented;
             bData(subs(s)).choice(4).objPresented];
         
-        ObjPresented_allSession = ObjPresented_allSession + 120*trlOffset;
+        ObjPresented_allSession = ObjPresented_allSession + 120*trlOffset(trlCho);
         
         % stack which object was chosen
         ObjChosen_allSessions = [bData(subs(s)).choice(1).objChosen;
@@ -157,22 +157,19 @@ for r = 1:length(roiNames)
             obj_2_idx = ObjPresented_allSession(trlCho,2);
             
             % take the corresponding activation pattern during imagination
-            respPattIma_leftSide = B_ima.(roiNames{r}).(subNames{s})(:,obj_1_idx);
-            respPattIma_righSide = B_ima.(roiNames{r}).(subNames{s})(:,obj_2_idx);
-            
-            % identify chosen and unchosen
+            respPattIma_trl_1 = B_ima.(roiNames{r}).(subNames{s})(:,obj_1_idx);
+            respPattIma_trl_2 = B_ima.(roiNames{r}).(subNames{s})(:,obj_2_idx);
             if ObjChosen_allSessions(trlCho) == -1
-                respPattIma_chosenItem = respPattIma_leftSide;
-                respPattIma_unchosItem = respPattIma_righSide;
+                respPattIma_trl_chosen = respPattIma_trl_1;
+                respPattIma_trl_unchos = respPattIma_trl_2;
             elseif ObjChosen_allSessions(trlCho) == 1
-                respPattIma_chosenItem = respPattIma_righSide;
-                respPattIma_unchosItem = respPattIma_leftSide;
-                continue
+                respPattIma_trl_chosen = respPattIma_trl_2;
+                respPattIma_trl_unchos = respPattIma_trl_1;
             end
             
             % compute correlation with chosen and unchosen
-            corr_choiceVSchosen(trlCho) = corr(respPattCho_trl,respPattIma_chosenItem);
-            corr_choiceVSunchos(trlCho) = corr(respPattCho_trl,respPattIma_unchosItem);
+            corr_choiceVSchosen(trlCho) = corr(respPattCho_trl,respPattIma_trl_chosen);
+            corr_choiceVSunchos(trlCho) = corr(respPattCho_trl,respPattIma_trl_unchos);
         end
         %         corr_choiceVSchosen_sub(r,s) = mean(corr_choiceVSchosen);
         %         corr_choiceVSunchos_sub(r,s) = mean(corr_choiceVSunchos);
@@ -209,13 +206,13 @@ ylabel('r(choice,chosObj)-r(choice,unchObj)')
 % [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(2,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(3,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(4,:),subjectPerformance);
-%
+% 
 % % ...unchos
 % [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(1,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(2,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(3,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(4,:),subjectPerformance);
-%
+% 
 % [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:)-corr_choiceVSunchos_sub(1,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(2,:),subjectPerformance);
 % [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(3,:),subjectPerformance);

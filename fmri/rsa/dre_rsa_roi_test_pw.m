@@ -31,8 +31,8 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% subjects
-subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -41,10 +41,10 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 % roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
 %     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-% roiNames = {'lingual','lp_hpc','rp_hpc','la_hpc','ra_hpc','pcc','mcc','pfc_vm','ofc'};
-roiNames = {'midOcc','lingual','imaginationValue','lp_hpc','rp_hpc','la_hpc','ra_hpc','pcc','mcc','acc','ofc'};
-% roiNames = {'lingual','imaginationValue','hpc_lr','pcc','mcc','acc','ofc'};
-% roiNames = {'la_hpc','ofc'};
+roiNames = {'calc','l_ling','lp_itc','l_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
+roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
+roiNames = {'calc','l_ling','lp_itc','l_hpc','r_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
+roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -78,7 +78,11 @@ for r = 1:length(roiNames)
         subjMaskFile.fname = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
         
         % whiten betas
-        B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
+        try
+            B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
+        catch
+            keyboard
+        end
         
         % take only those corresponding to conditions
         if size(B,1) == 124
@@ -195,7 +199,7 @@ end, clear r m mat_ID
 means = squeeze(mean(corrRoiModel,2));
 sems  = squeeze(std(corrRoiModel,0,2)/sqrt(numel(subs)));
 
-roiNamesTrue = {'midOcc','Lingual','imaVal','lpHPC','rpHPC','laHPC','raHPC','PCC','MCC','ACC','OFC'};
+roiNamesTrue = roiNames;
 % roiNamesTrue = roiNames;
 figure('color',[1 1 1])
 hb = bar(means); hold on
@@ -214,14 +218,14 @@ for r1 = 1:length(roiNames)
     for r2 = 1:length(roiNames)
         corrRoiVal_r1 = squeeze(corrRoiModel(r1,:,1));
         corrRoiVal_r2 = squeeze(corrRoiModel(r2,:,1));
-        [~,p(r1,r2),~,stats] = ttest(corrRoiVal_r2 - corrRoiVal_r1);
+        [~,p(r1,r2),~,stats] = ttest(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
         tValues(r1,r2) = stats.tstat;
     end
 end
 isSignificant = p < 0.05;
 tValues = tValues.*isSignificant;
 figure('color',[1 1 1]),imagesc(tValues)
-keyboard
+
 
 %% ROI-ROI correlations
 
@@ -262,8 +266,8 @@ for s = 1:length(subs)
     pctile_fam_66 = prctile(Y_fam,200/3);
     
     % separate trials accordingly
-    val_LO(s,:) = Y_fam < pctile_fam_33;
-    val_HI(s,:) = Y_fam > pctile_fam_66;
+    val_LO(s,:) = Y_con < pctile_con_33;
+    val_HI(s,:) = Y_con > pctile_con_66;
     
 end
 
@@ -299,14 +303,14 @@ corrRoiRoi_HI_mean = mean(corrRoiRoi_HI,3);
 subplot(2,2,1),imagesc(corrRoiRoi_HI_mean,[0.07 0.18])
 set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
     'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('High familiarity')
+xtickangle(45),ytickangle(45),title('High confidence')
 
 % plot val LO
 corrRoiRoi_LO_mean = mean(corrRoiRoi_LO,3);
 subplot(2,2,2),imagesc(corrRoiRoi_LO_mean,[0.07 0.18])
 set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
     'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('Low familiarity')
+xtickangle(45),ytickangle(45),title('Low confidence')
 
 % plot difference
 subplot(2,2,3),imagesc(corrRoiRoi_HI_mean - corrRoiRoi_LO_mean)
@@ -326,7 +330,7 @@ for i = 1:numel(roiNames)
 end
 
 % plot difference
-foo = p < 0.05;
+foo = p < 0.01;
 ppp = aaa.*foo;
 subplot(2,2,4),imagesc(ppp,[-3 3])
 set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...

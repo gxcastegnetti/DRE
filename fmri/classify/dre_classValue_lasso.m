@@ -37,8 +37,8 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 % subs = subs(6);
 % taskOrd = taskOrd(6);
 % subs = [4 5 7 8 9 13 14];
@@ -53,12 +53,7 @@ load(filePatterns,'responsePatterns')
 roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-% roiNames = {'sphere_10--20_-54_-8'};
-% roiNames = {'box_w-16_16_16-0_20_36'};
-% roiNames = {'l_hpc'};
-roiNames = {'midOcc','lingual','imaginationValue','lp_hpc','rp_hpc','la_hpc','ra_hpc','pcc','mcc','acc','ofc'};
-roiNames = {'ofc'};
-% roiNames = {'lingual'};
+roiNames = {'calc','l_ling','lp_itc','l_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
 roiNamesTrue = roiNames;
 
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
@@ -82,7 +77,7 @@ for r = 1:length(roiNames)
             end
         end
         toNormalOrder = [objIdx_F,objIdx_B];
-
+        
         % SPM file from 1st level analysis
         subjSPMFile = [dir.beta,fs,'SF',num2str(subs(s),'%03d'),fs,'SPM.mat'];
         load(subjSPMFile)
@@ -100,15 +95,15 @@ for r = 1:length(roiNames)
         B = B(toNormalOrder,:)';
         
         respPatt.(['roi',num2str(r)]).(subjName) = B;
-
+        
     end
 end
 
 roiNames = fieldnames(respPatt);
 subNames = fieldnames(respPatt.roi1);
 hMean = figure('color',[1 1 1]);
-hSub = figure('color',[1 1 1]);
 for r = 1:length(roiNames)
+    hSub = figure('color',[1 1 1]);
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -144,8 +139,8 @@ for r = 1:length(roiNames)
         end
         
         % fix nans
-        objVal_F(isnan(objVal_F)) = 50*rand;
-        objVal_B(isnan(objVal_B)) = 50*rand;
+        objVal_F(isnan(objVal_F)) = 25;
+        objVal_B(isnan(objVal_B)) = 25;
         
         % add a constant for univoque determination of median
         Y_F = objVal_F + (0.00001*(1:120))';
@@ -183,7 +178,7 @@ for r = 1:length(roiNames)
         %         lassoPlot(coef,info,'plottype','CV');
         %         legend('show') % Show legend
         
-        numFolds = 10;
+        numFolds = 80;
         for k = 1:numFolds
             
             c_F = cvpartition(Y_F_logic,'kFold',numFolds);
@@ -191,6 +186,11 @@ for r = 1:length(roiNames)
             
             idxTrain_F = training(c_F,k);
             idxTrain_B = training(c_B,k);
+            
+            idxTrain_F = true(nTrials,1);
+            idxTrain_B = true(nTrials,1);
+            idxTrain_F(k) = false;
+            idxTrain_B(k) = false;
             
             idxTest_F = ~idxTrain_F;
             idxTest_B = ~idxTrain_B;
@@ -223,20 +223,20 @@ for r = 1:length(roiNames)
                 XTest_diff_F_foo = XTest_diff_F(j,:);
                 
                 % FF
-                foo = sum(b_F.*XTest_same_F_foo(:)) + i_F.Intercept;
-                label_FF(j) = round(1./(1+exp(-foo)));
+                fooFF = sum(b_F.*XTest_same_F_foo(:)) + i_F.Intercept;
+                label_FF(j) = round(1./(1+exp(-fooFF)));
                 
                 % BB
-                foo = sum(b_B.*XTest_same_B_foo(:)) + i_B.Intercept;
-                label_BB(j) = round(1./(1+exp(-foo)));
+                fooBB = sum(b_B.*XTest_same_B_foo(:)) + i_B.Intercept;
+                label_BB(j) = round(1./(1+exp(-fooBB)));
                 
                 % FB
-                foo = sum(b_F.*XTest_diff_B_foo(:)) + i_F.Intercept;
-                label_FB(j) = round(1./(1+exp(-foo)));
+                fooFB = sum(b_F.*XTest_diff_B_foo(:)) + i_F.Intercept;
+                label_FB(j) = round(1./(1+exp(-fooFB)));
                 
                 % BF
-                foo = sum(b_B.*XTest_diff_F_foo(:)) + i_B.Intercept;
-                label_BF(j) = round(1./(1+exp(-foo)));
+                fooBF = sum(b_B.*XTest_diff_F_foo(:)) + i_B.Intercept;
+                label_BF(j) = round(1./(1+exp(-fooBF)));
             end
             
             acc_foo_FF(k) = mean(label_FF(:) == yTest_same_F(:));
@@ -260,6 +260,11 @@ for r = 1:length(roiNames)
         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
         ylim([0.4 0.6]),xlim([0 5.5])
         
+        %         if acc_FF_meanSub(r) < 0.4 || acc_BB_meanSub(r) < 0.4 || acc_FB_meanSub(r) < 0.4 || acc_BF_meanSub(r) < 0.4
+        %             keyboard
+        %         end
+        
+        clear fooBB fooFF fooBF fooFB
         
     end
     acc_FF_meanRoi(r) = mean(acc_FF_meanSub);
@@ -267,7 +272,7 @@ for r = 1:length(roiNames)
     acc_FB_meanRoi(r) = mean(acc_FB_meanSub);
     acc_BF_meanRoi(r) = mean(acc_BF_meanSub);
     
-    figure(hMean),subplot(2,3,r)
+    figure(hMean),subplot(3,4,r)
     bar([1,2],[acc_FF_meanRoi(r),acc_BB_meanRoi(r)],'facecolor',[0.15 0.45 0.75]),hold on
     bar([3.5,4.5],[acc_FB_meanRoi(r),acc_BF_meanRoi(r)],'facecolor',[0.55 0.55 0.55])
     set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',14)

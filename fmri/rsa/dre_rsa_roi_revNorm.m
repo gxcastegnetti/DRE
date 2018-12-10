@@ -39,7 +39,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 roiNames = {'mask_sl_val_l_lg','mask_sl_val_r_lg','mask_sl_val_rm_lg','mask_sl_val_rma_lg','mask_sl_val_l_lg','mask_sl_val_lp_ins',...
     'mask_sl_val_l_hpc','mask_sl_val_r_hpc','mask_sl_val_rp_ins','mask_sl_val_ra_ins','mask_sl_val_l_mcc','mask_sl_val_l_ofc'};
 
-roiNames = {'imaginationValue'};
+roiNames = {'lp_ins'};
 
 %% subjects
 subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39:41 43 47:50];

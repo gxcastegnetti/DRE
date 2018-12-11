@@ -144,6 +144,8 @@ for r = 1:length(roiNames)
             bData(subs(s)).choice(3).objChosen;
             bData(subs(s)).choice(4).objChosen];
         
+        corr_choiceVSchosen = nan(96,1);
+        corr_choiceVSunchos = nan(96,1);
         for trlCho = 1:96
             % take response pattern during choice
             respPattCho_trl = B_cho.(roiNames{r}).(subNames{s})(:,trlCho);
@@ -167,7 +169,6 @@ for r = 1:length(roiNames)
             elseif ObjChosen_allSessions(trlCho) == 1
                 respPattIma_chosenItem = respPattIma_righSide;
                 respPattIma_unchosItem = respPattIma_leftSide;
-                continue
             end
             
             % compute correlation with chosen and unchosen
@@ -176,9 +177,9 @@ for r = 1:length(roiNames)
         end
         %         corr_choiceVSchosen_sub(r,s) = mean(corr_choiceVSchosen);
         %         corr_choiceVSunchos_sub(r,s) = mean(corr_choiceVSunchos);
-        corr_choiceVdiffere_sub(r,s) = mean(corr_choiceVSchosen - corr_choiceVSunchos);
-        corr_choiceVSchosen_sub(r,s) = mean(corr_choiceVSchosen);
-        corr_choiceVSunchos_sub(r,s) = mean(corr_choiceVSunchos);
+        corr_choiceVdiffere_sub(r,s) = nanmean(corr_choiceVSchosen - corr_choiceVSunchos);
+        corr_choiceVSchosen_sub(r,s) = nanmean(corr_choiceVSchosen);
+        corr_choiceVSunchos_sub(r,s) = nanmean(corr_choiceVSunchos);
     end
 end
 
@@ -200,24 +201,4 @@ bar(1:numel(roiNames),mean(corr_choiceVdiffere_sub,2),0.4), hold on
 errorbar(1:numel(roiNames),corrMean,corrSem,'k.')
 set(gca,'fontsize',18,'xtick',1:numel(roiNames),'xticklabels',roiNamesTrue)
 ylabel('r(choice,chosObj)-r(choice,unchObj)')
-
-%% chosen and unchosen
-
-% compute correlation between performance and...
-% ...chosen
-% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(2,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(3,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(4,:),subjectPerformance);
-%
-% % ...unchos
-% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(1,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(2,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(3,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVSunchos_sub(4,:),subjectPerformance);
-%
-% [r_foo, p_foo] = corrcoef(corr_choiceVSchosen_sub(1,:)-corr_choiceVSunchos_sub(1,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(2,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(3,:),subjectPerformance);
-% [r_foo, p_foo] = corrcoef(corr_choiceVdiffere_sub(4,:),subjectPerformance);
 

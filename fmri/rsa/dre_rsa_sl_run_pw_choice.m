@@ -67,15 +67,15 @@ end
 
 %% load betas
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
-userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
-if ~exist(filePatterns,'file')
-    responsePatterns = fMRIDataPreparation('SPM', userOptions);
-    if ~exist([dir.out,fs,'_responsePatterns',fs,betaid],'dir'),mkdir([dir.out,fs,'_responsePatterns',fs,betaid]),end
-    save(filePatterns,'responsePatterns','-v7.3')
-else
-    load(filePatterns,'responsePatterns')
-end
+% userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
+% filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
+% if ~exist(filePatterns,'file')
+%     responsePatterns = fMRIDataPreparation('SPM', userOptions);
+%     if ~exist([dir.out,fs,'_responsePatterns',fs,betaid],'dir'),mkdir([dir.out,fs,'_responsePatterns',fs,betaid]),end
+%     save(filePatterns,'responsePatterns','-v7.3')
+% else
+%     load(filePatterns,'responsePatterns')
+% end
 
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
@@ -112,8 +112,8 @@ for s = 1:length(subs)
     model(5).RDM = RDMs{s}.choice.ccxt;
     model(5).color = [0 1 0];
     
-    model = RDMs{s}.choice.dVal;
+    model = RDMs{s}.choice.cMun;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_dVal_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_cMun_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

@@ -193,9 +193,12 @@ for vx = 1:size(Result,2)
         foo_2 = foo_1(toNormalOrder,toNormalOrder);
     elseif size(foo_1,1) == 96
         foo_2 = foo_1;
+    else
+        error('Something is wrong here.')
     end
     searchlightRDM_ltv = vectorizeRDM(foo_2);
     [rs_vx(vx), ~] = corr(searchlightRDM_ltv(:), modelRDMs_ltv(:), 'type', 'Spearman', 'rows', 'pairwise');
+    clear foo_2
 end
 rs = nan(VolIn(1).dim);
 rs(Searchlight.voxel) = rs_vx;

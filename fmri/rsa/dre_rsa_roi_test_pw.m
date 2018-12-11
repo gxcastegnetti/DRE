@@ -41,10 +41,9 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 % roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
 %     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
-roiNames = {'calc','l_ling','lp_itc','l_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
-roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
-roiNames = {'calc','l_ling','lp_itc','l_hpc','r_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
 roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
+roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc','vmpfc_ima'};
+% roiNames = {'calc','l_ling','lp_itc','l_hpc','lp_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)

@@ -38,12 +38,10 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% which mask?
-% roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
-%     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
-
-roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
-roiNames = {'calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc','vmpfc_ima'};
-% roiNames = {'calc','l_ling','lp_itc','l_hpc','lp_hpc','mcc','sma','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc'};
+roiNames = {'calc','l_ling','lp_itc','lp_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc_ima'};
+roiNames = {'l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc_ima'};
+roiNames = {'l_ling','lp_itc','l_hpc','r_hpc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
+roiNames = {'l_ling','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','ofc_conf','l_ofc'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -198,6 +196,9 @@ end, clear r m mat_ID
 means = squeeze(mean(corrRoiModel,2));
 sems  = squeeze(std(corrRoiModel,0,2)/sqrt(numel(subs)));
 
+means = means(end-1:end,1:2);
+sems = sems(end-1:end,1:2);
+
 roiNamesTrue = roiNames;
 % roiNamesTrue = roiNames;
 figure('color',[1 1 1])
@@ -210,6 +211,7 @@ end, clear ib
 legend(scoreNames,'location','northwest'),set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
     'xticklabels',roiNamesTrue)
 ylabel('Correlation(ROI, model)')
+
 
 
 %% ROI-ROI comparison
@@ -296,25 +298,25 @@ for r1 = 1:length(roiNames)
 end, clear r1 r2
 
 figure('color',[1 1 1])
-
+roiNamesTrue = {'Lingual','lHPC','rHPC','ACC','rIns','vmPFC','pOFC','aOFC'};
 % plot val HI
 corrRoiRoi_HI_mean = mean(corrRoiRoi_HI,3);
 subplot(2,2,1),imagesc(corrRoiRoi_HI_mean,[0.07 0.18])
-set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
-    'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
+set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
+    'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
 xtickangle(45),ytickangle(45),title('High confidence')
 
 % plot val LO
 corrRoiRoi_LO_mean = mean(corrRoiRoi_LO,3);
 subplot(2,2,2),imagesc(corrRoiRoi_LO_mean,[0.07 0.18])
-set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
-    'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
+set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
+    'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
 xtickangle(45),ytickangle(45),title('Low confidence')
 
 % plot difference
 subplot(2,2,3),imagesc(corrRoiRoi_HI_mean - corrRoiRoi_LO_mean)
-set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
-    'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
+set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
+    'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
 xtickangle(45),ytickangle(45),title('Difference')
 
 % ttest
@@ -322,7 +324,7 @@ for i = 1:numel(roiNames)
     for j = 1:numel(roiNames)
         bbb = corrRoiRoi_HI(i,j,:);
         www = corrRoiRoi_LO(i,j,:);
-        [~,p(i,j),ci,stats] = ttest(bbb-www);
+        [~,p(i,j),ci,stats] = ttest(bbb-www,0,'tail','right');
         ttt = stats.tstat;
         aaa(i,j) = ttt;
     end
@@ -332,11 +334,16 @@ end
 foo = p < 0.01;
 ppp = aaa.*foo;
 subplot(2,2,4),imagesc(ppp,[-3 3])
-set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
-    'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('t-values')
+set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
+    'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
+xtickangle(45),ytickangle(45),title('p < 0.01')
+
+%% plot only wrt hippocampus
+% for i = []
+% corrRoiVsHpc_highConf = corrRoiRoi_HI(i,3,:);
 
 
+%%
 % for r1 = 1:length(roiNames)
 %     for r2 = 1:length(roiNames)
 %         for s = 1:size(RDM_brain,2)

@@ -6,7 +6,7 @@ clear
 close all
 
 %% analysis and contrast name
-analysisName = 'rsa_sl_ima';
+analysisName = 'rsa_sl_pw_ima';
 contrastName = 'val';
 
 %% directories

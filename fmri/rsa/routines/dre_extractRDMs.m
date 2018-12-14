@@ -121,55 +121,62 @@ for s = 1:length(subs)
         RDMs{s}.pri(:,i) = abs(pri_all(i) - pri_all);
     end
     
+    zval_all = val_all;
+    zval_all(~isnan(val_all)) = zscore(val_all(~isnan(val_all)));
+    zcalQuad_all = zval_all.^2;
+    for i = 1:length(val_all)
+        RDMs{s}.valQuad(:,i) = abs(zcalQuad_all(i) - zcalQuad_all);
+    end
+    
     %% create median split RDMs
     % the 0.00001*idx is to make median univocally defined
     
-%     val_all_pert = val_all + 0.00001*(1:length(val_all))';
-%     medVal = nanmedian(val_all_pert);
-%     idxVal_H = val_all_pert > medVal;
-%     
-%     con_all_pert = con_all + 0.00001*(1:length(con_all))';
-%     medCon = median(con_all_pert);
-%     idxCon_H = con_all_pert > medCon;
-%     
-%     fam_all_pert = fam_all + 0.00001*(1:length(fam_all))';
-%     medFam = median(fam_all_pert);
-%     idxFam_H = fam_all_pert > medFam;
-%     
-%     pri_all_pert = pri_all + 0.00001*(1:length(pri_all))';
-%     medPri = median(pri_all_pert);
-%     idxPri_H = pri_all_pert > medPri;
-%     
-%     % create median split RDMs
-%     for i = 1:length(val_all)
-%         RDMs{s}.valMed(:,i) = abs(idxVal_H(i) - idxVal_H);
-%         RDMs{s}.conMed(:,i) = abs(idxCon_H(i) - idxCon_H);
-%         RDMs{s}.famMed(:,i) = abs(idxFam_H(i) - idxFam_H);
-%         RDMs{s}.priMed(:,i) = abs(idxPri_H(i) - idxPri_H);
-%     end
+    %     val_all_pert = val_all + 0.00001*(1:length(val_all))';
+    %     medVal = nanmedian(val_all_pert);
+    %     idxVal_H = val_all_pert > medVal;
+    %
+    %     con_all_pert = con_all + 0.00001*(1:length(con_all))';
+    %     medCon = median(con_all_pert);
+    %     idxCon_H = con_all_pert > medCon;
+    %
+    %     fam_all_pert = fam_all + 0.00001*(1:length(fam_all))';
+    %     medFam = median(fam_all_pert);
+    %     idxFam_H = fam_all_pert > medFam;
+    %
+    %     pri_all_pert = pri_all + 0.00001*(1:length(pri_all))';
+    %     medPri = median(pri_all_pert);
+    %     idxPri_H = pri_all_pert > medPri;
+    %
+    %     % create median split RDMs
+    %     for i = 1:length(val_all)
+    %         RDMs{s}.valMed(:,i) = abs(idxVal_H(i) - idxVal_H);
+    %         RDMs{s}.conMed(:,i) = abs(idxCon_H(i) - idxCon_H);
+    %         RDMs{s}.famMed(:,i) = abs(idxFam_H(i) - idxFam_H);
+    %         RDMs{s}.priMed(:,i) = abs(idxPri_H(i) - idxPri_H);
+    %     end
     
     %% now divide scores into high, low and create RDMs
-%     valHigh = val_all;
-%     valHigh(val_all_pert < medVal) = nan;
-%     valLow = val_all;
-%     valLow(val_all_pert > medVal) = nan;
-%     conHigh = con_all;
-%     conHigh(con_all_pert < medCon) = nan;
-%     conLow = con_all;
-%     conLow(con_all_pert > medCon) = nan;
-%     famHigh = fam_all;
-%     famHigh(fam_all_pert < medFam) = nan;
-%     famLow = fam_all;
-%     famLow(fam_all_pert > medFam) = nan;
-%     
-%     for i = 1:length(val_all)
-%         RDMs{s}.valHigh(:,i) = abs(valHigh(i) - valHigh);
-%         RDMs{s}.valLow(:,i) = abs(valLow(i) - valLow);
-%         RDMs{s}.conHigh(:,i) = abs(conHigh(i) - conHigh);
-%         RDMs{s}.conLow(:,i) = abs(conLow(i) - conLow);
-%         RDMs{s}.famHigh(:,i) = abs(famHigh(i) - famHigh);
-%         RDMs{s}.famLow(:,i) = abs(famLow(i) - famLow);
-%     end
+    %     valHigh = val_all;
+    %     valHigh(val_all_pert < medVal) = nan;
+    %     valLow = val_all;
+    %     valLow(val_all_pert > medVal) = nan;
+    %     conHigh = con_all;
+    %     conHigh(con_all_pert < medCon) = nan;
+    %     conLow = con_all;
+    %     conLow(con_all_pert > medCon) = nan;
+    %     famHigh = fam_all;
+    %     famHigh(fam_all_pert < medFam) = nan;
+    %     famLow = fam_all;
+    %     famLow(fam_all_pert > medFam) = nan;
+    %
+    %     for i = 1:length(val_all)
+    %         RDMs{s}.valHigh(:,i) = abs(valHigh(i) - valHigh);
+    %         RDMs{s}.valLow(:,i) = abs(valLow(i) - valLow);
+    %         RDMs{s}.conHigh(:,i) = abs(conHigh(i) - conHigh);
+    %         RDMs{s}.conLow(:,i) = abs(conLow(i) - conLow);
+    %         RDMs{s}.famHigh(:,i) = abs(famHigh(i) - famHigh);
+    %         RDMs{s}.famLow(:,i) = abs(famLow(i) - famLow);
+    %     end
     
     %% create context model
     cxt_model = nan(240);

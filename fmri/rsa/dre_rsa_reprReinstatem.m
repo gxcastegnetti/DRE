@@ -3,7 +3,7 @@
 % GX Castegnetti --- 2018
 
 clear
-close all
+% close all
 restoredefaultpath
 
 %% analysisName
@@ -36,8 +36,8 @@ subjectPerformance = [0.122322024086225,0.111973420430063,0.104265818963093,0.20
 subsBest = sort([16,2,24,17,1,26,30,19,22,11,13,23,4,6,20,25]);
 subsWors = sort([31,27,9,15,21,18,14,28,29,12,10,3,8,5,7]);
 %
-% subs = subs(subsWors);
-% taskOrd = taskOrd(subsWors);
+subs = subs(subsBest);
+taskOrd = taskOrd(subsBest);
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -46,6 +46,7 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 roiNames = {'midOcc','lingual','imaginationValue','lp_hpc','la_hpc','rp_hpc','ra_hpc','pcc','mcc','acc','ofc'};
 % roiNames = {'lingual','itc','phpc','l_hpc','r_hpc','angular','par_inf','ins_la','pcc','mcc','acc','caudate','putamen','subgenual','pfc_vm','ofc'};
 roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
+roiNames = {'l_hpc','r_hpc'};
 
 %% betas for imagination and choice
 dir.betaIma = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,'rsa_pulse_ima',fs,'none'];

@@ -45,7 +45,12 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
     'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
 
 roiNames = {'lingual','imaginationValue','calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
+roiNames = {'imaginationValue','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','l_ofc','ofc_conf'};
+roiNames = {'vmpfc_ima_p','mask_sl_val_6'};
+
 roiNamesTrue = roiNames;
+
+
 
 %% apply two masks: one for grey matter, one for ROI
 % for r = 1:length(roiNames)
@@ -193,7 +198,7 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 25;
+        nSweeps = 100;
         for k = 1:nSweeps
             
             c_F = cvpartition(Y_F_logic,'holdOut',0.1);

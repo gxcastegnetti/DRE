@@ -98,12 +98,14 @@ for s = 1:length(subs)
         % use this if also physiological regressors required %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
+%         dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
+%         
 %         % load rp file to concatenate with physio regressors
 %         rp = load(rp_file{1});
 %         
 %         % see which file is correct
-%         fileF = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'F_R_S1.mat'];
-%         fileB = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'B_R_S1.mat'];
+%         fileF = [dir.phy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'F_R_S1.mat'];
+%         fileB = [dir.phy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'B_R_S1.mat'];
 %         try
 %             try
 %                 mov = load(fileF);
@@ -114,7 +116,6 @@ for s = 1:length(subs)
 %         catch
 %             mov = [];
 %         end
-%         
 %         
 %         % concatenate movement and physiological regressors
 %         R = [rp, mov]; %#ok<NASGU>

@@ -21,8 +21,8 @@ addpath(genpath(dir.spm))
 
 %% subjects
 subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 47:49];
-subs = [4 5 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 45 47:49];
-subs = [50];
+subs = [4 5 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39:43 45 47:49 50];
+subs = [39:43 45 47:49 50];
 %% input run types (fun: functional; struct: structural; fmapm: fmap magnitude; fmapp: fmap phase; loc: localiser)
 runType{1}  = {'loc','ignore','fun','fun','fmapm','fmapp','struct','fun'};
 runType{2}  = {};
@@ -90,14 +90,14 @@ for s = 1:length(subs)
 end
 
 %% spatial preprocessing
-if true
+if false
     spatial_preproc(dir,subs,fmapFiles);
 end
 
 %% physiological regressors
-% addpath([dir.spm,fs,'toolbox',fs,'physio']);
-% addpath([dir.spm,fs,'toolbox',fs,'physio',fs,'son']);
-% physioRegressors(dir,subs)
+addpath([dir.spm,fs,'toolbox',fs,'physio']);
+addpath([dir.spm,fs,'toolbox',fs,'physio',fs,'son']);
+physioRegressors(dir,subs)
 
 %% save movement data on a .pdf
 % fmri_plotMovements(dir,subs)

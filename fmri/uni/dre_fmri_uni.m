@@ -22,15 +22,39 @@ addpath(genpath(dir.spm))
 addpath(genpath([foodir,fs,'routines'])), clear foodir idcs newdir4 dirSPM
 
 %% Subjects
-subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
+if false
+    analysisName = 'uni_pulse_iVCF_cS';
+    context = 'F';
+    
+    % 1st level
+    timing.iOns = 0; % onset for imagination
+    timing.cOns = 0; % onset for choice
+    timing.iDur = 0; % duration for imagination
+    timing.cDur = 0; % duration for choice
+%     dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
+    
+    % contrasts
+    dre_con_i3_c1(dir,analysisName,subs,taskOrd,context);
+    
+    % 2nd level
+    dre_L2(dir,analysisName,[context,'_imagination_onset'],subs,1);
+    dre_L2(dir,analysisName,[context,'_imagination_confid'],subs,2);
+    dre_L2(dir,analysisName,[context,'_imagination_value'],subs,3);
+    dre_L2(dir,analysisName,[context,'_imagination_famil'],subs,4);
+    dre_L2(dir,analysisName,[context,'_choice_onset'],subs,5);
+    dre_L2(dir,analysisName,[context,'_choice_vChosen'],subs,6);
+end
+
+%% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCF_cS_off';
+    analysisName = 'uni_pulse_iV2_cV';
     context = 'all';
     
     % 1st level
@@ -38,39 +62,16 @@ if true
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-    dre_L1_iVCF_cS(dir,analysisName,subs,timing,bData);
+%     dre_L1_iV2_cV(dir,analysisName,subs,timing,bData);
     
     % contrasts
-    dre_con_i3_c1(dir,analysisName,subs,taskOrd,context);
+    dre_con_i1_c1(dir,analysisName,subs,taskOrd,context);
     
     % 2nd level
     dre_L2(dir,analysisName,[context,'_imagination_onset'],subs,1);
-    dre_L2(dir,analysisName,[context,'_imagination_value'],subs,2);
-    dre_L2(dir,analysisName,[context,'_imagination_confid'],subs,3);
-    dre_L2(dir,analysisName,[context,'_imagination_famil'],subs,4);
-    dre_L2(dir,analysisName,[context,'_choice_onset'],subs,5);
-    dre_L2(dir,analysisName,[context,'_choice_vChosen'],subs,6);
-end
-
-%% FOR RFXPLOT
-if false
-    analysisName = 'uni_pulse_rfx_iV_cS';
-    
-    % 1st level
-    timing.iOns = 0; % onset for imagination
-    timing.cOns = 0; % onset for choice
-    timing.iDur = 0; % duration for imagination
-    timing.cDur = 0; % duration for choice
-    dre_L1_rfx_iV_cS(dir,analysisName,subs,timing,bData);
-    
-    % contrasts
-    dre_con_i1_c1(dir,analysisName,subs);
-    
-    % 2nd level
-    dre_L2(dir,analysisName,'imagination_onset',subs,1);
-    dre_L2(dir,analysisName,'imagination_value',subs,2);
-    dre_L2(dir,analysisName,'choice_onset',subs,3);
-    dre_L2(dir,analysisName,'choice_valueChosen',subs,4);
+    dre_L2(dir,analysisName,[context,'_valueSquared'],subs,2);
+    dre_L2(dir,analysisName,[context,'_choice_onset'],subs,3);
+    dre_L2(dir,analysisName,[context,'_choice_dV'],subs,4);
 end
 
 %% median splits

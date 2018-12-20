@@ -23,6 +23,7 @@ dir.out  = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi'];
 
 % paths
 addpath([dir.rsaCod,fs,'routines'])
+addpath(genpath([dir.rsaCod,fs,'drtoolbox']))
 addpath([dir.dre,fs,'codes',fs,'fmri',fs,'uni',fs,'routines'])
 addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
@@ -36,11 +37,11 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
+ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 
 %% which mask?
-roiNames = {'calc','l_ling','lp_itc','lp_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc_ima'};
-roiNames = {'l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc_ima'};
-roiNames = {'l_ling','lp_itc','l_hpc','r_hpc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
+% roiNames = {'l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc_ima'};
+% roiNames = {'l_ling','lp_itc','l_hpc','r_hpc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
 roiNames = {'l_ling','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','ofc_conf','l_ofc'};
 
 %% prewhiten activity in the mask
@@ -89,17 +90,47 @@ for r = 1:length(roiNames)
             B = B(toNormalOrder(s,:),:);
         end
         
-        %         B_foo = B(toNormalOrder(s,:),:);
         B_struct.(roiNames{r}).(subjName) = B';
         
-        fooDir = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
-        %         save([fooDir,fs,'toNormalOrder',fs,'SF',num2str(subs(s),'%03d')],'toNormalOrder')
+        % fooDir = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+        % save([fooDir,fs,'toNormalOrder',fs,'SF',num2str(subs(s),'%03d')],'toNormalOrder')
         
         % construct RDM
         rdm = squareform(pdist(B,'correlation'));
         RDM_brain(r,s).RDM = rdm;
     end
 end, clear rdm fooDir subjSPMFile objIdx_F objIdx_B obj objIdx_sess_F objIdx_sess_B s SPM betaid
+
+%% plot ROI RDM
+% user options
+userOptions = dre_rsa_userOptions(dir,subs);
+userOptions.analysisName = analysisName;
+userOptions.rootPath = dir.out;
+userOptions.forcePromptReply = 'r';
+
+% average RDMs across subjects and plot
+figure('color',[1,1,1])
+for r = 1:numel(roiNames)
+    
+    % compute ROI-specific average
+    foo = zeros(size(B,1),size(B,1));
+    for s = 1:numel(subs)
+        newOrd = ordData(subs(s)).norm2val_cont;
+        foo = foo + RDM_brain(r,s).RDM(newOrd,newOrd)/numel(subs);
+    end
+    
+    % fill struct for the RSA toolbox
+    RDM_brain_avg(r).color = [0 0 1];
+    RDM_brain_avg(r).name = roiNames{r};
+    RDM_brain_avg(r).RDM = foo;
+    
+    % plot
+    subplot(3,5,r)
+    RDM_brain_avg(r).RDM(RDM_brain_avg(r).RDM==0)=nan;
+    foo = nanmean(RDM_brain_avg(r).RDM(:));
+    imagesc(RDM_brain_avg(r).RDM),title(roiNames{r}),caxis([foo-1 foo+1])
+end
+
 
 %% ROI-model correlations
 
@@ -196,8 +227,8 @@ end, clear r m mat_ID
 means = squeeze(mean(corrRoiModel,2));
 sems  = squeeze(std(corrRoiModel,0,2)/sqrt(numel(subs)));
 
-means = means(end-1:end,1:2);
-sems = sems(end-1:end,1:2);
+% means = means(end-1:end,1:2);
+% sems = sems(end-1:end,1:2);
 
 roiNamesTrue = roiNames;
 % roiNamesTrue = roiNames;
@@ -208,13 +239,12 @@ for ib = 1:numel(hb)
     errorbar(xData',means(:,ib),sems(:,ib),'k.')
     %     hb(ib).FaceColor = myColors(ib,:);
 end, clear ib
-legend(scoreNames,'location','northwest'),set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
-    'xticklabels',roiNamesTrue)
+legend({'Value','Confid.'},'location','northwest'),set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
+    'xticklabels',roiNames)
 ylabel('Correlation(ROI, model)')
 
 
-
-%% ROI-ROI comparison
+%% ROI-ROI comparison in terms of correlation with mdoel
 for r1 = 1:length(roiNames)
     for r2 = 1:length(roiNames)
         corrRoiVal_r1 = squeeze(corrRoiModel(r1,:,1));
@@ -229,6 +259,8 @@ figure('color',[1 1 1]),imagesc(tValues)
 
 
 %% ROI-ROI correlations
+
+whatScore = 'value';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % take trials with hi/low val, con, fam %
@@ -266,9 +298,17 @@ for s = 1:length(subs)
     pctile_fam_33 = prctile(Y_fam,100/3);
     pctile_fam_66 = prctile(Y_fam,200/3);
     
-    % separate trials accordingly
-    val_LO(s,:) = Y_con < pctile_con_33;
-    val_HI(s,:) = Y_con > pctile_con_66;
+    % separate trials according to value
+    val_LO(s,:) = Y_val < pctile_val_33;
+    val_HI(s,:) = Y_val > pctile_val_66;
+    
+    % separate trials according to value
+    con_LO(s,:) = Y_con < pctile_con_33;
+    con_HI(s,:) = Y_con > pctile_con_66;
+    
+    % separate trials according to value
+    fam_LO(s,:) = Y_fam < pctile_fam_33;
+    fam_HI(s,:) = Y_fam > pctile_fam_66;
     
 end
 
@@ -281,37 +321,52 @@ for r1 = 1:length(roiNames)
             subjName = ['SF',num2str(subs(s),'%03d')];
             
             % take activity in the two ROIs
-            roi1_val_HI = B_struct.(roiNames{r1}).(subjName)(:,val_HI(s,:));
-            roi1_val_LO = B_struct.(roiNames{r1}).(subjName)(:,val_LO(s,:));
-            roi2_val_HI = B_struct.(roiNames{r2}).(subjName)(:,val_HI(s,:));
-            roi2_val_LO = B_struct.(roiNames{r2}).(subjName)(:,val_LO(s,:));
+            if strcmp(whatScore,'value')
+                roi1_HI = B_struct.(roiNames{r1}).(subjName)(:,val_HI(s,:));
+                roi1_LO = B_struct.(roiNames{r1}).(subjName)(:,val_LO(s,:));
+                roi2_HI = B_struct.(roiNames{r2}).(subjName)(:,val_HI(s,:));
+                roi2_LO = B_struct.(roiNames{r2}).(subjName)(:,val_LO(s,:));
+            elseif strcmp(whatScore,'confidence')
+                roi1_HI = B_struct.(roiNames{r1}).(subjName)(:,con_HI(s,:));
+                roi1_LO = B_struct.(roiNames{r1}).(subjName)(:,con_LO(s,:));
+                roi2_HI = B_struct.(roiNames{r2}).(subjName)(:,con_HI(s,:));
+                roi2_LO = B_struct.(roiNames{r2}).(subjName)(:,con_LO(s,:));
+            elseif strcmp(whatScore,'familiarity')
+                roi1_HI = B_struct.(roiNames{r1}).(subjName)(:,fam_HI(s,:));
+                roi1_LO = B_struct.(roiNames{r1}).(subjName)(:,fam_LO(s,:));
+                roi2_HI = B_struct.(roiNames{r2}).(subjName)(:,fam_HI(s,:));
+                roi2_LO = B_struct.(roiNames{r2}).(subjName)(:,fam_LO(s,:));
+            end
             
             % now create RDMs
-            rdm_roi1_val_HI = pdist(roi1_val_HI','correlation');
-            rdm_roi1_val_LO = pdist(roi1_val_LO','correlation');
-            rdm_roi2_val_HI = pdist(roi2_val_HI','correlation');
-            rdm_roi2_val_LO = pdist(roi2_val_LO','correlation');
-            corrRoiRoi_HI(r1,r2,s) = corr(rdm_roi1_val_HI(:),rdm_roi2_val_HI(:),'rows','pairwise','type','Spearman');
-            corrRoiRoi_LO(r1,r2,s) = corr(rdm_roi1_val_LO(:),rdm_roi2_val_LO(:),'rows','pairwise','type','Spearman');
+            rdm_roi1_HI = pdist(roi1_HI','correlation');
+            rdm_roi1_LO = pdist(roi1_LO','correlation');
+            rdm_roi2_HI = pdist(roi2_HI','correlation');
+            rdm_roi2_LO = pdist(roi2_LO','correlation');
+%             corrRoiRoi_HI(r1,r2,s) = corr(rdm_roi1_HI(:),rdm_roi2_HI(:),'rows','pairwise','type','Spearman');
+%             corrRoiRoi_LO(r1,r2,s) = corr(rdm_roi1_LO(:),rdm_roi2_LO(:),'rows','pairwise','type','Spearman');
+            corrRoiRoi_HI(r1,r2,s) = rankCorr_Kendall_taua(rdm_roi1_HI(:),rdm_roi2_HI(:));
+            corrRoiRoi_LO(r1,r2,s) = rankCorr_Kendall_taua(rdm_roi1_LO(:),rdm_roi2_LO(:));
         end
     end
 end, clear r1 r2
 
 figure('color',[1 1 1])
 roiNamesTrue = {'Lingual','lHPC','rHPC','ACC','rIns','vmPFC','pOFC','aOFC'};
+
 % plot val HI
 corrRoiRoi_HI_mean = mean(corrRoiRoi_HI,3);
 subplot(2,2,1),imagesc(corrRoiRoi_HI_mean,[0.07 0.18])
 set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
     'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('High confidence')
+xtickangle(45),ytickangle(45),title(['High ',whatScore])
 
 % plot val LO
 corrRoiRoi_LO_mean = mean(corrRoiRoi_LO,3);
 subplot(2,2,2),imagesc(corrRoiRoi_LO_mean,[0.07 0.18])
 set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
     'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('Low confidence')
+xtickangle(45),ytickangle(45),title(['Low ',whatScore])
 
 % plot difference
 subplot(2,2,3),imagesc(corrRoiRoi_HI_mean - corrRoiRoi_LO_mean)
@@ -322,46 +377,62 @@ xtickangle(45),ytickangle(45),title('Difference')
 % ttest
 for i = 1:numel(roiNames)
     for j = 1:numel(roiNames)
-        bbb = corrRoiRoi_HI(i,j,:);
-        www = corrRoiRoi_LO(i,j,:);
-        [~,p(i,j),ci,stats] = ttest(bbb-www,0,'tail','right');
-        ttt = stats.tstat;
-        aaa(i,j) = ttt;
+        roiHI = corrRoiRoi_HI(i,j,:);
+        roiLO = corrRoiRoi_LO(i,j,:);
+        [~,p(i,j),ci,stats] = ttest(roiHI-roiLO,0,'tail','right');
+        tfoo = stats.tstat;
+        tvalues(i,j) = tfoo;
     end
-end
+end, clear roiLO roiHI tfoo stats corrRoiRoi_LO corrRoiRoi_HI
 
 % plot difference
-foo = p < 0.01;
-ppp = aaa.*foo;
-subplot(2,2,4),imagesc(ppp,[-3 3])
+foo = p < 0.05;
+pSignificant = tvalues.*foo;
+subplot(2,2,4),imagesc(pSignificant,[-3 3])
 set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
     'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('p < 0.01')
-
-%% plot only wrt hippocampus
-% for i = []
-% corrRoiVsHpc_highConf = corrRoiRoi_HI(i,3,:);
+xtickangle(45),ytickangle(45),title('p < 0.05')
+clear foo pSignificant roiNamesTrue
 
 
-%%
-% for r1 = 1:length(roiNames)
-%     for r2 = 1:length(roiNames)
-%         for s = 1:size(RDM_brain,2)
-%             roi1 = vectorizeRDM(RDM_brain(r1,s).RDM);
-%             roi2 = vectorizeRDM(RDM_brain(r2,s).RDM);
-%             corrRoiRoi(r1,r2,s) = corr(roi1(:),roi2(:),'rows','pairwise','type','Spearman');
-%         end
-%     end
-% end, clear r1 r2
-% corrRoiRoi_mean = mean(corrRoiRoi,3);
-% figure,imagesc(corrRoiRoi_mean,[0.07 0.18])
-% set(gca,'XTick',1:numel(roiNames),'fontsize',11,'XtickLabel',roiNamesTrue,...
-%     'YTick',1:numel(roiNames),'fontsize',11,'YtickLabel',roiNamesTrue)
-% xtickangle(45),ytickangle(45)
+%% dimensionality
+dimThreshold = 75;
+for r = 1:numel(roiNames)
+    for s = 1:numel(subs)
+        explained = [];
+        
+        % subject name
+        subjName = ['SF',num2str(subs(s),'%03d')];
+        
+        dataMatrix = B_struct.(roiNames{r}).(subjName)';
+        
+        % reorder according to session
+        %         newOrd = ordData(subs(s)).norm2sessions;
+        %         dataMatrix = dataMatrix(newOrd,:);
+        
+        % take values in this session
+        valuesSession = bData(subs(s)).imagination.val;
+        valuesSession = valuesSession(:) + 0.00001*[1:60]';
+        valuesSession_LO = valuesSession < median(valuesSession);
+        valuesSession_HI = valuesSession > median(valuesSession);
+        
+        [~,~,~,~,explained(:,1),~] = pca(dataMatrix(1:60,:));
+        [~,~,~,~,explained(:,2),~] = pca(dataMatrix(61:120,:));
+        [~,~,~,~,explained(:,3),~] = pca(dataMatrix(121:180,:));
+        [~,~,~,~,explained(:,4),~] = pca(dataMatrix(181:240,:));
+        
+        foo = cumsum(explained);
+        
+        for i = 1:4
+            dimSession.(roiNames{r})(s,i) = find(foo(:,i) > dimThreshold,1);
+        end
+    end
+    dimSession_mean.(roiNames{r}) = mean(dimSession.(roiNames{r}),1);
+end, clear subjName i r s
 
 %% Compare good and bad subjects
-% subsBest = [16,2,24,17,1,26,30,19,22,11,13,23,4,6,20,25];
-% subsWors = [31,27,9,15,21,18,14,28,29,12,10,3,8,5,7];
+% subsBest = [15,2,23,16,1,25,29,18,21,11,12,22,4,6,19,24];
+% subsWors = [30,28,9,14,20,17,13,27,28,11,10,3,8,5,7];
 %
 % corrRoiRoi_mean_best = mean(corrRoiRoi(:,:,subsBest),3);
 % figure,imagesc(corrRoiRoi_mean_best,[0 0.18])

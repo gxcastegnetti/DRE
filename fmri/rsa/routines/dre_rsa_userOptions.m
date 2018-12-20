@@ -45,7 +45,7 @@ userOptions.distanceMeasure = 'Spearman';
 userOptions.significanceTestPermutations = 10000;
 
 % should RDMs entries be rank transformed into [0,1]?
-userOptions.rankTransform = true;
+userOptions.rankTransform = false;
 
 % RDM colourscheme
 userOptions.colourScheme = jet(64);

@@ -44,7 +44,7 @@ userOptions.forcePromptReply = 'r';
 filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_choice/rsaPatterns_sl.mat';
 load(filePatterns,'responsePatterns')
 
-roiNames = {'hpc','mcc','pfc_vm','ofc'};
+roiNames = {'l_hpc','r_hpc','l_ofc'};
 
 % apply two masks: one for grey matter, one for ROI
 for r = 1:length(roiNames)

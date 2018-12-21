@@ -35,6 +35,10 @@ mkdir([dir.out,fs,analysisName])
 subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 
+subsBest = [15,2,23,16,1,25,29,18,21,11,12,22,4,6,19,24];
+subs = subs(subsBest);
+taskOrd = taskOrd(subsBest);
+
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,0);
 
@@ -45,7 +49,7 @@ roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-
 roiNames = {'lingual','imaginationValue','calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
 roiNames = {'imaginationValue','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','l_ofc','ofc_conf'};
 % roiNames = {'vmpfc_ima_p','mask_sl_val_6'};
-% roiNames = {'imaginationValue'};
+roiNames = {'imaginationValue'};
 
 roiNamesTrue = roiNames;
 
@@ -186,7 +190,7 @@ for r = 1:length(roiNames)
         
         
         %% CV
-        nSweeps = 25;
+        nSweeps = 10;
         fracHoldOut = 0.1;
         for k = 1:nSweeps
             
@@ -209,13 +213,13 @@ for r = 1:length(roiNames)
             
             % test F and B
             XTest_same_F = X_F_red(idxTest_F,:);
-            yTest_same_F = Y_F_logic(idxTest_F);
+            yTest_same_F = double(Y_F_logic(idxTest_F));
             XTest_same_B = X_B_red(idxTest_B,:);
-            yTest_same_B = Y_B_logic(idxTest_B);
+            yTest_same_B = double(Y_B_logic(idxTest_B));
             XTest_diff_F = X_F_red(idxTest_B,:);
-            yTest_diff_F = Y_F_logic(idxTest_B);
+            yTest_diff_F = double(Y_F_logic(idxTest_B));
             XTest_diff_B = X_B_red(idxTest_F,:);
-            yTest_diff_B = Y_B_logic(idxTest_F);
+            yTest_diff_B = double(Y_B_logic(idxTest_F));
             
             %             [ww_f_FF, ix_eff_f_FF, errTable_tr_FF, errTable_te_FF] = biclsfy_slrvar(XTrain_F, yTrain_F, XTest_same_F, yTest_same_F,...
             %                 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none', 'invhessian',1);

@@ -38,19 +38,8 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-filePatterns = '/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/rsa/sl/_responsePatterns/rsa_pulse_ima/rsaPatterns_sl.mat';
-load(filePatterns,'responsePatterns'), clear filePatterns
-
-roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
-    'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
-
-roiNames = {'lingual','imaginationValue','calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
-roiNames = {'imaginationValue','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','l_ofc','ofc_conf'};
-roiNames = {'vmpfc_ima_p','mask_sl_val_6'};
-
+roiNames = {'l_ling','imaginationValue','lp_itc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','lp_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
 roiNamesTrue = roiNames;
-
-
 
 %% apply two masks: one for grey matter, one for ROI
 % for r = 1:length(roiNames)
@@ -60,14 +49,14 @@ roiNamesTrue = roiNames;
 %         gmMaskFile =  [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
 %         roiMask = spm_read_vols(spm_vol(roiMaskFile));
 %         gmMask = spm_read_vols(spm_vol(gmMaskFile));
-%         
+%
 %         % vectorise it
 %         roiMask = reshape(roiMask, 1, []);
 %         gmMask = reshape(gmMask, 1, []);
-%         
+%
 %         respPatt_foo = responsePatterns.(subjName)(logical(roiMask) & logical(gmMask),:);
 %         respPatt.(['roi',num2str(r)]).(subjName) = respPatt_foo(~isnan(respPatt_foo(:,1)),:);
-%         
+%
 %         clear subjName roiMaskFile gmMaskFile roiMask gmMask respPatt_foo
 %     end
 % end, clear r s
@@ -94,7 +83,7 @@ for r = 1:length(roiNames)
             end
         end
         toNormalOrder = [objIdx_F,objIdx_B];
-
+        
         % SPM file from 1st level analysis
         subjSPMFile = [dir.beta,fs,'SF',num2str(subs(s),'%03d'),fs,'SPM.mat'];
         load(subjSPMFile)
@@ -112,7 +101,7 @@ for r = 1:length(roiNames)
         B = B(toNormalOrder,:)';
         
         respPatt.(['roi',num2str(r)]).(subjName) = B;
-
+        
     end
 end
 
@@ -122,7 +111,7 @@ subNames = fieldnames(respPatt.roi1);
 
 figAllRois = figure('color',[1 1 1]);
 for r = 1:length(roiNames)
-%     hfig{r} = figure;
+    %     hfig{r} = figure;
     for s = 1:length(subs)
         
         disp(['sub#',num2str(subs(s))])
@@ -157,27 +146,37 @@ for r = 1:length(roiNames)
         objVal_B(isnan(objVal_B)) = ceil(50*rand);
         
         % add a constant for univoque determination of median
-%         Y_F = randn(120,1);%objVal_F + (0.00001*(1:120))';
-%         Y_B = randn(120,1);%objVal_B + (0.00001*(1:120))';
+        %         Y_F = randn(120,1);%objVal_F + (0.00001*(1:120))';
+        %         Y_B = randn(120,1);%objVal_B + (0.00001*(1:120))';
         
         Y_F = objVal_F + (0.00001*(1:120))';
         Y_B = objVal_B + (0.00001*(1:120))';
         
         % find percentiles
-        pl_F_33 = prctile(Y_F,100/3);
-        pl_F_66 = prctile(Y_F,200/3);
-        pl_B_33 = prctile(Y_B,100/3);
-        pl_B_66 = prctile(Y_B,200/3);
+%         pl_F_33 = prctile(Y_F,100/3);
+%         pl_F_66 = prctile(Y_F,200/3);
+%         pl_B_33 = prctile(Y_B,100/3);
+%         pl_B_66 = prctile(Y_B,200/3);
         
-        X_F_red = X_F(Y_F < pl_F_33 | Y_F > pl_F_66,:);
-        Y_F_red = Y_F(Y_F < pl_F_33 | Y_F > pl_F_66);
+        pl_F_33 = prctile(Y_F,50);
+        pl_F_66 = prctile(Y_F,50);
+        pl_B_33 = prctile(Y_B,50);
+        pl_B_66 = prctile(Y_B,50);
+        
+%         X_F_red = X_F(Y_F < pl_F_33 | Y_F > pl_F_66,:);
+%         Y_F_red = Y_F(Y_F < pl_F_33 | Y_F > pl_F_66);
+        
+        X_F_red = X_F;
+        Y_F_red = Y_F;
         Y_F_logic = Y_F_red > pl_F_66;
         
-        X_B_red = X_B(Y_B < pl_B_33 | Y_B > pl_B_66,:);
-        Y_B_red = Y_B(Y_B < pl_B_33 | Y_B > pl_B_66);
+%         X_B_red = X_B(Y_B < pl_B_33 | Y_B > pl_B_66,:);
+%         Y_B_red = Y_B(Y_B < pl_B_33 | Y_B > pl_B_66);
+        X_B_red = X_B;
+        Y_B_red = Y_B;
         Y_B_logic = Y_B_red > pl_B_66;
         
-        nTrials = 80;
+        nTrials = 120;
         
         clear pl_F_33 pl_B_33 pl_F_66 pl_B_66
         clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
@@ -198,7 +197,7 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 100;
+        nSweeps = 1000;
         for k = 1:nSweeps
             
             c_F = cvpartition(Y_F_logic,'holdOut',0.1);
@@ -250,13 +249,13 @@ for r = 1:length(roiNames)
         acc_FB(r,s) = mean(acc_foo_FB);
         acc_BF(r,s) = mean(acc_foo_BF);
         
-%         figure(hfig{r})
-%         subplot(6,6,s)
-%         bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
-%         bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
-%         set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
-%         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
-%         ylim([0.4 0.6]),xlim([0 5.5])
+        %         figure(hfig{r})
+        %         subplot(6,6,s)
+        %         bar([1,2],[acc_FF(s),acc_BB(s)],'facecolor',[0.15 0.45 0.75]),hold on
+        %         bar([3.5,4.5],[acc_FB(s),acc_BF(s)],'facecolor',[0.55 0.55 0.55])
+        %         set(gca,'xtick',[1 2 3.5 4.5],'xticklabels',{'FF','BB','FB','BF'},'fontsize',11)
+        %         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
+        %         ylim([0.4 0.6]),xlim([0 5.5])
         
         clear acc_foo_FF acc_foo_BB acc_foo_FB acc_foo_BF label_FF label_BB label_FB label_BF c_F c_B
         clear XTest_F XTest_B XTrain_F XTrain_B bc_F bc_B ks_F ks_B idxTest_F idxTest_B idxTrain_F idxTrain_B
@@ -275,10 +274,10 @@ for r = 1:length(roiNames)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
     
-    aaa=mean([acc_BF(r,:);acc_FB(r,:)]);
+    aaa=mean([acc_BF(12,:);acc_FB(12,:)]);
     [h,p,ci,stats] = ttest(aaa-0.5)
     
 end, clear r k s
-
+save('results_1000perm')
 clear responsePatterns
 

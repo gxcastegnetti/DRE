@@ -53,7 +53,7 @@ if false
 end
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
-if true
+if false
     analysisName = 'uni_pulse_iV2_cV';
     context = 'all';
     
@@ -72,6 +72,33 @@ if true
     dre_L2(dir,analysisName,[context,'_valueSquared'],subs,2);
     dre_L2(dir,analysisName,[context,'_choice_onset'],subs,3);
     dre_L2(dir,analysisName,[context,'_choice_dV'],subs,4);
+end
+
+%% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
+if true
+    analysisName = 'uni_fullModel';
+    context = 'all';
+    
+    % 1st level
+    timing.iOns = 0; % onset for imagination
+    timing.cOns = 0; % onset for choice
+    timing.iDur = 0; % duration for imagination
+    timing.cDur = 0; % duration for choice
+    dre_L1_full(dir,analysisName,subs,timing,bData);
+    
+    % contrasts
+    dre_con_full(dir,analysisName,subs,taskOrd,context);
+    
+    % 2nd level
+    dre_L2(dir,analysisName,[context,'_imagination_onset'],subs,1);
+    dre_L2(dir,analysisName,[context,'_value'],subs,2);
+    dre_L2(dir,analysisName,[context,'_valueWrong'],subs,3);
+    dre_L2(dir,analysisName,[context,'_confidence'],subs,4);
+    dre_L2(dir,analysisName,[context,'_familiarity'],subs,5);
+    dre_L2(dir,analysisName,[context,'_price'],subs,6);    
+    dre_L2(dir,analysisName,[context,'_choice_onset'],subs,7);
+    dre_L2(dir,analysisName,[context,'_chosen-unchosen'],subs,8);
+    dre_L2(dir,analysisName,[context,'_chosen-unchosenWrong'],subs,9);
 end
 
 %% median splits

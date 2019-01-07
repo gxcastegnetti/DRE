@@ -453,6 +453,7 @@ for s = 1:length(subs)
 %     figure('color',[1 1 1])
 %     subplot(1,2,1),imagesc(RSM_ss_F),set(gca,'fontsize',12,'ytick',[],'xtick',[])
 %     subplot(1,2,2),imagesc(RSM_ss_B),set(gca,'fontsize',12,'ytick',[],'xtick',[])
+    colormap bone
     
     %% fill structure for RSA toolbox
     %         RDM_fire_struct{s}.RDM = RSM_fire_ss;

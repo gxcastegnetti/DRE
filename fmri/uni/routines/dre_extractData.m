@@ -29,11 +29,11 @@ for s = 1:length(subs)
         if taskOrd(s) == 1
             day2Order = {'F','B','F','B'};
             day1Order = {'1','2','1','2'};
-%             day1Order = {'2','1','2','1'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
+            day1OrderWrong = {'2','1','2','1'};
         elseif taskOrd(s) == 2
             day2Order = {'B','F','B','F'};
             day1Order = {'2','1','2','1'};
-%             day1Order = {'1','2','1','2'}; %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% wrong
+            day1OrderWrong = {'1','2','1','2'};
         end
         
         %% subject directories
@@ -65,6 +65,7 @@ for s = 1:length(subs)
         
         % load behaviour matrix from day 1
         Mday1 = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B',day1Order{r},'_DRE.csv']);
+        Mday1Wrong = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_B',day1OrderWrong{r},'_DRE.csv']);
         
         %% find value that on day 1 was assigned to objects presented on day 2
         
@@ -74,7 +75,17 @@ for s = 1:length(subs)
             idxIma_day2(i) = find(Mday1(:,2) == idIma_day2(i));
         end
         objVal = Mday1(idxIma_day2,3); % value
+        objValWrong = Mday1Wrong(idxIma_day2,3); % value
         objCon = Mday1(idxIma_day2,4); % confidence
+        
+        Mday1F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);
+        
+        % familiarity and price
+        for i = 1:length(idIma_day2)
+            idxFam_day2(i) = find(Mday1F(:,2) == idIma_day2(i)); %#ok<*AGROW>
+        end
+        objFam = Mday1F(idxFam_day2,3); % familiarity
+        objPri = Mday1F(idxFam_day2,4); % monetary value
         
         %% choice
         idxCho_day2_L = NaN(length(idCho_day2),1);
@@ -99,19 +110,31 @@ for s = 1:length(subs)
         difVal = abs(valCho - valUnc); % value difference
         chMunc = valCho - valUnc; % value chosen - value unchosen
         
-        % movement onset and side
+        %% choice wrong
+        idxCho_day2_L = NaN(length(idCho_day2),1);
+        idxCho_day2_R = NaN(length(idCho_day2),1);
+        valChoWrong = NaN(length(idCho_day2),1);
+        valUncWrong = NaN(length(idCho_day2),1);
+        for i = 1:length(idCho_day2)
+            idxCho_day2_L(i) = find(Mday1Wrong(:,2) == idCho_day2(i,1));
+            idxCho_day2_R(i) = find(Mday1Wrong(:,2) == idCho_day2(i,2));
+            if chosenChoice_day2(i) == -1
+                valChoWrong(i) = Mday1(idxCho_day2_L(i),3);
+                valUncWrong(i) = Mday1(idxCho_day2_R(i),3);
+            elseif chosenChoice_day2(i) == 1
+                valChoWrong(i) = Mday1(idxCho_day2_R(i),3);
+                valUncWrong(i) = Mday1(idxCho_day2_L(i),3);
+            else
+                valChoWrong(i) = NaN;
+                valUncWrong(i) = NaN;
+            end
+        end
+        difValWrong = abs(valChoWrong - valUncWrong); % value difference
+        chMuncWrong = valChoWrong - valUncWrong; % value chosen - value unchosen
+        
+        %% movement onset and side
         movCho = Mday2(Mday2(:,3)==1,8);
         sidCho = Mday2(Mday2(:,3)==1,7);
-        
-        % familiarity and price
-        Mday1F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);
-        
-        % imagination
-        for i = 1:length(idIma_day2)
-            idxFam_day2(i) = find(Mday1F(:,2) == idIma_day2(i)); %#ok<*AGROW>
-        end
-        objFam = Mday1F(idxFam_day2,3); % familiarity
-        objPri = Mday1F(idxFam_day2,4); % monetary value
         
         %% find indices of objects within the 120 used ones
         objs        = readtable([dir.behDat,fs,'Objects.csv']);
@@ -124,10 +147,11 @@ for s = 1:length(subs)
         
         %% remove nans if needed
         if excNan == 1
-            objKeep = ~isnan(objVal) & ~isnan(objCon) & ~isnan(objFam) & ~isnan(objPri);
-            difKeep = ~isnan(difVal) & ~isnan(valCho) & ~isnan(movCho) & ~isnan(sidCho);
+            objKeep = ~isnan(objVal) & ~isnan(objValWrong) & ~isnan(objCon) & ~isnan(objFam) & ~isnan(objPri);
+            difKeep = ~isnan(difVal) & ~isnan(difValWrong) & ~isnan(valCho) & ~isnan(movCho) & ~isnan(sidCho);
             onsIma = onsIma(objKeep);
             objVal = objVal(objKeep);
+            objValWrong = objValWrong(objKeep);
             objCon = objCon(objKeep);
             objFam = objFam(objKeep);
             objPri = objPri(objKeep);
@@ -136,8 +160,10 @@ for s = 1:length(subs)
             onsCho = onsCho(difKeep);
             difVal = difVal(difKeep);
             valCho = valCho(difKeep);
+            valChoWrong = valChoWrong(difKeep);
             valUnc = valUnc(difKeep);
             chMunc = chMunc(difKeep);
+            chMuncWrong = chMuncWrong(difKeep);
             movCho = movCho(difKeep);
             sidCho = sidCho(difKeep);
         end
@@ -177,7 +203,7 @@ for s = 1:length(subs)
         medCmU = median(chMunc_pert);
         idxCmU_H = chMunc_pert > medCmU;
         idxCmU_L = chMunc_pert < medCmU;
-                
+        
         %% session type
         bData(subs(s)).sessType{r} = day2Order{r};
         
@@ -193,6 +219,7 @@ for s = 1:length(subs)
         
         % subjective evaluations
         bData(subs(s)).imagination(r).val = objVal;     % object value
+        bData(subs(s)).imagination(r).valWrong = objValWrong;     % object value - wrong
         bData(subs(s)).imagination(r).con = objCon;     % object confidence in value
         bData(subs(s)).imagination(r).fam = objFam;     % object familiarity
         bData(subs(s)).imagination(r).pri = objPri;     % object price
@@ -214,8 +241,10 @@ for s = 1:length(subs)
         bData(subs(s)).choice(r).onset = onsCho;
         bData(subs(s)).choice(r).valDiff = difVal;
         bData(subs(s)).choice(r).valCho = valCho;
+        bData(subs(s)).choice(r).valChoWrong = valChoWrong;
         bData(subs(s)).choice(r).valUnc = valUnc;
         bData(subs(s)).choice(r).chMunc = chMunc;
+        bData(subs(s)).choice(r).chMuncWrong = chMuncWrong;
         bData(subs(s)).choice(r).movOnset = movCho;
         bData(subs(s)).choice(r).movSide = sidCho;
         bData(subs(s)).choice(r).objPresented = choObjPresented;

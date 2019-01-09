@@ -89,8 +89,8 @@ for s = 1:length(subs)
     thisSubject = userOptions.subjectNames{s};
     
     %% run searchlight
-    model = RDMs{s}.valQuad;
+    model = RDMs{s}.val;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_valQuad_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_valOff_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

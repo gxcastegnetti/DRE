@@ -73,9 +73,10 @@ for s = 1:length(subs)
         idxIma_day2 = NaN(length(idIma_day2),1);
         for i = 1:length(idIma_day2)
             idxIma_day2(i) = find(Mday1(:,2) == idIma_day2(i));
+            idxIma_day2Wrong(i) = find(Mday1Wrong(:,2) == idIma_day2(i));
         end
         objVal = Mday1(idxIma_day2,3); % value
-        objValWrong = Mday1Wrong(idxIma_day2,3); % value
+        objValWrong = Mday1Wrong(idxIma_day2Wrong,3); % value
         objCon = Mday1(idxIma_day2,4); % confidence
         
         Mday1F = csvread([dirBeha,fs,'SF',num2str(subs(s),'%03d'),'_PE_DRE.csv']);
@@ -119,11 +120,11 @@ for s = 1:length(subs)
             idxCho_day2_L(i) = find(Mday1Wrong(:,2) == idCho_day2(i,1));
             idxCho_day2_R(i) = find(Mday1Wrong(:,2) == idCho_day2(i,2));
             if chosenChoice_day2(i) == -1
-                valChoWrong(i) = Mday1(idxCho_day2_L(i),3);
-                valUncWrong(i) = Mday1(idxCho_day2_R(i),3);
+                valChoWrong(i) = Mday1Wrong(idxCho_day2_L(i),3);
+                valUncWrong(i) = Mday1Wrong(idxCho_day2_R(i),3);
             elseif chosenChoice_day2(i) == 1
-                valChoWrong(i) = Mday1(idxCho_day2_R(i),3);
-                valUncWrong(i) = Mday1(idxCho_day2_L(i),3);
+                valChoWrong(i) = Mday1Wrong(idxCho_day2_R(i),3);
+                valUncWrong(i) = Mday1Wrong(idxCho_day2_L(i),3);
             else
                 valChoWrong(i) = NaN;
                 valUncWrong(i) = NaN;

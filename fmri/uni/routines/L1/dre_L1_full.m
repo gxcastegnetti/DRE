@@ -114,7 +114,7 @@ for s = 1:length(subs)
     job1LM{1}.spm.stats.fmri_spec.volt = 1;
     job1LM{1}.spm.stats.fmri_spec.global = 'None';
     job1LM{1}.spm.stats.fmri_spec.mthresh = 0.8;
-    job1LM{1}.spm.stats.fmri_spec.mask = {''};
+    job1LM{1}.spm.stats.fmri_spec.mask = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/_useNow/gmAvg.nii'};
     job1LM{1}.spm.stats.fmri_spec.cvi = 'AR(1)';
     
     %% run job and save file names

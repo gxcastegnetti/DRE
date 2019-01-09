@@ -551,6 +551,9 @@ sigm_avg.FonB = sigmf(xspan,[slope_avg.FonB offset.FonB]);
 sigm_avg.BonF = sigmf(xspan,[slope_avg.BonF offset.BonF]);
 sigm_avg.BonB = sigmf(xspan,[slope_avg.BonB offset.BonB]);
 
+sigm_avg.congru = sigmf(xspan,[mean([slope_avg.FonF, slope_avg.BonB]), mean([offset.FonF, offset.BonB])]);
+sigm_avg.incong = sigmf(xspan,[mean([slope_avg.FonB, slope_avg.BonF]), mean([offset.FonB, offset.BonF])]);
+
 figure('color',[1 1 1])
 subplot(4,4,[1 2 5 6])
 plot(xspan,sigm_avg.FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
@@ -567,6 +570,16 @@ set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),xlabel('v
 subplot(4,4,[11 12 15 16])
 plot(xspan,sigm_avg.BonB,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
 set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
+
+% draw sigmoids congruent/incongruent
+figure('color',[1 1 1])
+subplot(1,2,1)
+plot(xspan,sigm_avg.congru,'linewidth',5,'color',hist_fire_color)
+set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
+
+subplot(1,2,2)
+plot(xspan,sigm_avg.incong,'linewidth',5,'color',hist_boat_color)
+set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
 
 clear xspan slope_avg offset
 %% separate worst subjects from best subjects

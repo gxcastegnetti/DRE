@@ -76,7 +76,7 @@ end
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_fullModel_gm';
+    analysisName = 'uni_fullModel_S';
     context = 'all';
     
     % 1st level

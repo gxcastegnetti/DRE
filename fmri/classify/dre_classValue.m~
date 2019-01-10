@@ -39,7 +39,7 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
 roiNames = {'l_ling','imaginationValue','lp_itc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','lp_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
-roiNames = {'vmpfc_ima_p'};
+roiNames = {'vmPFC_ima_9'};
 roiNamesTrue = roiNames;
 
 %% apply two masks: one for grey matter, one for ROI
@@ -183,7 +183,7 @@ for r = 1:length(roiNames)
         
         nTrials = 60;
         
-        clear pl_F_low pl_B_low pl_F_hig pl_B_hig
+        clear pl_F_low pl_B_33 pl_F_66 pl_B_66
         clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
         
         %% optimise models

@@ -153,10 +153,10 @@ for r = 1:length(roiNames)
         objVal_B(isnan(objVal_B)) = ceil(50*rand);
         
         % add a constant for univoque determination of median      
-%         Y_F = objVal_F + (0.00001*(1:120))';
-%         Y_B = objVal_B + (0.00001*(1:120))';
-        Y_F = objCon_F + (0.00001*(1:120))';
-        Y_B = objCon_B + (0.00001*(1:120))';
+        Y_F = objVal_F + (0.00001*(1:120))';
+        Y_B = objVal_B + (0.00001*(1:120))';
+%         Y_F = objCon_F + (0.00001*(1:120))';
+%         Y_B = objCon_B + (0.00001*(1:120))';
         
         % find percentiles
         %         pl_F_33 = prctile(Y_F,100/3);

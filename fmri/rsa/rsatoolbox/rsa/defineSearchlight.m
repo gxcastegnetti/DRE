@@ -56,7 +56,7 @@ function L = defineSearchlight(Structures,Mask,varargin)
 Opt.progressstep = 100;   % Progress step reporting 
 Opt.writeMask     = 1;    % Save the full mask image for included voxels? 
 
-getUserOptions(varargin,Opt,{'progressstep','saveMask'}); 
+Opt = getUserOptions(varargin,Opt,{'progressstep','saveMask','sphere'}); 
 
 %% 1. Input checking
 if isempty(Structures) && isempty(Mask)

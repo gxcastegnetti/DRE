@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pw_ima';
+analysisName = 'rsa_sl_pw_ima_up';
 betaid       = 'rsa_pulse_ima';
 
 %% directories
@@ -33,8 +33,8 @@ mkdir([dir.out,fs,analysisName])
 %% subjects
 % subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 % taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
-subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -67,14 +67,6 @@ end
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
 
-%% searchlight options
-userOptions.voxelSize = [3 3 3];
-userOptions.searchlightRadius = 9;
-searchlightOptions.monitor = false;
-searchlightOptions.fisher = true;
-searchlightOptions.nSessions = 1;
-searchlightOptions.nConditions = 240;
-
 %% run searchlight for imagination
 % create matrix for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
@@ -86,7 +78,6 @@ for s = 1:length(subs)
     
     % prepare mask
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
-    thisSubject = userOptions.subjectNames{s};
     
     %% run searchlight
     model = RDMs{s}.val;

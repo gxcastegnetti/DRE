@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pulse_ons0_off';
+analysisName = 'rsa_sl_pulse_ons0_6mm';
 betaid       = 'rsa_pulse_ons0';
 
 %% directories
@@ -68,7 +68,7 @@ RDMs = dre_extractRDMs(dir,subs,taskOrd);
 
 %% searchlight options
 userOptions.voxelSize = [3 3 3];
-userOptions.searchlightRadius = 9;
+userOptions.searchlightRadius = 6;
 searchlightOptions.monitor = false;
 searchlightOptions.fisher = true;
 searchlightOptions.nSessions = 1;
@@ -92,22 +92,22 @@ for s = 1:length(subs)
     model(1).name = 'val';
     model(1).RDM = RDMs{s}.val;
     model(1).color = [0 1 0];
-    %     model(2).name = 'con';
-    %     model(2).RDM = RDMs{s}.con;
-    %     model(2).color = [0 1 0];
-    model(2).name = 'fam';
-    model(2).RDM = RDMs{s}.fam;
+    model(2).name = 'con';
+    model(2).RDM = RDMs{s}.con;
     model(2).color = [0 1 0];
-    
-    % object identity
-    model(3).name = 'oid';
-    model(3).RDM = 1-mat_ID;
+    model(3).name = 'fam';
+    model(3).RDM = RDMs{s}.fam;
     model(3).color = [0 1 0];
     
-    % context
-    model(4).name = 'cxt';
-    model(4).RDM = RDMs{s}.cxt;
+    % object identity
+    model(4).name = 'oid';
+    model(4).RDM = 1-mat_ID;
     model(4).color = [0 1 0];
+    
+    % context
+    model(5).name = 'cxt';
+    model(5).RDM = RDMs{s}.cxt;
+    model(5).color = [0 1 0];
     
     %     % models with scores divided into low, high
     %     model(6).name = 'valL';

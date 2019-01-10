@@ -112,7 +112,7 @@ spm_progress_bar('Init',100);
 for k=1:ncent
     ds = surfing_eucldist(c_centers(:,k),c_voxels);
     if fixedradius
-        a       = voxels(:,ds<radius);
+        a       = voxels(:,ds<=radius/3);
         rs(k,1) = radius; 
     else 
         i       = find(ds<radius(1));

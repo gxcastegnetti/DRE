@@ -23,13 +23,14 @@ dir.beh = [dirNew,fs,'data',fs,'behaviour'];
 dir.psy = [dirNew,fs,'data',fs,'fmri',fs,'psychOut'];
 
 %% subjects and trials
-subs = [4:5 7 8 9 13:17 19:21 23 25:26 29:32 34:35 37 39:41 43 47:50];
-% subs = [4:5 7 8 9 10 13:17 19 20 21 23 25:26 27 29:32 34:35 37 39:41 43 44 45 47:49 50];
+subs = [4:5 7 8 9 13:17 19 21 23 25:26 29:32 34:35 37 39:41 43 47:50];
+% subs = [4:5 7 8 9 10 13:17 19 20 21 23 25:26 27 29:32 34:35 37 39:41 42 43 44 45 47:49 50];
+subs = [42 43 44 45 50];
 ntrials = 120;
 
 %% task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
-taskOrd = [ones(1,9),2*ones(1,10),1,2,ones(1,4),2*ones(1,3)];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
+taskOrd = [1 1 2 2 1];
 
 %% plots settings
 plot_rda_SS = false;
@@ -450,10 +451,10 @@ for s = 1:length(subs)
     rsmStack_F(s,:,:) = RSM_ss_F;
     rsmStack_B(s,:,:) = RSM_ss_B;
     
-    figure('color',[1 1 1])
-    subplot(1,2,1),imagesc(RSM_ss_F),set(gca,'fontsize',12,'ytick',[],'xtick',[])
-    subplot(1,2,2),imagesc(RSM_ss_B),set(gca,'fontsize',12,'ytick',[],'xtick',[])
-    colormap bone
+%     figure('color',[1 1 1])
+%     subplot(1,2,1),imagesc(RSM_ss_F),set(gca,'fontsize',12,'ytick',[],'xtick',[])
+%     subplot(1,2,2),imagesc(RSM_ss_B),set(gca,'fontsize',12,'ytick',[],'xtick',[])
+%     colormap bone
     
     %% fill structure for RSA toolbox
     %         RDM_fire_struct{s}.RDM = RSM_fire_ss;

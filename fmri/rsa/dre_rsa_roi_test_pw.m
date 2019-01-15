@@ -32,17 +32,16 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% subjects
-subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
-taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 45 47:49];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4) 1];
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
 ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 
 %% which mask?
-% roiNames = {'l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','l_ofc','vmpfc_ima'};
-% roiNames = {'l_ling','lp_itc','l_hpc','r_hpc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
-roiNames = {'l_ling','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','ofc_conf','l_ofc'};
+% roiNames = {'rsaVal_LG','rsaVal_ITG','lp_hpc','rsaVal_ACC','rsaVal_vmPFC','rsaVal_OFC','rsaVal_dlPFC'};
+roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -68,6 +67,9 @@ for r = 1:length(roiNames)
         end
         toNormalOrder(s,:) = [objIdx_F,objIdx_B];
         
+%         fooDir = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+%         save([fooDir,fs,'toNormalOrder',fs,'SF',num2str(subs(s),'%03d')],'toNormalOrder')
+
         % SPM file from 1st level analysis
         subjSPMFile = [dir.beta,fs,'SF',num2str(subs(s),'%03d'),fs,'SPM.mat'];
         load(subjSPMFile)
@@ -91,9 +93,6 @@ for r = 1:length(roiNames)
         end
         
         B_struct.(roiNames{r}).(subjName) = B';
-        
-        % fooDir = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
-        % save([fooDir,fs,'toNormalOrder',fs,'SF',num2str(subs(s),'%03d')],'toNormalOrder')
         
         % construct RDM
         rdm = squareform(pdist(B,'correlation'));
@@ -260,7 +259,7 @@ figure('color',[1 1 1]),imagesc(tValues)
 
 %% ROI-ROI correlations
 
-whatScore = 'value';
+whatScore = 'confidence';
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % take trials with hi/low val, con, fam %
@@ -386,7 +385,7 @@ for i = 1:numel(roiNames)
 end, clear roiLO roiHI tfoo stats corrRoiRoi_LO corrRoiRoi_HI
 
 % plot difference
-foo = p < 0.05;
+foo = p < 0.01;
 pSignificant = tvalues.*foo;
 subplot(2,2,4),imagesc(pSignificant,[-3 3])
 set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...

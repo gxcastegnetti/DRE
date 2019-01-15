@@ -35,21 +35,15 @@ mkdir([dir.out,fs,analysisName])
 subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
 
-subsBest = [15,2,23,16,1,25,29,18,21,11,12,22,4,6,19,24];
-subs = subs(subsBest);
-taskOrd = taskOrd(subsBest);
+% subsBest = [15,2,23,16,1,25,29,18,21,11,12,22,4,6,19,24];
+% subs = subs(subsBest);
+% taskOrd = taskOrd(subsBest);
 
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-roiNames = {'box_w-16_16_16-0_-60_26','box_w-16_16_16-0_-44_36','box_w-16_16_16-0_-28_40','box_w-16_16_16-0_-12_42',...
-    'box_w-16_16_16-0_4_42','box_w-16_16_16-0_20_36','box_w-16_16_16-0_36_23'};
-
-roiNames = {'lingual','imaginationValue','calc','l_ling','lp_itc','lp_hpc','rp_hpc','la_hpc','ra_hpc','mcc','sma','lp_ins','rp_ins','la_ins','ra_ins','l_dlpfc','r_dlpfc','l_ofc','pfc_vm'};
-roiNames = {'imaginationValue','lp_hpc','rp_hpc','mcc','rp_ins','vmpfc_ima_p','l_ofc','ofc_conf'};
-% roiNames = {'vmpfc_ima_p','mask_sl_val_6'};
-roiNames = {'imaginationValue'};
+roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 
 roiNamesTrue = roiNames;
 
@@ -170,10 +164,10 @@ for r = 1:length(roiNames)
         pl_B_33 = prctile(Y_B,100/3);
         pl_B_66 = prctile(Y_B,200/3);
         
-        pl_F_33 = prctile(Y_F,50);
-        pl_F_66 = prctile(Y_F,50);
-        pl_B_33 = prctile(Y_B,50);
-        pl_B_66 = prctile(Y_B,50);
+%         pl_F_33 = prctile(Y_F,25);
+%         pl_F_66 = prctile(Y_F,75);
+%         pl_B_33 = prctile(Y_B,25);
+%         pl_B_66 = prctile(Y_B,75);
         
         X_F_red = X_F(Y_F < pl_F_33 | Y_F > pl_F_66,:);
         Y_F_red = Y_F(Y_F < pl_F_33 | Y_F > pl_F_66);
@@ -183,7 +177,7 @@ for r = 1:length(roiNames)
         Y_B_red = Y_B(Y_B < pl_B_33 | Y_B > pl_B_66);
         Y_B_logic = Y_B_red > pl_B_66;
         
-        nTrials = 120;
+        nTrials = 80;
         
         clear pl_F_33 pl_B_33 pl_F_66 pl_B_66
         clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
@@ -221,17 +215,17 @@ for r = 1:length(roiNames)
             XTest_diff_B = X_B_red(idxTest_F,:);
             yTest_diff_B = double(Y_B_logic(idxTest_F));
             
-            %             [ww_f_FF, ix_eff_f_FF, errTable_tr_FF, errTable_te_FF] = biclsfy_slrvar(XTrain_F, yTrain_F, XTest_same_F, yTest_same_F,...
-            %                 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none', 'invhessian',1);
-            %
-            %             [ww_f_BB, ix_eff_f_BB, errTable_tr_BB, errTable_te_BB] = biclsfy_slrvar(XTrain_B, yTrain_B, XTest_same_B, yTest_same_B,...
-            %                 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none', 'invhessian',1);
+%             [ww_f_FF, ix_eff_f_FF, errTable_tr_FF, errTable_te_FF] = biclsfy_slrvar(XTrain_F, yTrain_F, XTest_same_F, yTest_same_F,...
+%                 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none', 'invhessian',1);
+%             
+%             [ww_f_BB, ix_eff_f_BB, errTable_tr_BB, errTable_te_BB] = biclsfy_slrvar(XTrain_B, yTrain_B, XTest_same_B, yTest_same_B,...
+%                 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none', 'invhessian',1);
             
-            [ww_f_FF, ix_eff_f_FF, errTable_tr_FF, errTable_te_FF] = biclsfy_slrlap(XTrain_F, yTrain_F, XTest_same_F, yTest_same_F,...
-                'wdisp_mode', 'off', 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none');
+                        [ww_f_FF, ix_eff_f_FF, errTable_tr_FF, errTable_te_FF] = biclsfy_slrlap(XTrain_F, yTrain_F, XTest_same_F, yTest_same_F,...
+                            'wdisp_mode', 'off', 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none');
             
-            [ww_f_BB, ix_eff_f_BB, errTable_tr_BB, errTable_te_BB] = biclsfy_slrlap(XTrain_B, yTrain_B, XTest_same_B, yTest_same_B,...
-                'wdisp_mode', 'off', 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none');
+                        [ww_f_BB, ix_eff_f_BB, errTable_tr_BB, errTable_te_BB] = biclsfy_slrlap(XTrain_B, yTrain_B, XTest_same_B, yTest_same_B,...
+                            'wdisp_mode', 'off', 'nlearn', 300, 'mean_mode', 'none', 'scale_mode', 'none');
             
             acc_foo_FF(k) = trace(errTable_te_FF)/(nTrials*fracHoldOut);
             acc_foo_BB(k) = trace(errTable_te_BB)/(nTrials*fracHoldOut);

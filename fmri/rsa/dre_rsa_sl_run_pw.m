@@ -31,10 +31,11 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-% subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-% taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
 subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:50];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
+
+subs = [45];
+taskOrd = [2];
 
 %% user options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -54,15 +55,15 @@ if false
 end
 
 %% load betas
-dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,roiName];
-userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
-filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
-if ~exist(filePatterns,'file')
-    responsePatterns = fMRIDataPreparation('SPM', userOptions);
-    save(filePatterns,'responsePatterns','-v7.3')
-else
-    load(filePatterns,'responsePatterns')
-end
+% dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,roiName];
+% userOptions.betaPath = [dir.beta,filesep,'[[subjectName]]',filesep,'[[betaIdentifier]]'];
+% filePatterns = [dir.out,fs,'_responsePatterns',fs,betaid,fs,'rsaPatterns_sl.mat'];
+% if ~exist(filePatterns,'file')
+%     responsePatterns = fMRIDataPreparation('SPM', userOptions);
+%     save(filePatterns,'responsePatterns','-v7.3')
+% else
+%     load(filePatterns,'responsePatterns')
+% end
 
 %% extract models of value, confidence, familiarity, price
 RDMs = dre_extractRDMs(dir,subs,taskOrd);
@@ -80,8 +81,8 @@ for s = 1:length(subs)
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     
     %% run searchlight
-    model = RDMs{s}.val;
+    model = RDMs{s}.con;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_valOff_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_con_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

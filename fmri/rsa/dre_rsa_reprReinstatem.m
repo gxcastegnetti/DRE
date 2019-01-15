@@ -30,23 +30,23 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19:21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-taskOrd = [ones(1,10),2*ones(1,11),1,2,ones(1,4),2*ones(1,3) 1];
-subjectPerformance = [0.122322024086225,0.111973420430063,0.104265818963093,0.200390550760437,0.107325561450143,0.263606651221993,0.111131356536965,0.107132574596395,0.0569356612625340,0.104072750329748,0.151948233527118,0.0989363068400909,0.155438087107738,0.0787478537444945,0.0615413716871817,0.111629725764643,0.116521094236080,0.0673474151090243,0.139266278029877,0.274225138374715,0.0642293398052977,0.143301853060085,0.166534822317758,0.113621624095970,0.325275596011275,0.131400908853378,0.0417606997518145,0.0817217943015241,0.0961469078160667,0.138164677679371,0.0330499066561577];
-subsBest = sort([16,2,24,17,1,26,30,19,22,11,13,23,4,6,20,25]);
-subsWors = sort([31,27,9,15,21,18,14,28,29,12,10,3,8,5,7]);
-%
-subs = subs(subsBest);
-taskOrd = taskOrd(subsBest);
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
+
+subsBest = sort([24,19,6,4,22,12,11,21,18,29,25,1,16,23,2]);
+subsWors = sort([15,7,5,8,3,10,28,27,13,17,20,14,9,26,30]);
+
+% subs = subs(subsWors);
+% taskOrd = taskOrd(subsWors);
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% ROI
-roiNames = {'midOcc','lingual','imaginationValue','lp_hpc','la_hpc','rp_hpc','ra_hpc','pcc','mcc','acc','ofc'};
-% roiNames = {'lingual','itc','phpc','l_hpc','r_hpc','angular','par_inf','ins_la','pcc','mcc','acc','caudate','putamen','subgenual','pfc_vm','ofc'};
 roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
-roiNames = {'l_hpc','r_hpc'};
+roiNames = {'lp_hpc','la_hpc','ra_hpc','rp_hpc'};
+
+% roiNames = {'l_hpc','r_hpc'};
 
 %% betas for imagination and choice
 dir.betaIma = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,'rsa_pulse_ima',fs,'none'];

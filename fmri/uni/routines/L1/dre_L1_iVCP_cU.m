@@ -1,4 +1,4 @@
-function spmMat_name = dre_L1_iVCF_cU(dir,analysisName,subs,timing,bData)
+function spmMat_name = dre_L1_iVCP_cU(dir,analysisName,subs,timing,bData)
 %% function dre_L1_iVCF_cV(dirSub,sub,runType)
 % ~~~
 % First level analysis with conditions:
@@ -61,8 +61,8 @@ for s = 1:length(subs)
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(2).poly = 1;
         
         % parametric modulations of familiarity
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).name = 'imagin. famil.';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).param = bData(subs(s)).imagination(r).fam;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).name = 'imagin. price';
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).param = bData(subs(s)).imagination(r).pri;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).pmod(3).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(1).orth = 0;
         

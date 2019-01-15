@@ -19,6 +19,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 
 %% subjects
 subs = [4 5 7 8 9 13:17 19 20 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
+subs = [42 44 45];
 
 for s = 1:length(subs)   
     

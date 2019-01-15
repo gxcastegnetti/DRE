@@ -31,15 +31,15 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,4),2*ones(1,3) 1];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 45 47:49];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 
 %% extract behavioural data
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-roiNames = {'l_ling','imaginationValue','lp_itc','lp_hpc','rp_hpc','mcc','sma','rp_ins','la_ins','lp_ins','l_dlpfc','r_dlpfc','vmpfc_ima_p','l_ofc','ofc_conf'};
-roiNames = {'vmpfc_ima_p'};
+roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+% roiNames = {'rsaVal_LG_10mm','rsaVal_vmPFC_10mm'};
 roiNamesTrue = roiNames;
 
 %% apply two masks: one for grey matter, one for ROI
@@ -152,22 +152,22 @@ for r = 1:length(roiNames)
         objVal_F(isnan(objVal_F)) = ceil(50*rand);
         objVal_B(isnan(objVal_B)) = ceil(50*rand);
         
-        % add a constant for univoque determination of median      
+        % add a constant for univoque determination of median
         Y_F = objVal_F + (0.00001*(1:120))';
         Y_B = objVal_B + (0.00001*(1:120))';
-%         Y_F = objCon_F + (0.00001*(1:120))';
-%         Y_B = objCon_B + (0.00001*(1:120))';
+        %         Y_F = objCon_F + (0.00001*(1:120))';
+        %         Y_B = objCon_B + (0.00001*(1:120))';
         
         % find percentiles
-        %         pl_F_33 = prctile(Y_F,100/3);
-        %         pl_F_66 = prctile(Y_F,200/3);
-        %         pl_B_33 = prctile(Y_B,100/3);
-        %         pl_B_66 = prctile(Y_B,200/3);
+        pl_F_low = prctile(Y_F,100/3);
+        pl_F_hig = prctile(Y_F,200/3);
+        pl_B_low = prctile(Y_B,100/3);
+        pl_B_hig = prctile(Y_B,200/3);
         
-        pl_F_low = prctile(Y_F,25);
-        pl_F_hig = prctile(Y_F,75);
-        pl_B_low = prctile(Y_B,25);
-        pl_B_hig = prctile(Y_B,75);
+        %         pl_F_low = prctile(Y_F,33);
+        %         pl_F_hig = prctile(Y_F,75);
+        %         pl_B_low = prctile(Y_B,25);
+        %         pl_B_hig = prctile(Y_B,75);
         
         X_F_red = X_F(Y_F < pl_F_low | Y_F > pl_F_hig,:);
         Y_F_red = Y_F(Y_F < pl_F_low | Y_F > pl_F_hig);
@@ -181,7 +181,7 @@ for r = 1:length(roiNames)
         %         Y_B_red = Y_B;
         Y_B_logic = Y_B_red > pl_B_hig;
         
-        nTrials = 60;
+        nTrials = 80;
         
         clear pl_F_low pl_B_low pl_F_hig pl_B_hig
         clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
@@ -202,7 +202,7 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 100;
+        nSweeps = 1000;
         for k = 1:nSweeps
             
             c_F = cvpartition(Y_F_logic,'holdOut',0.1);

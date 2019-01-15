@@ -30,8 +30,7 @@ for s = 1:length(subs)
 
 end
 
-
 sS_avgMaskFile = [dir.dre,fs,'out',fs,'fmri',fs,'masks',fs,'_useNow',fs,'gmAvg.nii'];
-sS_avgMask = mean(sS_subMasks,4) > 0.3;
+sS_avgMask = mean(sS_subMasks,4) > 0.75;
 sS_maskMetaData.fname = sS_avgMaskFile;
 spm_write_vol(sS_maskMetaData, sS_avgMask);

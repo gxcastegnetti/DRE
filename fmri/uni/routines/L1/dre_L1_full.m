@@ -81,7 +81,7 @@ for s = 1:length(subs)
         % parametric modulation by value of the chosen item minus the
         % value of the unchosed item
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'value chosen - unchosen';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).valCho;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).valCmU;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;
         
         % parametric modulation by wrong value of the chosen item minus the

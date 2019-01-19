@@ -22,7 +22,7 @@ addpath(genpath(dir.spm))
 addpath(genpath([foodir,fs,'routines'])), clear foodir idcs newdir4 dirSPM
 
 %% Subjects
-subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 45 47:49];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 47:49];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 
 %% extract behavioural data
@@ -30,18 +30,18 @@ bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCP_cU_off';
-    context = 'all';
+    analysisName = 'uni_pulse_iVCP_cU';
+    context = 'B';
     
     % 1st level
     timing.iOns = 0; % onset for imagination
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-%     dre_L1_iVCP_cU(dir,analysisName,subs,timing,bData);
+    dre_L1_iVCP_cU(dir,analysisName,subs,timing,bData);
     
     % contrasts
-%     dre_con_i3_c1(dir,analysisName,subs,taskOrd,context);
+    dre_con_i3_c1(dir,analysisName,subs,taskOrd,context);
     
     % 2nd level
     dre_L2(dir,analysisName,[context,'_imagination_onset'],subs,1);
@@ -76,7 +76,7 @@ end
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if false
-    analysisName = 'uni_fullModel_S';
+    analysisName = 'uni_fullModel_U';
     context = 'all';
     
     % 1st level

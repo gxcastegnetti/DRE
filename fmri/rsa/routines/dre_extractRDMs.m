@@ -90,6 +90,8 @@ for s = 1:length(subs)
     % extract value, confidence
     val_F = Mday1_F(idx_day1_F,3);
     val_B = Mday1_B(idx_day1_B,3);
+    val_F = val_F(idx_sort_F);
+    val_B = val_B(idx_sort_B);
     val_all = [val_F(idx_sort_F); val_B(idx_sort_B)];
     con_F = Mday1_F(idx_day1_F,4);
     con_B = Mday1_B(idx_day1_B,4);
@@ -116,9 +118,16 @@ for s = 1:length(subs)
     % all trials
     for i = 1:length(val_all)
         RDMs{s}.val(:,i) = abs(val_all(i) - val_all);
+        RDMs{s}.valF(:,i) = abs(val_all(i) - val_all);
+        RDMs{s}.valB(:,i) = abs(val_all(i) - val_all);
         RDMs{s}.con(:,i) = abs(con_all(i) - con_all);
         RDMs{s}.fam(:,i) = abs(fam_all(i) - fam_all);
         RDMs{s}.pri(:,i) = abs(pri_all(i) - pri_all);
+    end
+    
+    for i = 1:length(val_F)
+        RDMs{s}.val_F(:,i) = abs(val_F(i) - val_F);
+        RDMs{s}.val_B(:,i) = abs(val_B(i) - val_B);
     end
     
     zval_all = val_all;

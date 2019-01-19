@@ -27,9 +27,9 @@ for s = 1:length(subs)
     %% folders
     dirSub = [dir.dre,fs,'data',fs,'fmri',fs,'scanner',fs,'SF',num2str(subs(s),'%03d')];
     dirOut = [dir.out,fs,analysisName,fs,'SF',num2str(subs(s),'%03d')];
-%     dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
-%     dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
-%     if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
+    %     dirPhy = [dir.phy,fs,num2str(subs(s),'%03d')];
+    %     dirPhyOut = [dir.dre,fs,'out',fs,'fmri',fs,'preprocessing',fs,'body_regr',fs,'SF',num2str(subs(s),'%03d')];
+    %     if ~exist(dirPhyOut,'dir'), mkdir(dirPhyOut), end
     if ~exist(dirOut,'dir'), mkdir(dirOut), end
     
     job1LM{1}.spm.stats.fmri_spec.dir = {dirOut};
@@ -75,11 +75,10 @@ for s = 1:length(subs)
         
         % parametric modulation by value of the chosen item minus the
         % value of the unchosed item
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'value chosen - unchosen';
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'chosen - unchosen';
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).chMunc;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).orth = 0;
-        
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).orth = 0;        
         
         %% movement (and physio) regressors
         
@@ -99,35 +98,35 @@ for s = 1:length(subs)
         % use this if also physiological regressors required %
         %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
         
-%         % load rp file to concatenate with physio regressors
-%         rp = load(rp_file{1});
-%         
-%         % see which file is correct
-%         fileF = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'F_R_S1.mat'];
-%         fileB = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'B_R_S1.mat'];
-%         try
-%             try
-%                 mov = load(fileF);
-%             catch
-%                 mov = load(fileB);
-%             end
-%             mov = mov.R;
-%         catch
-%             mov = [];
-%         end
-%         
-%         
-%         % concatenate movement and physiological regressors
-%         R = [rp, mov]; %#ok<NASGU>
-%         
-%         % save
-%         allRegr_file = [dirPhyOut,fs,'body_r_SF',num2str(subs(s),'%03d'),'_S',num2str(r),'.mat'];
-%         save(allRegr_file,'R');
-%         
-%         job1LM{1}.spm.stats.fmri_spec.sess(r).multi = {''};
-%         job1LM{1}.spm.stats.fmri_spec.sess(r).regress = struct('name', {}, 'val', {});
-%         job1LM{1}.spm.stats.fmri_spec.sess(r).multi_reg = {allRegr_file};
-%         job1LM{1}.spm.stats.fmri_spec.sess(r).hpf = 128;
+        %         % load rp file to concatenate with physio regressors
+        %         rp = load(rp_file{1});
+        %
+        %         % see which file is correct
+        %         fileF = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'F_R_S1.mat'];
+        %         fileB = [dirPhy,fs,'SF',num2str(subs(s),'%03d'),'_S',num2str(r),'B_R_S1.mat'];
+        %         try
+        %             try
+        %                 mov = load(fileF);
+        %             catch
+        %                 mov = load(fileB);
+        %             end
+        %             mov = mov.R;
+        %         catch
+        %             mov = [];
+        %         end
+        %
+        %
+        %         % concatenate movement and physiological regressors
+        %         R = [rp, mov]; %#ok<NASGU>
+        %
+        %         % save
+        %         allRegr_file = [dirPhyOut,fs,'body_r_SF',num2str(subs(s),'%03d'),'_S',num2str(r),'.mat'];
+        %         save(allRegr_file,'R');
+        %
+        %         job1LM{1}.spm.stats.fmri_spec.sess(r).multi = {''};
+        %         job1LM{1}.spm.stats.fmri_spec.sess(r).regress = struct('name', {}, 'val', {});
+        %         job1LM{1}.spm.stats.fmri_spec.sess(r).multi_reg = {allRegr_file};
+        %         job1LM{1}.spm.stats.fmri_spec.sess(r).hpf = 128;
         
     end
     

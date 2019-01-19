@@ -23,9 +23,8 @@ function [u_hat,resMS,Sw_hat,beta_hat,shrinkage,trRR]=noiseNormalizeBeta(Y,SPM,v
 %                 This number provides an estimate for the residual spatial
 %                 correlation. For variance-estimation, the effective
 %                 number of voxels are effVox = numVox^2/trRR 
-% Alexander Walther, Joern Diedrichsen
-% joern.diedrichsen@googlemail.com
-% 2/2015
+% Alexander Walther, Joern Diedrichsen 2015  ~ edited by GC, 2018-19
+
 Opt.normmode = 'overall';  % Either runwise or overall
 Opt.shrinkage = []; 
 Opt = getUserOptions(varargin,Opt);

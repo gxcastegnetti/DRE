@@ -3,7 +3,7 @@
 % GX Castegnetti --- 2018
 
 clear
-close all
+% close all
 restoredefaultpath
 
 %% analysisName
@@ -36,8 +36,8 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
 subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
 
-% subs = subs(subsBest);
-% taskOrd = taskOrd(subsBest);
+% subs = subs(subsWors);
+% taskOrd = taskOrd(subsWors);
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -46,7 +46,7 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
 %
 roiNames = {'l_hpc','r_hpc'};
-roiNames = {'rsaOid_Occ_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+% roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 
 
 %% betas for imagination and choice
@@ -173,10 +173,7 @@ for r = 1:length(roiNames)
                 respPattIma_unchosItem = respPattIma_leftSide;
             end
             
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            % uncomment to compare H/L value instead of chosen/unchosen %
-            %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-            
+            % uncomment for co
 %             % load indices for normal ordering
 %             dirdre = '/Users/gcastegnetti/Desktop/stds/DRE';
 %             fooDir = [dirdre,filesep,'out',filesep,'fmri',filesep,'rsa'];

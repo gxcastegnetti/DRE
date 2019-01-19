@@ -647,7 +647,7 @@ tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','dC','sumC'
 
 lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC','distribution','binomial');
 
-lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC + sumC:dV','distribution','binomial');
+lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC','distribution','binomial');
 
 lmeChoice = fitlme(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC + (1 | sub)');
 lmeRT     = fitlme(tblChoice,'RT     ~ 1 + sumV + sumC + sumV:sumC + (1 | sub)');

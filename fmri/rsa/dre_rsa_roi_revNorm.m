@@ -33,7 +33,7 @@ mkdir([dir.out,fs,analysisName])
 % roiNames = {'sphere_9-0_-61_25','sphere_9-0_-43_35','sphere_9-0_-25_39','sphere_9-0_-7_40',...
 %     'sphere_9-0_11_37','sphere_9-0_28_29','sphere_9-0_41_20','sphere_9-0_47_11'};
 
-roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaOid_Occ_10mm'};
 
 %% subjects
 subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 45 47:49];

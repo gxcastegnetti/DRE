@@ -7,9 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_pw_choice_up';
-betaid       = 'rsa_pulse_choice';
-analysisName = 'rsa_sl_pw_ima_up';
+analysisName = 'rsa_sl_ima';
 betaid       = 'rsa_pulse_ima';
 thisIsDim    = false;
 
@@ -31,8 +29,7 @@ addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
 addpath(genpath(dir.spm))
 
 %% Subjects
-subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40 41 43 47:49 50];
-subs = [42 45];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39:43 47:49];
 
 %% Set options
 userOptions = dre_rsa_userOptions(dir,subs);
@@ -43,7 +40,7 @@ userOptions.forcePromptReply = 'r';
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 modelNames = {'val','con','oid','cxt'};
-modelNames = {'con'};
+modelNames = {'valB'};
 
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
@@ -82,7 +79,7 @@ if true
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
         if ~thisIsDim
-            load([dirSl,fs,'sl_con_SF',num2str(subs(s),'%03d'),'.mat']);
+            load([dirSl,fs,'sl_valB_SF',num2str(subs(s),'%03d'),'.mat']);
         else
             load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
         end

@@ -32,16 +32,22 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none'];
 
 %% subjects
-subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 45 47:49];
-taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4) 1];
+subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 47:49];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,3)];
+
+subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
+subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
+
+% subs = subs(subsWors);
+% taskOrd = taskOrd(subsWors);
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
 ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 
 %% which mask?
-% roiNames = {'rsaVal_LG','rsaVal_ITG','lp_hpc','rsaVal_ACC','rsaVal_vmPFC','rsaVal_OFC','rsaVal_dlPFC'};
 roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -77,6 +83,11 @@ for r = 1:length(roiNames)
         % subjective mask
         subjMaskFile.fname = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
         
+%         % subjective gm mask
+%         subjGreyFile.fname = [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
+%         
+%         % take intersection between the two
+              
         % whiten betas
         try
             B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
@@ -151,15 +162,12 @@ if size(RDM_brain(1,1).RDM,1) == 240
         RDM_model(2,s).name = 'con';
         RDM_model(2,s).RDM = RDMs_models{s}.con;
         RDM_model(2,s).color = [0 1 0];
-        RDM_model(3,s).name = 'fam';
-        RDM_model(3,s).RDM = RDMs_models{s}.fam;
+%         RDM_model(3,s).name = 'oid';
+%         RDM_model(3,s).RDM = 1-mat_ID;
+%         RDM_model(3,s).color = [0 1 0];
+        RDM_model(3,s).name = 'oid';
+        RDM_model(3,s).RDM = RDMs_models{s}.con ./ RDMs_models{s}.val;
         RDM_model(3,s).color = [0 1 0];
-        RDM_model(4,s).name = 'oid';
-        RDM_model(4,s).RDM = 1-mat_ID;
-        RDM_model(4,s).color = [0 1 0];
-        RDM_model(5,s).name = 'cxt';
-        RDM_model(5,s).RDM = RDMs_models{s}.cxt;
-        RDM_model(5,s).color = [0 1 0];
     end
     
     % for every region and sub, correlate RDM and model
@@ -169,7 +177,7 @@ if size(RDM_brain(1,1).RDM,1) == 240
             for m = 1:size(RDM_model,1)
                 a = vectorizeRDM(RDM_brain(r,s).RDM);
                 b = vectorizeRDM(RDM_model(m,s).RDM);
-                corrRoiModel(r,s,m) = corr(a(:),b(:),'rows','pairwise','type','Spearman');
+                corrRoiModel(r,s,m) = corr(a(:),b(:),'rows','pairwise','type','spearman');
                 % rL2(m,s) = fisherTransform(rL2(m,s));
             end
         end
@@ -216,7 +224,9 @@ end
 for r = 1:length(roiNames)
     for m = 1:size(RDM_model,1)
         scores = corrRoiModel(r,:,m);
-        [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
+%         [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
+        [pCorr(r,m),h,~] = signrank(scores,0,'Tail','right');
+%         tCorr(r,m) = stats.tstat;
     end
 end, clear r m mat_ID
 
@@ -229,17 +239,18 @@ sems  = squeeze(std(corrRoiModel,0,2)/sqrt(numel(subs)));
 % means = means(end-1:end,1:2);
 % sems = sems(end-1:end,1:2);
 
-roiNamesTrue = roiNames;
-% roiNamesTrue = roiNames;
+roiNamesTrue = {'vmPFC','OFC','dlPFC'};
+myColors = [230,184,0; 46,184,46; 46,184,230]/255;
 figure('color',[1 1 1])
 hb = bar(means); hold on
 for ib = 1:numel(hb)
     xData = hb(ib).XData+hb(ib).XOffset;
     errorbar(xData',means(:,ib),sems(:,ib),'k.')
-    %     hb(ib).FaceColor = myColors(ib,:);
+    hb(ib).FaceColor = myColors(ib,:);
 end, clear ib
-legend({'Value','Confid.'},'location','northwest'),set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
-    'xticklabels',roiNames)
+legend({'Value','Confid.','Obj. ID'},'location','northwest'), legend boxoff
+set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
+    'xticklabels',roiNamesTrue), ylim([-0.002 0.008]),xtickangle(45)
 ylabel('Correlation(ROI, model)')
 
 
@@ -248,13 +259,10 @@ for r1 = 1:length(roiNames)
     for r2 = 1:length(roiNames)
         corrRoiVal_r1 = squeeze(corrRoiModel(r1,:,1));
         corrRoiVal_r2 = squeeze(corrRoiModel(r2,:,1));
-        [~,p(r1,r2),~,stats] = ttest(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
-        tValues(r1,r2) = stats.tstat;
+        [~,p(r1,r2),~,~] = ttest(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
+        [p(r1,r2),~,~] = signrank(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
     end
 end
-isSignificant = p < 0.05;
-tValues = tValues.*isSignificant;
-figure('color',[1 1 1]),imagesc(tValues)
 
 
 %% ROI-ROI correlations

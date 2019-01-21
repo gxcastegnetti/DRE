@@ -42,7 +42,7 @@ ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 %% which mask?
 
 roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-roiNames = {'rsaCon_vmPFC_10mm'};
+roiNames = {'rsaVal_OFC_10mm'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -122,8 +122,8 @@ for s = 1:length(subs)
     objCon_B = objCon_B(objIdx_sort_B);
     objVal = [objVal_F; objVal_B];
     objCon = [objCon_F; objCon_B];
-    objVal = objVal(~isnan(objVal));
-    objCon = objCon(~isnan(objCon));    
+    ObjVal = ObjVal(~isnan(ObjVal));
+    Obj = ObjVal(~isnan(ObjVal));    
     
     % brain activities during fire and boat trials
     %     X_B = B(1:120,:);
@@ -155,12 +155,12 @@ for s = 1:length(subs)
         
         % value
         X_val = [ones(length(objVal),1) objVal];
-        betas_val = X_val\y(~isnan(objVal));
+        betas_val = X_val\y;
         slopes_val(vx) = abs(betas_val(2));
         
         % confidence
         X_con = [ones(length(objCon),1) objCon];
-        betas_con = X_con\y(~isnan(objCon));
+        betas_con = X_con\y;
         slopes_con(vx) = abs(betas_con(2));
         
     end
@@ -170,36 +170,32 @@ for s = 1:length(subs)
     nPerm = 1000;
     for i = 1:nPerm
         fooRand_val = randperm(numel(objVal));
-        fooRand_con = randperm(numel(objCon));
+        fooRand_con = randperm(numel(objVal));
         objVal_perm = objVal(fooRand_val);
-        objCon_perm = objCon(fooRand_con);
+        objCon_perm = objVal(fooRand_con);
         
         for vx = 1:numVoxels
             
-            % voxel activity
-            y = B(:,vx);
-            
             % value
             X_val = [ones(length(objVal_perm),1) objVal_perm];
-            betas_val = X_val\y(~isnan(objVal));
+            betas_val = X_val\y;
             slopes_val_perm(vx) = abs(betas_val(2));
             
             % confidence
             X_con = [ones(length(objCon_perm),1) objCon_perm];
-            betas_con = X_con\y(~isnan(objCon));
+            betas_con = X_con\y;
             slopes_con_perm(vx) = abs(betas_con(2));
             
         end
         
-        r_betas_perm(s,i) = corr(slopes_val_perm',slopes_con_perm','type','spearman');
-        [pVal_perm(i),~,~] = signrank(r_betas_perm(:,i));
+        r_betas_perm(s,i) = corr(slopes_val_perm,slopes_con_perm,'type','spearman');
     end
     
 end
 
 % stats with real indices
-% [h,p,~,stats] = ttest(r_betas);
-[pVal_real,h,~] = signrank(r_betas);
+[h,p,~,stats] = ttest(r_betas);
+[p,h,~] = signrank(r_betas);
 % tVal_real = stats.tstat;
 
 % for i = 1:nPerm

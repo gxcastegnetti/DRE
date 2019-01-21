@@ -645,7 +645,8 @@ subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 tblChoice = table(allSubs,allCond,alldV,alldV_opp,allSumV,alldC,allSumC,(allCho+1)/2,allRT);
 tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','dC','sumC','choice','RT'};
 
-lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC','distribution','binomial');
+lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC + dV:dC + sumV:dC','distribution','binomial');
+lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC + dV:dC','distribution','binomial');
 
 lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC + sumC:dV','distribution','binomial');
 

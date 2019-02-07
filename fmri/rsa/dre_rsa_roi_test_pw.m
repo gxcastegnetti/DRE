@@ -35,19 +35,23 @@ dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none']
 subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 47:49];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,3)];
 
-subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
-subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
+% subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
+% subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
 
 % subs = subs(subsWors);
 % taskOrd = taskOrd(subsWors);
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
-ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 
 %% which mask?
 roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','l_hpc','r_hpc','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+
+% roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
+% roiNames = {'rsaVal_LGeye_9mm','la_hpc'};
+% roiNames = {'rsaVal_Occ','rsaVal_MCC','rsaVal_vmPFC'};
+
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -113,33 +117,33 @@ end, clear rdm fooDir subjSPMFile objIdx_F objIdx_B obj objIdx_sess_F objIdx_ses
 
 %% plot ROI RDM
 % user options
-userOptions = dre_rsa_userOptions(dir,subs);
-userOptions.analysisName = analysisName;
-userOptions.rootPath = dir.out;
-userOptions.forcePromptReply = 'r';
-
-% average RDMs across subjects and plot
-figure('color',[1,1,1])
-for r = 1:numel(roiNames)
-    
-    % compute ROI-specific average
-    foo = zeros(size(B,1),size(B,1));
-    for s = 1:numel(subs)
-        newOrd = ordData(subs(s)).norm2val_cont;
-        foo = foo + RDM_brain(r,s).RDM(newOrd,newOrd)/numel(subs);
-    end
-    
-    % fill struct for the RSA toolbox
-    RDM_brain_avg(r).color = [0 0 1];
-    RDM_brain_avg(r).name = roiNames{r};
-    RDM_brain_avg(r).RDM = foo;
-    
-    % plot
-    subplot(3,5,r)
-    RDM_brain_avg(r).RDM(RDM_brain_avg(r).RDM==0)=nan;
-    foo = nanmean(RDM_brain_avg(r).RDM(:));
-    imagesc(RDM_brain_avg(r).RDM),title(roiNames{r}),caxis([foo-1 foo+1])
-end
+% userOptions = dre_rsa_userOptions(dir,subs);
+% userOptions.analysisName = analysisName;
+% userOptions.rootPath = dir.out;
+% userOptions.forcePromptReply = 'r';
+% 
+% % average RDMs across subjects and plot
+% figure('color',[1,1,1])
+% for r = 1:numel(roiNames)
+%     
+%     % compute ROI-specific average
+%     foo = zeros(size(B,1),size(B,1));
+%     for s = 1:numel(subs)
+%         newOrd = ordData(subs(s)).norm2val_cont;
+%         foo = foo + RDM_brain(r,s).RDM(newOrd,newOrd)/numel(subs);
+%     end
+%     
+%     % fill struct for the RSA toolbox
+%     RDM_brain_avg(r).color = [0 0 1];
+%     RDM_brain_avg(r).name = roiNames{r};
+%     RDM_brain_avg(r).RDM = foo;
+%     
+%     % plot
+%     subplot(3,5,r)
+%     RDM_brain_avg(r).RDM(RDM_brain_avg(r).RDM==0)=nan;
+%     foo = nanmean(RDM_brain_avg(r).RDM(:));
+%     imagesc(RDM_brain_avg(r).RDM),title(roiNames{r}),caxis([foo-1 foo+1])
+% end
 
 
 %% ROI-model correlations
@@ -162,12 +166,12 @@ if size(RDM_brain(1,1).RDM,1) == 240
         RDM_model(2,s).name = 'con';
         RDM_model(2,s).RDM = RDMs_models{s}.con;
         RDM_model(2,s).color = [0 1 0];
-%         RDM_model(3,s).name = 'oid';
-%         RDM_model(3,s).RDM = 1-mat_ID;
-%         RDM_model(3,s).color = [0 1 0];
         RDM_model(3,s).name = 'oid';
-        RDM_model(3,s).RDM = RDMs_models{s}.con ./ RDMs_models{s}.val;
+        RDM_model(3,s).RDM = 1-mat_ID;
         RDM_model(3,s).color = [0 1 0];
+%         RDM_model(3,s).name = 'oid';
+%         RDM_model(3,s).RDM = RDMs_models{s}.con ./ RDMs_models{s}.val;
+%         RDM_model(3,s).color = [0 1 0];
     end
     
     % for every region and sub, correlate RDM and model
@@ -178,7 +182,7 @@ if size(RDM_brain(1,1).RDM,1) == 240
                 a = vectorizeRDM(RDM_brain(r,s).RDM);
                 b = vectorizeRDM(RDM_model(m,s).RDM);
                 corrRoiModel(r,s,m) = corr(a(:),b(:),'rows','pairwise','type','spearman');
-                % rL2(m,s) = fisherTransform(rL2(m,s));
+%                 rL2(m,s) = fisherTransform(rL2(m,s));
             end
         end
     end
@@ -224,8 +228,8 @@ end
 for r = 1:length(roiNames)
     for m = 1:size(RDM_model,1)
         scores = corrRoiModel(r,:,m);
-%         [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
-        [pCorr(r,m),h,~] = signrank(scores,0,'Tail','right');
+        [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
+%         [pCorr(r,m),h,~] = signrank(scores,0,'Tail','right');
 %         tCorr(r,m) = stats.tstat;
     end
 end, clear r m mat_ID
@@ -359,7 +363,7 @@ for r1 = 1:length(roiNames)
 end, clear r1 r2
 
 figure('color',[1 1 1])
-roiNamesTrue = {'Lingual','lHPC','rHPC','ACC','rIns','vmPFC','pOFC','aOFC'};
+roiNamesTrue = {'lHPC','rHPC','vmPFC','OFC','dlPFC'};
 
 % plot val HI
 corrRoiRoi_HI_mean = mean(corrRoiRoi_HI,3);
@@ -393,12 +397,12 @@ for i = 1:numel(roiNames)
 end, clear roiLO roiHI tfoo stats corrRoiRoi_LO corrRoiRoi_HI
 
 % plot difference
-foo = p < 0.01;
+foo = p < 0.05;
 pSignificant = tvalues.*foo;
 subplot(2,2,4),imagesc(pSignificant,[-3 3])
 set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...
     'YTick',1:numel(roiNames),'fontsize',14,'YtickLabel',roiNamesTrue)
-xtickangle(45),ytickangle(45),title('p < 0.05')
+xtickangle(45),ytickangle(45),title('p < 0.01')
 clear foo pSignificant roiNamesTrue
 
 

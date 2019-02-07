@@ -113,7 +113,10 @@ for k=1:ncent
     ds = surfing_eucldist(c_centers(:,k),c_voxels);
     if fixedradius
         a       = voxels(:,ds<=radius/3);
-        rs(k,1) = radius; 
+        rs(k,1) = radius;
+        
+%         if k == 455, keyboard, end
+        
     else 
         i       = find(ds<radius(1));
         [dss,j] = sort(ds(i));

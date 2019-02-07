@@ -29,7 +29,7 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 bData = dre_extractData(dir,subs,taskOrd,1);
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
-if true
+if false
     analysisName = 'uni_pulse_iVCP_cU';
     context = 'B';
     
@@ -53,6 +53,32 @@ if true
 end
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
+if true
+    analysisName = 'uni_pulse_iVCP_cUuP';
+    context = 'all';
+    
+    % 1st level
+    timing.iOns = 0; % onset for imagination
+    timing.cOns = 0; % onset for choice
+    timing.iDur = 0; % duration for imagination
+    timing.cDur = 0; % duration for choice
+    dre_L1_iVCP_cUuP(dir,analysisName,subs,timing,bData);
+    
+    % contrasts
+    dre_con_i3_c3(dir,analysisName,subs,taskOrd,context);
+    
+    % 2nd level
+    dre_L2(dir,analysisName,[context,'_imagination_onset'],subs,1);
+    dre_L2(dir,analysisName,[context,'_imagination_value'],subs,2);
+    dre_L2(dir,analysisName,[context,'_imagination_confid'],subs,3);
+    dre_L2(dir,analysisName,[context,'_imagination_price'],subs,4);
+    dre_L2(dir,analysisName,[context,'_choice_onset'],subs,5);
+    dre_L2(dir,analysisName,[context,'_choice_chosen CONGRUENT'],subs,6);
+    dre_L2(dir,analysisName,[context,'_choice_chosen INCONGRUENT'],subs,7);
+    dre_L2(dir,analysisName,[context,'_choice_chosen PRICE'],subs,8);
+end
+
+%% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if false
     analysisName = 'uni_pulse_iV2_cV';
     context = 'all';
@@ -62,7 +88,7 @@ if false
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-%     dre_L1_iV2_cV(dir,analysisName,subs,timing,bData);
+    %     dre_L1_iV2_cV(dir,analysisName,subs,timing,bData);
     
     % contrasts
     dre_con_i1_c1(dir,analysisName,subs,taskOrd,context);
@@ -95,7 +121,7 @@ if false
     dre_L2(dir,analysisName,[context,'_valueWrong'],subs,3);
     dre_L2(dir,analysisName,[context,'_confidence'],subs,4);
     dre_L2(dir,analysisName,[context,'_familiarity'],subs,5);
-    dre_L2(dir,analysisName,[context,'_price'],subs,6);    
+    dre_L2(dir,analysisName,[context,'_price'],subs,6);
     dre_L2(dir,analysisName,[context,'_choice_onset'],subs,7);
     dre_L2(dir,analysisName,[context,'_chosen-unchosen'],subs,8);
     dre_L2(dir,analysisName,[context,'_chosen-unchosenWrong'],subs,9);

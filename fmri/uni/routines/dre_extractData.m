@@ -92,16 +92,22 @@ for s = 1:length(subs)
         idxCho_day2_L = NaN(length(idCho_day2),1);
         idxCho_day2_R = NaN(length(idCho_day2),1);
         valCho = NaN(length(idCho_day2),1);
+        priCho = NaN(length(idCho_day2),1);
         valUnc = NaN(length(idCho_day2),1);
+        priUnc = NaN(length(idCho_day2),1);
         for i = 1:length(idCho_day2)
             idxCho_day2_L(i) = find(Mday1(:,2) == idCho_day2(i,1));
             idxCho_day2_R(i) = find(Mday1(:,2) == idCho_day2(i,2));
             if chosenChoice_day2(i) == -1
                 valCho(i) = Mday1(idxCho_day2_L(i),3);
                 valUnc(i) = Mday1(idxCho_day2_R(i),3);
+                priCho(i) = Mday1F(idxCho_day2_L(i),4);
+                priUnc(i) = Mday1F(idxCho_day2_R(i),4);
             elseif chosenChoice_day2(i) == 1
                 valCho(i) = Mday1(idxCho_day2_R(i),3);
                 valUnc(i) = Mday1(idxCho_day2_L(i),3);
+                priCho(i) = Mday1F(idxCho_day2_R(i),4);
+                priUnc(i) = Mday1F(idxCho_day2_L(i),4);
             else
                 valCho(i) = NaN;
                 valUnc(i) = NaN;
@@ -110,6 +116,7 @@ for s = 1:length(subs)
         choObjPresented = [idxCho_day2_L idxCho_day2_R];
         difVal = abs(valCho - valUnc); % value difference
         chMunc = valCho - valUnc; % value chosen - value unchosen
+        chMuncPrice = priCho - priUnc; % value chosen - value unchosen
         
         %% choice wrong
         idxCho_day2_L = NaN(length(idCho_day2),1);
@@ -149,7 +156,7 @@ for s = 1:length(subs)
         %% remove nans if needed
         if excNan == 1
             objKeep = ~isnan(objVal) & ~isnan(objValWrong) & ~isnan(objCon) & ~isnan(objFam) & ~isnan(objPri);
-            difKeep = ~isnan(difVal) & ~isnan(difValWrong) & ~isnan(valCho) & ~isnan(movCho) & ~isnan(sidCho);
+            difKeep = ~isnan(difVal) & ~isnan(difValWrong) & ~isnan(chMuncPrice) & ~isnan(valCho) & ~isnan(movCho) & ~isnan(sidCho);
             onsIma = onsIma(objKeep);
             objVal = objVal(objKeep);
             objValWrong = objValWrong(objKeep);
@@ -162,9 +169,11 @@ for s = 1:length(subs)
             difVal = difVal(difKeep);
             valCho = valCho(difKeep);
             valChoWrong = valChoWrong(difKeep);
+            priCho = priCho(difKeep);
             valUnc = valUnc(difKeep);
             chMunc = chMunc(difKeep);
             chMuncWrong = chMuncWrong(difKeep);
+            chMuncPrice = chMuncPrice(difKeep);
             movCho = movCho(difKeep);
             sidCho = sidCho(difKeep);
         end
@@ -242,10 +251,12 @@ for s = 1:length(subs)
         bData(subs(s)).choice(r).onset = onsCho;
         bData(subs(s)).choice(r).valDiff = difVal;
         bData(subs(s)).choice(r).valCho = valCho;
+        bData(subs(s)).choice(r).priCho = priCho;
         bData(subs(s)).choice(r).valChoWrong = valChoWrong;
         bData(subs(s)).choice(r).valUnc = valUnc;
         bData(subs(s)).choice(r).chMunc = chMunc;
         bData(subs(s)).choice(r).chMuncWrong = chMuncWrong;
+        bData(subs(s)).choice(r).chMuncPrice = chMuncPrice;
         bData(subs(s)).choice(r).movOnset = movCho;
         bData(subs(s)).choice(r).movSide = sidCho;
         bData(subs(s)).choice(r).objPresented = choObjPresented;

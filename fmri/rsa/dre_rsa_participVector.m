@@ -42,7 +42,7 @@ ordData = dre_rearrange_3L(dir,subs,taskOrd,bData);
 %% which mask?
 
 roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-roiNames = {'rsaCon_vmPFC_10mm'};
+roiNames = {'rsaVal_OFC_10mm'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -167,7 +167,7 @@ for s = 1:length(subs)
     r_betas(s) = corr(slopes_val',slopes_con','type','spearman');
     
     % permutation test
-    nPerm = 1000;
+    nPerm = 10000;
     for i = 1:nPerm
         fooRand_val = randperm(numel(objVal));
         fooRand_con = randperm(numel(objCon));

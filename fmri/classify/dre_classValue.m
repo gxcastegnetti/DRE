@@ -38,8 +38,7 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-% roiNames = {'rsaVal_LG_10mm','rsaVal_vmPFC_10mm'};
+roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 roiNamesTrue = roiNames;
 
 %% apply two masks: one for grey matter, one for ROI
@@ -159,15 +158,15 @@ for r = 1:length(roiNames)
         %         Y_B = objCon_B + (0.00001*(1:120))';
         
         % find percentiles
-        pl_F_low = prctile(Y_F,100/3);
-        pl_F_hig = prctile(Y_F,200/3);
-        pl_B_low = prctile(Y_B,100/3);
-        pl_B_hig = prctile(Y_B,200/3);
+%         pl_F_low = prctile(Y_F,100/3);
+%         pl_F_hig = prctile(Y_F,200/3);
+%         pl_B_low = prctile(Y_B,100/3);
+%         pl_B_hig = prctile(Y_B,200/3);
         
-        %         pl_F_low = prctile(Y_F,33);
-        %         pl_F_hig = prctile(Y_F,75);
-        %         pl_B_low = prctile(Y_B,25);
-        %         pl_B_hig = prctile(Y_B,75);
+        pl_F_low = prctile(Y_F,50);
+        pl_F_hig = prctile(Y_F,50);
+        pl_B_low = prctile(Y_B,50);
+        pl_B_hig = prctile(Y_B,50);
         
         X_F_red = X_F(Y_F < pl_F_low | Y_F > pl_F_hig,:);
         Y_F_red = Y_F(Y_F < pl_F_low | Y_F > pl_F_hig);
@@ -181,7 +180,7 @@ for r = 1:length(roiNames)
         %         Y_B_red = Y_B;
         Y_B_logic = Y_B_red > pl_B_hig;
         
-        nTrials = 80;
+        nTrials = 120;
         
         clear pl_F_low pl_B_low pl_F_hig pl_B_hig
         clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
@@ -202,7 +201,7 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 300;
+        nSweeps = 1000;
         for k = 1:nSweeps
             
             c_F = cvpartition(Y_F_logic,'holdOut',0.1);
@@ -283,6 +282,6 @@ for r = 1:length(roiNames)
     [h,p,ci,stats] = ttest(aaa-0.5)
     
 end, clear r k s
-% save('results_1000perm')
+save('results_1000perm_50')
 clear responsePatterns
 

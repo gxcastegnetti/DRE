@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_ima';
+analysisName = 'rsa_sl_ima_bis';
 betaid       = 'rsa_pulse_ima';
 thisIsDim    = false;
 
@@ -40,7 +40,7 @@ userOptions.forcePromptReply = 'r';
 %% model names
 modelNames = {'val','con','fam','oid','cxt','valL','valH','conL','conH','famL','famH','valMed','conMed','famMed'};
 modelNames = {'val','con','oid','cxt'};
-modelNames = {'valB'};
+modelNames = {'val'};
 
 % modelNames = {'dval','vCho','vUnc','cMun','ccxt'};
 
@@ -79,7 +79,7 @@ if true
         % load correlation maps
         %     load([dirSl,fs,'sl_context_SF',num2str(subs(s),'%03d'),'.mat']);
         if ~thisIsDim
-            load([dirSl,fs,'sl_valB_SF',num2str(subs(s),'%03d'),'.mat']);
+            load([dirSl,fs,'sl_val6_SF',num2str(subs(s),'%03d'),'.mat']);
         else
             load([dirSl,fs,'sl_dim_SF',num2str(subs(s),'%03d'),'.mat']);
         end
@@ -184,7 +184,7 @@ if true
             if ~thisIsDim
                 disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
                 swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
-                spm_smooth(wrMapFile,swrMapFile,[9 9 9]);
+                spm_smooth(wrMapFile,swrMapFile,[8 8 8]);
                 
             else % lighter smoothing for dimensionality
                 disp(['Smoothing sub#', num2str(subs(s),'%03d'),' - ',modelName])
@@ -224,7 +224,7 @@ for s = 1:length(subs)
         modelName = modelNames{m};
         
         % select file
-        swrMapFile = [dirSl,fs,modelName,fs,'swrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
+        swrMapFile = [dirSl,fs,modelName,fs,'wrMap_',modelName,'_SF',num2str(subs(s),'%03d'),'.nii'];
         
         % mask smoothed r-maps with MNI mask
         swrMap = spm_read_vols(spm_vol(swrMapFile));

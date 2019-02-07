@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_ima';
+analysisName = 'rsa_sl_ima_tris';
 betaid       = 'rsa_pulse_ima';
 
 %% directories
@@ -70,9 +70,9 @@ for s = 1:length(subs)
     
     %% run searchlight
     model = RDMs{s}.val;
-    model(1:120,:) = nan;
-    model(:,1:120) = nan;
+%     model(1:120,:) = nan;
+%     model(:,1:120) = nan;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_valB_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_val_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

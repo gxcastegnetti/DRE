@@ -2,7 +2,7 @@
 clear
 close all
 
-load('results_1000perm_25_bis.mat')
+load('results_1000perm_33.mat')
 
 accuracy_between = (acc_BF + acc_FB)/2;
 accuracy_within  = (acc_BB + acc_FF)/2;

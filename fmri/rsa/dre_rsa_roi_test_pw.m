@@ -236,14 +236,14 @@ end
 % MDS plot %
 %%%%%%%%%%%%
 
-RDM_MDS{numel(roiNames)+1}.color = [0 0 1];
-RDM_MDS{numel(roiNames)+1}.name = 'Value';
-RDM_MDS{numel(roiNames)+1}.RDM = fooVal;
-RDM_MDS{numel(roiNames)+2}.color = [0 0 1];
-RDM_MDS{numel(roiNames)+2}.name = 'Confidence';
-RDM_MDS{numel(roiNames)+2}.RDM = fooCon;
-userOptions.rubberbands = true;
-MDSRDMs(RDM_MDS,userOptions)
+% RDM_MDS{numel(roiNames)+1}.color = [0 0 1];
+% RDM_MDS{numel(roiNames)+1}.name = 'Value';
+% RDM_MDS{numel(roiNames)+1}.RDM = fooVal;
+% RDM_MDS{numel(roiNames)+2}.color = [0 0 1];
+% RDM_MDS{numel(roiNames)+2}.name = 'Confidence';
+% RDM_MDS{numel(roiNames)+2}.RDM = fooCon;
+% userOptions.rubberbands = true;
+% MDSRDMs(RDM_MDS,userOptions)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ttest of correlations for each ROI and model %
@@ -328,8 +328,8 @@ for s = 1:length(subs)
     % find percentiles
     pctile_val_33 = prctile(Y_val,100/3);
     pctile_val_66 = prctile(Y_val,200/3);
-    pctile_con_33 = prctile(Y_con,25);
-    pctile_con_66 = prctile(Y_con,75);
+    pctile_con_33 = prctile(Y_con,100/3);
+    pctile_con_66 = prctile(Y_con,200/3);
     pctile_fam_33 = prctile(Y_fam,100/3);
     pctile_fam_66 = prctile(Y_fam,200/3);
     
@@ -421,7 +421,7 @@ for i = 1:numel(roiNames)
 end, clear roiLO roiHI tfoo stats corrRoiRoi_LO corrRoiRoi_HI
 
 % plot difference
-foo = p < 0.05;
+foo = p < 0.01;
 pSignificant = tvalues.*foo;
 subplot(2,2,4),imagesc(pSignificant,[-3 3])
 set(gca,'XTick',1:numel(roiNames),'fontsize',14,'XtickLabel',roiNamesTrue,...

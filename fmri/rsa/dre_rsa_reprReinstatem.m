@@ -46,7 +46,7 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
 %
 roiNames = {'l_hpc','r_hpc'};
-roiNames = {'rsaOid_Occ_10mm','rsaVal_ITG'};
+% roiNames = {'rsaOid_Occ_10mm','rsaVal_ITG'};
 % roiNames = {'l_phpc','r_phpc'};
 
 

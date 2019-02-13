@@ -31,7 +31,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39:43 45 47:49];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39:43 47:49];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 
 %% user options
@@ -81,8 +81,17 @@ for i = 1:numel(weight)
     end
 end, clear weight wood metal plastic fabric
 
-%% compute correlation between value and weight/material
-
+%% compute correlation between value and weight/material and between goals
+RDM_weight_vec = vectorizeRDM(RDM_weight);
+RDM_material_vec = vectorizeRDM(RDM_material);
+for s = 1:length(subs)
+    RDM_value_vec = vectorizeRDM(RDMs{s}.val);
+    [r_valVSmat(s),p_valVSmat(s)] = corr(RDM_value_vec',RDM_material_vec','type','spearman','rows','pairwise');
+    [r_valVSwei(s),p_valVSwei(s)] = corr(RDM_value_vec',RDM_weight_vec','type','spearman','rows','pairwise');
+    
+    % goals
+    [r_goals(s),p_goals(s)] = corr(vectorizeRDM(RDMs{s}.val_F)',vectorizeRDM(RDMs{s}.val_B)','type','spearman','rows','pairwise');
+end
 
 
 %% searchlight
@@ -97,7 +106,7 @@ for s = 1:length(subs)
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     
     %% run searchlight
-    model = RDM_weight;
+    model = RDM_material;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
     save([dir.out,fs,analysisName,fs,'sl_mat_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask

@@ -29,8 +29,8 @@ subs = [4:5 7 8 9 13:17 19 21 23 25:26 29:32 34:35 37 39:43 47:49];
 % task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,3)];
 % taskOrd = [1 2 1 2 1];
-subs = [4:5 7 8 9 10 13:17 19 21 23 25:26 27 29:32 34:36 37 39:43 44 47:49 50];
-taskOrd = [ones(1,11),2*ones(1,11),1,1,2,ones(1,5),2*ones(1,4) 1];
+% subs = [4:5 7 8 9 10 13:17 19 21 23 25:26 27 29:32 34:36 37 39:43 44 47:49 50];
+% taskOrd = [ones(1,11),2*ones(1,11),1,1,2,ones(1,5),2*ones(1,4) 1];
 
 ntrials = 120;
 
@@ -661,7 +661,7 @@ tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','dC','sumC'
 lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC','distribution','binomial');
 lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC + dV:dC','distribution','binomial');
 
-lmeRT     = fitlme(tblChoice,'RT     ~ 1 + sumV + sumC + sumV:sumC + (1 | sub)');
+lmeRT     = fitglm(tblChoice,'RT ~ 1 + dV + dC + sumV + sumC');
 
 % plot coefficients
 k_cond = lmeChoice.Coefficients(2,2).Estimate;

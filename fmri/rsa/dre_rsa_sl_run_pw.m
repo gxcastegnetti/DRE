@@ -58,6 +58,34 @@ RDMs = dre_extractRDMs(dir,subs,taskOrd);
 % create matrix for object ID
 mat_ID = [diag(ones(120,1)), diag(ones(120,1));
     diag(ones(120,1)), diag(ones(120,1))];
+
+%% materials and weights
+dirMaterials = [dir.behDat,filesep,'materials'];
+est_MZ = csvread([dirMaterials,filesep,'ObjectsMaterials_MZ.csv'],1,2);
+est_LU = csvread([dirMaterials,filesep,'ObjectsMaterials_LU.csv'],1,2);
+est_ND = csvread([dirMaterials,filesep,'ObjectsMaterials_ND.csv'],1,2);
+est_LU = est_LU(est_LU(:,5) ~= 0,:);
+est_ND = est_ND(est_ND(:,5) ~= 0,:);
+est_mean = (est_MZ + est_LU + est_ND)/3;
+
+weight = [est_mean(:,5);est_mean(:,5)];
+wood   = [est_mean(:,1);est_mean(:,1)];
+metal  = [est_mean(:,2);est_mean(:,2)];
+plastic = [est_mean(:,3);est_mean(:,3)];
+fabric = [est_mean(:,4);est_mean(:,4)];
+for i = 1:numel(weight)
+    for j = 1:numel(weight)
+        RDM_weight(i,j) = abs(weight(i) - weight(j));
+        RDM_material(i,j) = sqrt((wood(i) - wood(j))^2 + (metal(i) - metal(j))^2 + ...
+            (plastic(i) - plastic(j))^2 + (fabric(i) - fabric(j))^2);
+    end
+end, clear weight wood metal plastic fabric
+
+%% compute correlation between value and weight/material
+
+
+
+%% searchlight
 for s = 1:length(subs)
     
     RDMs{s}.oid = 1 - mat_ID;
@@ -69,10 +97,8 @@ for s = 1:length(subs)
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     
     %% run searchlight
-    model = RDMs{s}.val;
-%     model(1:120,:) = nan;
-%     model(:,1:120) = nan;
+    model = RDM_weight;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_val_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_mat_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

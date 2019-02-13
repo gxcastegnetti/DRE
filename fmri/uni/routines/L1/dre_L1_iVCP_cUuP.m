@@ -75,17 +75,17 @@ for s = 1:length(subs)
         
         % parametric modulation by value of the chosen minus unchosed item
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).name = 'chosen CONGRUENT';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).valCho;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).param = bData(subs(s)).choice(r).chMunc;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(1).poly = 1;
         
         % parametric modulation by value of the chosen minus unchosed item
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(2).name = 'chosen INCONGRUENT';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(2).param = bData(subs(s)).choice(r).valChoWrong;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(2).param = bData(subs(s)).choice(r).chMuncWrong;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(2).poly = 1;
         
         % parametric modulation by value of the chosen minus unchosed item
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(3).name = 'chosen PRICE';
-        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(3).param = bData(subs(s)).choice(r).priCho;
+        job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(3).param = bData(subs(s)).choice(r).chMuncPrice;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).pmod(3).poly = 1;
         job1LM{1}.spm.stats.fmri_spec.sess(r).cond(2).orth = 0;      
         

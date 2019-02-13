@@ -31,7 +31,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
-subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 45 47:49];
+subs = [4 5 7 8 9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 47:49];
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 
 %% extract behavioural data
@@ -158,15 +158,15 @@ for r = 1:length(roiNames)
         %         Y_B = objCon_B + (0.00001*(1:120))';
         
         % find percentiles
-%         pl_F_low = prctile(Y_F,100/3);
-%         pl_F_hig = prctile(Y_F,200/3);
-%         pl_B_low = prctile(Y_B,100/3);
-%         pl_B_hig = prctile(Y_B,200/3);
+        %         pl_F_low = prctile(Y_F,100/3);
+        %         pl_F_hig = prctile(Y_F,200/3);
+        %         pl_B_low = prctile(Y_B,100/3);
+        %         pl_B_hig = prctile(Y_B,200/3);
         
-        pl_F_low = prctile(Y_F,50);
-        pl_F_hig = prctile(Y_F,50);
-        pl_B_low = prctile(Y_B,50);
-        pl_B_hig = prctile(Y_B,50);
+        pl_F_low = prctile(Y_F,25);
+        pl_F_hig = prctile(Y_F,75);
+        pl_B_low = prctile(Y_B,25);
+        pl_B_hig = prctile(Y_B,75);
         
         X_F_red = X_F(Y_F < pl_F_low | Y_F > pl_F_hig,:);
         Y_F_red = Y_F(Y_F < pl_F_low | Y_F > pl_F_hig);
@@ -180,7 +180,7 @@ for r = 1:length(roiNames)
         %         Y_B_red = Y_B;
         Y_B_logic = Y_B_red > pl_B_hig;
         
-        nTrials = 120;
+        nTrials = 60;
         
         clear pl_F_low pl_B_low pl_F_hig pl_B_hig
         clear objVal_F objVal_B objIdx_sort_F objIdx_sort_B objIdx_F objIdx_B
@@ -201,14 +201,16 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 1000;
-        for k = 1:nSweeps
+        nSweeps = nTrials;
+        c_F = cvpartition(Y_F_logic,'kfold',20);
+        c_B = cvpartition(Y_B_logic,'kfold',20);
+        for k = 1:20
             
-            c_F = cvpartition(Y_F_logic,'holdOut',0.1);
-            c_B = cvpartition(Y_B_logic,'holdOut',0.1);
+            % c_F = cvpartition(Y_F_logic,'holdOut',0.1);
+            % c_B = cvpartition(Y_B_logic,'holdOut',0.1);
             
-            idxTrain_F = training(c_F);
-            idxTrain_B = training(c_B);
+            idxTrain_F = training(c_F,k);
+            idxTrain_B = training(c_B,k);
             
             idxTest_F = ~idxTrain_F;
             idxTest_B = ~idxTrain_B;
@@ -240,6 +242,11 @@ for r = 1:length(roiNames)
             label_FB = predict(mdl_F,XTest_diff_B);
             label_BF = predict(mdl_B,XTest_diff_F);
             
+            predicted.FF(idxTest_F) = label_FF;
+            predicted.BB(idxTest_B) = label_BB;
+            predicted.FB(idxTest_F) = label_FB;
+            predicted.BF(idxTest_B) = label_BF;
+            
             acc_foo_FF(k) = mean(label_FF(:) == yTest_same_F(:));
             acc_foo_BB(k) = mean(label_BB(:) == yTest_same_B(:));
             acc_foo_FB(k) = mean(label_FB(:) == yTest_diff_B(:));
@@ -261,6 +268,28 @@ for r = 1:length(roiNames)
         %         plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
         %         ylim([0.4 0.6]),xlim([0 5.5])
         
+        % TP, FP, TN, FN
+        TP.FF = predicted.FF == 1 & Y_F_logic == 1;
+        FP.FF = predicted.FF == 1 & Y_F_logic == 0;
+        TN.FF = predicted.FF == 0 & Y_F_logic == 0;
+        FN.FF = predicted.FF == 0 & Y_F_logic == 1;
+        
+        TP.BB = predicted.BB == 1 & Y_B_logic == 1;
+        FP.BB = predicted.BB == 1 & Y_B_logic == 0;
+        TN.BB = predicted.BB == 0 & Y_B_logic == 0;
+        FN.BB = predicted.BB == 0 & Y_B_logic == 1;
+        
+        TP.FB = predicted.FB == 1 & Y_B_logic == 1;
+        FP.FB = predicted.FB == 1 & Y_B_logic == 0;
+        TN.FB = predicted.FB == 0 & Y_B_logic == 0;
+        FN.FB = predicted.FB == 0 & Y_B_logic == 1;
+        
+        TP.BF = predicted.BF == 1 & Y_F_logic == 1;
+        FP.BF = predicted.BF == 1 & Y_F_logic == 0;
+        TN.BF = predicted.BF == 0 & Y_F_logic == 0;
+        FN.BF = predicted.BF == 0 & Y_F_logic == 1;
+        
+        
         clear acc_foo_FF acc_foo_BB acc_foo_FB acc_foo_BF label_FF label_BB label_FB label_BF c_F c_B
         clear XTest_F XTest_B XTrain_F XTrain_B bc_F bc_B ks_F ks_B idxTest_F idxTest_B idxTrain_F idxTrain_B
     end
@@ -277,11 +306,8 @@ for r = 1:length(roiNames)
     title(roiNamesTrue{r},'fontsize',18)
     plot(0:0.01:5.5,0.5*ones(length([0:0.01:5.5]),1),'color',[0.5 0.5 0.5],'linestyle','--')
     ylim([0.4 0.6]),xlim([0 5.5])
-    
-    aaa=mean([acc_BF(r,:);acc_FB(r,:)]);
-    [h,p,ci,stats] = ttest(aaa-0.5)
-    
+
 end, clear r k s
-save('results_1000perm_50')
+save('results_1000perm_25_tris')
 clear responsePatterns
 

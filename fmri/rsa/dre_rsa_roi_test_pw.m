@@ -33,25 +33,31 @@ dir.beta = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'level1',fs,betaid,fs,'none']
 
 %% subjects
 subs = [4 5 7:9 13:17 19 21 23 25:26 29:32 34 35 37 39 40:43 47:49];
-taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,3)];
+taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 
-% subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
-% subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
+subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
+subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
 
-% subs = subs(subsWors);
-% taskOrd = taskOrd(subsWors);
+slopes = [0.244644048172450,0.223946840860126,0.208531637926186,0.400781101520874,0.214651122900286,...
+    0.527213302443985,0.222262713073930,0.214265149192790,0.113871322525068,0.208145500659497,...
+    0.303896467054236,0.310876174215477,0.157495707488989,0.123082743374363,0.223259451529286,...
+    0.233042188472160,0.134694830218049,0.278532556059753,0.548450276749430,0.128458679610595,...
+    0.286603706120169,0.333069644635516,0.227243248191941,0.650551192022550,0.262801817706755,...
+    0.150765971850011,0.0835213995036290,0.163443588603048,0.192293815632133,0.276329355358742];
+
+% subs = subs(subsBest);
+% taskOrd = taskOrd(subsBest);
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% which mask?
-roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-roiNames = {'rsaVal_LG_10mm','rsaVal_ACC_10mm','l_hpc','r_hpc','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaVal_LG_10mm','rsaVal_ITG','rsaVal_PCC_10mm','l_hpc','r_hpc','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'l_hpc','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 
-% roiNames = {'lp_hpc','la_hpc','rp_hpc','ra_hpc'};
-% roiNames = {'rsaVal_LGeye_9mm','la_hpc'};
-% roiNames = {'rsaVal_Occ','rsaVal_MCC','rsaVal_vmPFC'};
 
+% roiNamesTrue = {'LG','ITG','PCC','l HPC','r HPC','ACC','vmPFC','OFC','dlPFC'};
+roiNamesTrue = {'l HPC','vmPFC','OFC','dlPFC'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -77,9 +83,9 @@ for r = 1:length(roiNames)
         end
         toNormalOrder(s,:) = [objIdx_F,objIdx_B];
         
-%         fooDir = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
-%         save([fooDir,fs,'toNormalOrder',fs,'SF',num2str(subs(s),'%03d')],'toNormalOrder')
-
+        %         fooDir = [dir.dre,fs,'out',fs,'fmri',fs,'rsa'];
+        %         save([fooDir,fs,'toNormalOrder',fs,'SF',num2str(subs(s),'%03d')],'toNormalOrder')
+        
         % SPM file from 1st level analysis
         subjSPMFile = [dir.beta,fs,'SF',num2str(subs(s),'%03d'),fs,'SPM.mat'];
         load(subjSPMFile)
@@ -87,11 +93,11 @@ for r = 1:length(roiNames)
         % subjective mask
         subjMaskFile.fname = [dir.mskOut,fs,roiNames{r},'_subj',fs,'SF',num2str(subs(s),'%03d'),fs,'rw',roiNames{r},'.nii'];
         
-%         % subjective gm mask
-%         subjGreyFile.fname = [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
-%         
-%         % take intersection between the two
-              
+        %         % subjective gm mask
+        %         subjGreyFile.fname = [dir.mskOut,fs,'gm_subj',fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
+        %
+        %         % take intersection between the two
+        
         % whiten betas
         try
             B = noiseNormaliseBeta_roi(SPM,subjMaskFile);
@@ -117,34 +123,32 @@ end, clear rdm fooDir subjSPMFile objIdx_F objIdx_B obj objIdx_sess_F objIdx_ses
 
 %% plot ROI RDM
 % user options
-% userOptions = dre_rsa_userOptions(dir,subs);
-% userOptions.analysisName = analysisName;
-% userOptions.rootPath = dir.out;
-% userOptions.forcePromptReply = 'r';
-% 
-% % average RDMs across subjects and plot
-% figure('color',[1,1,1])
-% for r = 1:numel(roiNames)
-%     
-%     % compute ROI-specific average
-%     foo = zeros(size(B,1),size(B,1));
-%     for s = 1:numel(subs)
-%         newOrd = ordData(subs(s)).norm2val_cont;
-%         foo = foo + RDM_brain(r,s).RDM(newOrd,newOrd)/numel(subs);
-%     end
-%     
-%     % fill struct for the RSA toolbox
-%     RDM_brain_avg(r).color = [0 0 1];
-%     RDM_brain_avg(r).name = roiNames{r};
-%     RDM_brain_avg(r).RDM = foo;
-%     
-%     % plot
-%     subplot(3,5,r)
-%     RDM_brain_avg(r).RDM(RDM_brain_avg(r).RDM==0)=nan;
-%     foo = nanmean(RDM_brain_avg(r).RDM(:));
-%     imagesc(RDM_brain_avg(r).RDM),title(roiNames{r}),caxis([foo-1 foo+1])
-% end
+userOptions = dre_rsa_userOptions(dir,subs);
+userOptions.analysisName = analysisName;
+userOptions.rootPath = dir.out;
+userOptions.forcePromptReply = 'r';
 
+% average RDMs across subjects and plot
+figure('color',[1,1,1])
+for r = 1:numel(roiNames)
+    
+    % compute ROI-specific average
+    foo = zeros(size(B,1),size(B,1));
+    for s = 1:numel(subs)
+        foo = foo + RDM_brain(r,s).RDM/numel(subs);
+    end
+    
+    % fill struct for the RSA toolbox
+    RDM_MDS{r}.color = [0 0 1];
+    RDM_MDS{r}.name = roiNames{r};
+    RDM_MDS{r}.RDM = foo;
+    
+    % plot
+    %     subplot(3,5,r)
+    %     RDM_MDS(r).RDM(RDM_MDS(r).RDM==0)=nan;
+    %     foo = nanmean(RDM_MDS(r).RDM(:));
+    %     imagesc(RDM_MDS(r).RDM),title(roiNames{r}),caxis([foo-1 foo+1])
+end
 
 %% ROI-model correlations
 
@@ -158,6 +162,8 @@ mat_ID = [diag(ones(120,1)), diag(ones(120,1));
 %%%%%%%%%%%%%%%%%%
 % if imagination %
 %%%%%%%%%%%%%%%%%%
+fooVal = zeros(size(B,1),size(B,1));
+fooCon = zeros(size(B,1),size(B,1));
 if size(RDM_brain(1,1).RDM,1) == 240
     for s = 1:length(subs)
         RDM_model(1,s).name = 'val';
@@ -169,9 +175,13 @@ if size(RDM_brain(1,1).RDM,1) == 240
         RDM_model(3,s).name = 'oid';
         RDM_model(3,s).RDM = 1-mat_ID;
         RDM_model(3,s).color = [0 1 0];
-%         RDM_model(3,s).name = 'oid';
-%         RDM_model(3,s).RDM = RDMs_models{s}.con ./ RDMs_models{s}.val;
-%         RDM_model(3,s).color = [0 1 0];
+        %         RDM_model(3,s).name = 'oid';
+        %         RDM_model(3,s).RDM = RDMs_models{s}.con ./ RDMs_models{s}.val;
+        %         RDM_model(3,s).color = [0 1 0];
+        
+        % averages
+        fooVal = fooVal + RDM_model(1,s).RDM/numel(subs);
+        fooCon = fooCon + RDM_model(2,s).RDM/numel(subs);
     end
     
     % for every region and sub, correlate RDM and model
@@ -182,7 +192,7 @@ if size(RDM_brain(1,1).RDM,1) == 240
                 a = vectorizeRDM(RDM_brain(r,s).RDM);
                 b = vectorizeRDM(RDM_model(m,s).RDM);
                 corrRoiModel(r,s,m) = corr(a(:),b(:),'rows','pairwise','type','spearman');
-%                 rL2(m,s) = fisherTransform(rL2(m,s));
+                %                 rL2(m,s) = fisherTransform(rL2(m,s));
             end
         end
     end
@@ -222,15 +232,28 @@ elseif size(RDM_brain(1,1).RDM,1) == 96
     end
 end
 
+%%%%%%%%%%%%
+% MDS plot %
+%%%%%%%%%%%%
+
+RDM_MDS{numel(roiNames)+1}.color = [0 0 1];
+RDM_MDS{numel(roiNames)+1}.name = 'Value';
+RDM_MDS{numel(roiNames)+1}.RDM = fooVal;
+RDM_MDS{numel(roiNames)+2}.color = [0 0 1];
+RDM_MDS{numel(roiNames)+2}.name = 'Confidence';
+RDM_MDS{numel(roiNames)+2}.RDM = fooCon;
+userOptions.rubberbands = true;
+MDSRDMs(RDM_MDS,userOptions)
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % ttest of correlations for each ROI and model %
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 for r = 1:length(roiNames)
     for m = 1:size(RDM_model,1)
         scores = corrRoiModel(r,:,m);
-        [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
-%         [pCorr(r,m),h,~] = signrank(scores,0,'Tail','right');
-%         tCorr(r,m) = stats.tstat;
+        %         [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
+        [pCorr(r,m),h,~] = signrank(scores,0,'Tail','right');
+        [rPerf.r(r,m),rPerf.p(r,m)] = corr(scores',slopes','type','spearman');
     end
 end, clear r m mat_ID
 
@@ -243,7 +266,8 @@ sems  = squeeze(std(corrRoiModel,0,2)/sqrt(numel(subs)));
 % means = means(end-1:end,1:2);
 % sems = sems(end-1:end,1:2);
 
-roiNamesTrue = {'vmPFC','OFC','dlPFC'};
+% roiNamesTrue = {'vmPFC','OFC','dlPFC'};
+% roiNamesTrue = roiNames;
 myColors = [230,184,0; 46,184,46; 46,184,230]/255;
 figure('color',[1 1 1])
 hb = bar(means); hold on
@@ -263,8 +287,8 @@ for r1 = 1:length(roiNames)
     for r2 = 1:length(roiNames)
         corrRoiVal_r1 = squeeze(corrRoiModel(r1,:,1));
         corrRoiVal_r2 = squeeze(corrRoiModel(r2,:,1));
-        [~,p(r1,r2),~,~] = ttest(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
-        [p(r1,r2),~,~] = signrank(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
+        %         [~,p(r1,r2),~,~] = ttest(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
+        [pRoiRoi(r1,r2),~,~] = signrank(corrRoiVal_r2 - corrRoiVal_r1,0,'tail','right');
     end
 end
 
@@ -304,8 +328,8 @@ for s = 1:length(subs)
     % find percentiles
     pctile_val_33 = prctile(Y_val,100/3);
     pctile_val_66 = prctile(Y_val,200/3);
-    pctile_con_33 = prctile(Y_con,100/3);
-    pctile_con_66 = prctile(Y_con,200/3);
+    pctile_con_33 = prctile(Y_con,25);
+    pctile_con_66 = prctile(Y_con,75);
     pctile_fam_33 = prctile(Y_fam,100/3);
     pctile_fam_66 = prctile(Y_fam,200/3);
     
@@ -354,8 +378,8 @@ for r1 = 1:length(roiNames)
             rdm_roi1_LO = pdist(roi1_LO','correlation');
             rdm_roi2_HI = pdist(roi2_HI','correlation');
             rdm_roi2_LO = pdist(roi2_LO','correlation');
-%             corrRoiRoi_HI(r1,r2,s) = corr(rdm_roi1_HI(:),rdm_roi2_HI(:),'rows','pairwise','type','Spearman');
-%             corrRoiRoi_LO(r1,r2,s) = corr(rdm_roi1_LO(:),rdm_roi2_LO(:),'rows','pairwise','type','Spearman');
+            %             corrRoiRoi_HI(r1,r2,s) = corr(rdm_roi1_HI(:),rdm_roi2_HI(:),'rows','pairwise','type','Spearman');
+            %             corrRoiRoi_LO(r1,r2,s) = corr(rdm_roi1_LO(:),rdm_roi2_LO(:),'rows','pairwise','type','Spearman');
             corrRoiRoi_HI(r1,r2,s) = rankCorr_Kendall_taua(rdm_roi1_HI(:),rdm_roi2_HI(:));
             corrRoiRoi_LO(r1,r2,s) = rankCorr_Kendall_taua(rdm_roi1_LO(:),rdm_roi2_LO(:));
         end
@@ -363,7 +387,7 @@ for r1 = 1:length(roiNames)
 end, clear r1 r2
 
 figure('color',[1 1 1])
-roiNamesTrue = {'lHPC','rHPC','vmPFC','OFC','dlPFC'};
+% roiNamesTrue = {'lHPC','rHPC','vmPFC','OFC','dlPFC'};
 
 % plot val HI
 corrRoiRoi_HI_mean = mean(corrRoiRoi_HI,3);

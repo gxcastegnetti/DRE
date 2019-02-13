@@ -92,7 +92,7 @@ for s = 1:length(subs)
     val_B = Mday1_B(idx_day1_B,3);
     val_F = val_F(idx_sort_F);
     val_B = val_B(idx_sort_B);
-    val_all = [val_F(idx_sort_F); val_B(idx_sort_B)];
+    val_all = [val_F; val_B];
     con_F = Mday1_F(idx_day1_F,4);
     con_B = Mday1_B(idx_day1_B,4);
     con_all = [con_F(idx_sort_F); con_B(idx_sort_B)];
@@ -286,5 +286,4 @@ for s = 1:length(subs)
         RDMs{s}.choice.Unch(:,i) = abs(valUnc(i) - valUnc)/50;
         RDMs{s}.choice.ccxt = cxt_model_choice;
     end
-    
 end

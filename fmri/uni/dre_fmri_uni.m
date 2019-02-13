@@ -54,7 +54,7 @@ end
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice
 if true
-    analysisName = 'uni_pulse_iVCP_cUuP';
+    analysisName = 'uni_pulse_iVCP_cUu';
     context = 'all';
     
     % 1st level
@@ -62,10 +62,10 @@ if true
     timing.cOns = 0; % onset for choice
     timing.iDur = 0; % duration for imagination
     timing.cDur = 0; % duration for choice
-    dre_L1_iVCP_cUuP(dir,analysisName,subs,timing,bData);
+    dre_L1_iVCP_cUu(dir,analysisName,subs,timing,bData);
     
     % contrasts
-    dre_con_i3_c3(dir,analysisName,subs,taskOrd,context);
+    dre_con_i3_c2(dir,analysisName,subs,taskOrd,context);
     
     % 2nd level
     dre_L2(dir,analysisName,[context,'_imagination_onset'],subs,1);
@@ -73,9 +73,9 @@ if true
     dre_L2(dir,analysisName,[context,'_imagination_confid'],subs,3);
     dre_L2(dir,analysisName,[context,'_imagination_price'],subs,4);
     dre_L2(dir,analysisName,[context,'_choice_onset'],subs,5);
-    dre_L2(dir,analysisName,[context,'_choice_chosen CONGRUENT'],subs,6);
-    dre_L2(dir,analysisName,[context,'_choice_chosen INCONGRUENT'],subs,7);
-    dre_L2(dir,analysisName,[context,'_choice_chosen PRICE'],subs,8);
+    dre_L2(dir,analysisName,[context,'_choice_chos-unch CONGRUENT'],subs,6);
+    dre_L2(dir,analysisName,[context,'_choice_chos-unch INCONGRUENT'],subs,7);
+    dre_L2(dir,analysisName,[context,'_choice_chos-unch CONGRUENT-INCONGRUENT'],subs,8);
 end
 
 %% pulse - value, confid, famil, pmod of imagination; value chosen - unchosen pmod of choice

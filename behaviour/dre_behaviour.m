@@ -29,6 +29,8 @@ subs = [4:5 7 8 9 13:17 19 21 23 25:26 29:32 34:35 37 39:43 47:49];
 % task order (1: fire-boat-fire-boat; 2: boat-fire-boat-fire)
 taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,3)];
 % taskOrd = [1 2 1 2 1];
+subs = [4:5 7 8 9 10 13:17 19 21 23 25:26 27 29:32 34:36 37 39:43 44 47:49 50];
+taskOrd = [ones(1,11),2*ones(1,11),1,1,2,ones(1,5),2*ones(1,4) 1];
 
 ntrials = 120;
 
@@ -112,6 +114,7 @@ for s = 1:length(subs)
     
     % histogram value fire
     plotTight = 7;
+    rowsPlots = 3;
     figure(plotVal)
     subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
@@ -382,7 +385,7 @@ for s = 1:length(subs)
     dC_F = dC_F(:);
     dC_B = dC_B(:);
     sumV_F = sumV_F(:);
-    sumV_B = sumV_B(:);    
+    sumV_B = sumV_B(:);
     sumC_F = sumC_B(:);
     sumC_B = sumC_B(:);
     
@@ -420,11 +423,11 @@ for s = 1:length(subs)
     alldV_opp   = [alldV_opp; dV_B/50; dV_F/50];
     allCho  = [allCho; choice_F(:,3); choice_B(:,3)];
     allRT  = [allRT; choice_F(:,4); choice_B(:,4)];
-        
+    
     %% plot logistic curves of choice vs dV
     
     % draw sigmoids with the fitted parameters
-    xspan = -50:0.1:50;
+    xspan = -49:0.1:49;
     sigm_FonF = sigmf(xspan,[mdl_FonF.Coefficients.Estimate(2) mdl_FonF.Coefficients.Estimate(1)]);
     sigm_BonB = sigmf(xspan,[mdl_BonB.Coefficients.Estimate(2) mdl_BonB.Coefficients.Estimate(1)]);
     sigm_BonF = sigmf(xspan,[mdl_BonF.Coefficients.Estimate(2) mdl_BonF.Coefficients.Estimate(1)]);
@@ -433,12 +436,15 @@ for s = 1:length(subs)
     
     % choice during fire
     figure(plotCho)
-    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1))
+    subplot(7,plotTight*5,1+plotTight*(s-1):3+plotTight*(s-1))
     plot(xspan,sigm_FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
     plot(xspan,sigm_FonB,'linewidth',5,'color',hist_boat_color) % based on value assigned during boat
-    plot(dV_F,(choice_F(:,3)+1)/2,'linestyle','none','marker','.','markersize',15,'color','k')
-    set(gca,'fontsize',12,'ytick',[],'xtick',[-50 0 50]),ylabel('P(Right)'),xlabel('Value diff.')
-    title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14)
+    plot(dV_F,(choice_F(:,3)+1)/2,'linestyle','none','marker','.','markersize',20,'color','k')
+    set(gca,'fontsize',12,'ytick',[],'xtick',[-40 0 40],...
+        'xcolor',hist_fire_color,'ycolor',hist_fire_color,...
+        'LineWidth',2)
+    ylim([-0.1 1.1])
+    title(['S#',num2str(subs(s)),': BURN.'],'fontsize',14)
     %     legend('F-based','B-based')
     
     % make label closer to axis
@@ -448,12 +454,15 @@ for s = 1:length(subs)
     set(xh,'position',p)    % set the new position
     
     % choice during boat
-    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1))
+    subplot(7,plotTight*5,4+plotTight*(s-1):6+plotTight*(s-1))
     plot(xspan,sigm_BonB,'linewidth',5,'color',hist_boat_color),hold on % based on value assigned during boat
     plot(xspan,sigm_BonF,'linewidth',5,'color',hist_fire_color) % based on value assigned during fire
-    plot(dV_B,(choice_B(:,3)+1)/2,'linestyle','none','marker','.','markersize',25,'color','k')
-    set(gca,'fontsize',12,'ytick',[],'xtick',[-50 0 50]),xlabel('Value diff.')
-    title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14)
+    plot(dV_B,(choice_B(:,3)+1)/2,'linestyle','none','marker','.','markersize',20,'color','k')
+    set(gca,'fontsize',12,'ytick',[],'xtick',[-40 0 40],...
+        'xcolor',hist_boat_color,'ycolor',hist_boat_color,...
+        'LineWidth',2)
+    ylim([-0.1 1.1])
+    title(['S#',num2str(subs(s)),': ANCH.'],'fontsize',14)
     
     % make label closer to axis
     xh = get(gca,'xlabel'); % handle to the label object
@@ -551,6 +560,9 @@ slopesIncon = [slopes.FonB] + [slopes.BonF];
 [~,p_Congr,~,stats_Congr] = ttest(slopesCongr);
 [~,p_Incon,~,stats_Incon] = ttest(slopesIncon);
 
+% correlation between F and B performance
+[r,p] = corr([slopes.FonF]',[slopes.BonB]');
+
 %% plot average correlation between scores and RT
 % figure
 % bar(mean(fooPlot_ChMUnc,1))
@@ -558,54 +570,54 @@ slopesIncon = [slopes.FonB] + [slopes.BonF];
 % clear fooPlot_ChMUnc
 
 %% plot average decision sigmoid
-slope_avg.FonF = mean([slopes.FonF]);
-slope_avg.FonB = mean([slopes.FonB]);
-slope_avg.BonF = mean([slopes.BonF]);
-slope_avg.BonB = mean([slopes.BonB]);
-
-offset_avg.FonF = mean([offset.FonF]);
-offset_avg.FonB = mean([offset.FonB]);
-offset_avg.BonF = mean([offset.BonF]);
-offset_avg.BonB = mean([offset.BonB]);
-
+% slope_avg.FonF = mean([slopes.FonF]);
+% slope_avg.FonB = mean([slopes.FonB]);
+% slope_avg.BonF = mean([slopes.BonF]);
+% slope_avg.BonB = mean([slopes.BonB]);
+% 
+% offset_avg.FonF = mean([offset.FonF]);
+% offset_avg.FonB = mean([offset.FonB]);
+% offset_avg.BonF = mean([offset.BonF]);
+% offset_avg.BonB = mean([offset.BonB]);
+% 
 % draw sigmoids with the average parameters
-xspan = -50:0.1:50;
-sigm_avg.FonF = sigmf(xspan,[slope_avg.FonF offset.FonF]);
-sigm_avg.FonB = sigmf(xspan,[slope_avg.FonB offset.FonB]);
-sigm_avg.BonF = sigmf(xspan,[slope_avg.BonF offset.BonF]);
-sigm_avg.BonB = sigmf(xspan,[slope_avg.BonB offset.BonB]);
-
-sigm_avg.congru = sigmf(xspan,[mean([slope_avg.FonF, slope_avg.BonB]), mean([offset.FonF, offset.BonB])]);
-sigm_avg.incong = sigmf(xspan,[mean([slope_avg.FonB, slope_avg.BonF]), mean([offset.FonB, offset.BonF])]);
-
-figure('color',[1 1 1])
-subplot(4,4,[1 2 5 6])
-plot(xspan,sigm_avg.FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),ylim([-0.025 1.025])
-
-subplot(4,4,[3 4 7 8])
-plot(xspan,sigm_avg.BonF,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
-
-subplot(4,4,[9 10 13 14])
-plot(xspan,sigm_avg.FonB,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
-
-subplot(4,4,[11 12 15 16])
-plot(xspan,sigm_avg.BonB,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
-
-% draw sigmoids congruent/incongruent
-figure('color',[1 1 1])
-subplot(1,2,1)
-plot(xspan,sigm_avg.congru,'linewidth',5,'color',hist_fire_color)
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
-
-subplot(1,2,2)
-plot(xspan,sigm_avg.incong,'linewidth',5,'color',hist_boat_color)
-set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
-
-clear xspan slope_avg offset
+% xspan = -50:0.1:50;
+% sigm_avg.FonF = sigmf(xspan,[slope_avg.FonF offset.FonF]);
+% sigm_avg.FonB = sigmf(xspan,[slope_avg.FonB offset.FonB]);
+% sigm_avg.BonF = sigmf(xspan,[slope_avg.BonF offset.BonF]);
+% sigm_avg.BonB = sigmf(xspan,[slope_avg.BonB offset.BonB]);
+% 
+% sigm_avg.congru = sigmf(xspan,[mean([slope_avg.FonF, slope_avg.BonB]), mean([offset.FonF, offset.BonB])]);
+% sigm_avg.incong = sigmf(xspan,[mean([slope_avg.FonB, slope_avg.BonF]), mean([offset.FonB, offset.BonF])]);
+% 
+% figure('color',[1 1 1])
+% subplot(4,4,[1 2 5 6])
+% plot(xspan,sigm_avg.FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
+% set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),ylim([-0.025 1.025])
+% 
+% subplot(4,4,[3 4 7 8])
+% plot(xspan,sigm_avg.BonF,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
+% set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
+% 
+% subplot(4,4,[9 10 13 14])
+% plot(xspan,sigm_avg.FonB,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
+% set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
+% 
+% subplot(4,4,[11 12 15 16])
+% plot(xspan,sigm_avg.BonB,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
+% set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
+% 
+% % draw sigmoids congruent/incongruent
+% figure('color',[1 1 1])
+% subplot(1,2,1)
+% plot(xspan,sigm_avg.congru,'linewidth',5,'color',hist_fire_color)
+% set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
+% 
+% subplot(1,2,2)
+% plot(xspan,sigm_avg.incong,'linewidth',5,'color',hist_boat_color)
+% set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
+% 
+% clear xspan slope_avg offset
 %% separate worst subjects from best subjects
 subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 % keyboard
@@ -615,9 +627,9 @@ subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 % % create table
 % tblChoice = table(allSubs,allCond,alldV,alldV_opp,alldC,allCho);
 % tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','dF','choice'};
-% 
+%
 % lmeChoice = fitlme(tblChoice,'choice ~ 1 + dV + dVo +  cond + dF + (1 + dV + dVo + cond + dF | sub)');
-% 
+%
 % % plot coefficients
 % k_cond = lmeChoice.Coefficients(2,2).Estimate;
 % k_dV   = lmeChoice.Coefficients(3,2).Estimate;
@@ -627,13 +639,13 @@ subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 % ce_dV  = lmeChoice.Coefficients(3,3).SE;
 % ce_dVo = lmeChoice.Coefficients(4,3).SE;
 % ce_dF  = lmeChoice.Coefficients(5,3).SE;
-% 
+%
 % figure('color',[1 1 1]),hold on
 % xspan = -10:0.1:10;
 % plot(xspan,zeros(length(xspan)),'linestyle',':','color',[0.5 0.5 0.5],'linewidth',2)
 % set(gca,'fontsize',16,'xtick',[1 2 3 4],'xticklabel',{'Goal','dV same','dV ~same','dF'}),xlim([0.5 4.5]),ylim([-1.5 2])
 % ylabel('Coefficient')
-% 
+%
 % % errorbar([1 2 3 4],[k_cond k_dV k_dVo k_dF],[ce_cond ce_dV ce_dVo ce_dF],'linestyle','none',...
 % %     'color','k','linewidth',1.5,'capsize',0),hold on
 % scatter([1 2 3 4],[k_cond k_dV k_dVo k_dF],180,'MarkerEdgeColor',[0 0 0],...
@@ -645,12 +657,10 @@ subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 tblChoice = table(allSubs,allCond,alldV,alldV_opp,allSumV,alldC,allSumC,(allCho+1)/2,allRT);
 tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','dC','sumC','choice','RT'};
 
-lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC + dV:dC + sumV:dC','distribution','binomial');
+
+lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC','distribution','binomial');
 lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC + dV:dC','distribution','binomial');
 
-lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC + sumC:dV','distribution','binomial');
-
-lmeChoice = fitlme(tblChoice,'choice ~ 1 + dV + sumV + dC + sumC + dV:dC + sumV:sumC + sumV:dC + (1 | sub)');
 lmeRT     = fitlme(tblChoice,'RT     ~ 1 + sumV + sumC + sumV:sumC + (1 | sub)');
 
 % plot coefficients

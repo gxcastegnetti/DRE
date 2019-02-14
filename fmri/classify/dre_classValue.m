@@ -153,11 +153,10 @@ for r = 1:length(roiNames)
         
         % add a constant for univoque determination of median
         rng(1);
-        Y_F = objVal_F + (0.00001*randn(120,1));
-        Y_B = objVal_B + (0.00001*randn(120,1));
-        Y_F = objVal_F + (0.00001*randn(120,1));
-        Y_B = objVal_B + (0.00001*randn(120,1));
-        
+%         Y_F = objVal_F + (0.0000001*randn(120,1));
+%         Y_B = objVal_B + (0.0000001*randn(120,1));
+        Y_F = objVal_F + (0.0000001*(1:120)');
+        Y_B = objVal_B + (0.0000001*(1:120)');
         
         % find percentiles
         pl_F_low = prctile(Y_F,100/3);
@@ -203,7 +202,7 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 200;
+        nSweeps = 400;
         c_F = cvpartition(Y_F_logic,'holdout',0.1);
         c_B = cvpartition(Y_B_logic,'holdout',0.1);
         for k = 1:nSweeps

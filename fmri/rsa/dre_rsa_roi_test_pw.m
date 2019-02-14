@@ -22,7 +22,7 @@ dir.behDat = [dir.dre,fs,'data',fs,'behaviour'];
 dir.out  = [dir.dre,fs,'out',fs,'fmri',fs,'rsa',fs,'roi'];
 
 % paths
-addpath([dir.rsaCod,fs,'routines'])
+addpath([dir.rsaCod,fs,'routines']),
 addpath(genpath([dir.rsaCod,fs,'drtoolbox']))
 addpath([dir.dre,fs,'codes',fs,'fmri',fs,'uni',fs,'routines'])
 addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
@@ -53,11 +53,11 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% which mask?
 roiNames = {'rsaVal_LG_10mm','rsaVal_ITG','rsaVal_PCC_10mm','l_hpc','r_hpc','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-roiNames = {'l_hpc','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 
 
 % roiNamesTrue = {'LG','ITG','PCC','l HPC','r HPC','ACC','vmPFC','OFC','dlPFC'};
-roiNamesTrue = {'l HPC','vmPFC','OFC','dlPFC'};
+roiNamesTrue = {'vmPFC','OFC','dlPFC'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)

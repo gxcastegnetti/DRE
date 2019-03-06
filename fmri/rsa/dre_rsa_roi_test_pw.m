@@ -53,11 +53,10 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% which mask?
 roiNames = {'rsaVal_LG_10mm','rsaVal_ITG','rsaVal_PCC_10mm','l_hpc','r_hpc','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
-
-
+roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm','rsaCon_vmPFC_10mm'};
+roiNames = {'l_hpc','r_hpc','rsaVal_vmPFC_10mm'};
 % roiNamesTrue = {'LG','ITG','PCC','l HPC','r HPC','ACC','vmPFC','OFC','dlPFC'};
-roiNamesTrue = {'vmPFC','OFC','dlPFC'};
+roiNamesTrue = {'lHPC','rHPC','vmPFC'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -168,16 +167,16 @@ if size(RDM_brain(1,1).RDM,1) == 240
     for s = 1:length(subs)
         RDM_model(1,s).name = 'val';
         RDM_model(1,s).RDM = RDMs_models{s}.val; %#ok<*SAGROW>
-        RDM_model(1,s).color = [0 1 0];
-        RDM_model(2,s).name = 'con';
-        RDM_model(2,s).RDM = RDMs_models{s}.con;
+%         RDM_model(1,s).color = [0 1 0];
+%         RDM_model(2,s).name = 'con';
+%         RDM_model(2,s).RDM = RDMs_models{s}.con;
         RDM_model(2,s).color = [0 1 0];
-        RDM_model(3,s).name = 'oid';
-        RDM_model(3,s).RDM = 1-mat_ID;
-        RDM_model(3,s).color = [0 1 0];
-        %         RDM_model(3,s).name = 'oid';
-        %         RDM_model(3,s).RDM = RDMs_models{s}.con ./ RDMs_models{s}.val;
-        %         RDM_model(3,s).color = [0 1 0];
+        RDM_model(2,s).name = 'oid';
+        RDM_model(2,s).RDM = 1-mat_ID;
+%         RDM_model(3,s).color = [0 1 0];
+%         RDM_model(3,s).name = 'oid';
+%         RDM_model(3,s).RDM = 50*RDMs_models{s}.con+RDMs_models{s}.val;
+%         RDM_model(3,s).color = [0 1 0];
         
         % averages
         fooVal = fooVal + RDM_model(1,s).RDM/numel(subs);
@@ -260,29 +259,36 @@ end, clear r m mat_ID
 %%%%%%%%%%%%%%%%%%%%%
 % plot mean and sem %
 %%%%%%%%%%%%%%%%%%%%%
-means = squeeze(mean(corrRoiModel,2));
-sems  = squeeze(std(corrRoiModel,0,2)/sqrt(numel(subs)));
+means = squeeze(mean(corrRoiModel(:,:,1:2),2));
+sems  = squeeze(std(corrRoiModel(:,:,1:2),0,2)/sqrt(numel(subs)));
 
 % means = means(end-1:end,1:2);
 % sems = sems(end-1:end,1:2);
 
-% roiNamesTrue = {'vmPFC','OFC','dlPFC'};
-% roiNamesTrue = roiNames;
-myColors = [230,184,0; 46,184,46; 46,184,230]/255;
+roiNamesTrue = {'vmPFC','lOFC','dlPFC','mOFC'};
+myColors = [0,128,255; 255,51,153]/255;
+myColors_ss = [170,200,255; 255,204,229]/255;
 figure('color',[1 1 1])
-hb = bar(means); hold on
+
+hb = bar(means,0.6); hold on
 for ib = 1:numel(hb)
     xData = hb(ib).XData+hb(ib).XOffset;
-    errorbar(xData',means(:,ib),sems(:,ib),'k.')
+        
+    for jb = 1:numel(roiNames)
+        scatter(xData(jb)+0.03*randn(numel(subs),1),corrRoiModel(jb,:,ib),25,'MarkerEdgeColor',myColors_ss(ib,:),...
+            'MarkerFaceColor',myColors_ss(ib,:))
+    end
+    errorbar(xData',means(:,ib),sems(:,ib),'linestyle','none','color','k','linewidth',2.5,'capsize',0)
     hb(ib).FaceColor = myColors(ib,:);
 end, clear ib
-legend({'Value','Confid.','Obj. ID'},'location','northwest'), legend boxoff
+
+legend({'Value','Confid.'},'location','southeast'), legend boxoff
 set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
-    'xticklabels',roiNamesTrue), ylim([-0.002 0.008]),xtickangle(45)
+    'xticklabels',roiNamesTrue), ylim([-0.025 0.0301]),xtickangle(45)
 ylabel('Correlation(ROI, model)')
 
 
-%% ROI-ROI comparison in terms of correlation with mdoel
+%% ROI-ROI comparison in terms of correlation with model
 for r1 = 1:length(roiNames)
     for r2 = 1:length(roiNames)
         corrRoiVal_r1 = squeeze(corrRoiModel(r1,:,1));
@@ -328,8 +334,8 @@ for s = 1:length(subs)
     % find percentiles
     pctile_val_33 = prctile(Y_val,100/3);
     pctile_val_66 = prctile(Y_val,200/3);
-    pctile_con_33 = prctile(Y_con,100/3);
-    pctile_con_66 = prctile(Y_con,200/3);
+    pctile_con_33 = prctile(Y_con,25);
+    pctile_con_66 = prctile(Y_con,75);
     pctile_fam_33 = prctile(Y_fam,100/3);
     pctile_fam_66 = prctile(Y_fam,200/3);
     

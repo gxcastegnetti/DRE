@@ -196,8 +196,18 @@ for vx = 1:size(Result,2)
     else
         error('Something is wrong here.')
     end
-    searchlightRDM_ltv = vectorizeRDM(foo_2);
-    [rs_vx(vx), ~] = corr(searchlightRDM_ltv(:), modelRDMs_ltv(:), 'type', 'Spearman', 'rows', 'pairwise');
+    
+    % if no model specified, do BURNING vs ANCHORING
+    if ~any(~isnan(modelRDMs_ltv))
+        RDM_F = foo_2(1:120,1:120);
+        RDM_B = foo_2(121:end,121:end);
+        searchlightRDM_ltv_F = permute(unwrapRDMs(vectorizeRDM(RDM_F)), [3 2 1]);
+        searchlightRDM_ltv_B = permute(unwrapRDMs(vectorizeRDM(RDM_B)), [3 2 1]);
+        [rs_vx(vx), ~] = corr(searchlightRDM_ltv_F(:), searchlightRDM_ltv_B(:), 'type', 'Spearman', 'rows', 'pairwise');
+    else
+        searchlightRDM_ltv = permute(unwrapRDMs(vectorizeRDM(foo_2)), [3 2 1]);
+        [rs_vx(vx), ~] = corr(searchlightRDM_ltv(:), modelRDMs_ltv(:), 'type', 'Spearman', 'rows', 'pairwise');
+    end
     clear foo_2
 end
 rs = nan(VolIn(1).dim);

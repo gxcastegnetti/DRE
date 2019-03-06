@@ -60,7 +60,10 @@ allSubs    = [];
 allCond    = [];
 alldV      = [];
 allSumV    = [];
+alldC_opp  = [];
 alldV_opp  = [];
+allSumV_opp = [];
+allSumC_opp = [];
 alldC      = [];
 allSumC    = [];
 allCho     = [];
@@ -106,11 +109,11 @@ for s = 1:length(subs)
     %% plot value
     
     % plot rating for each item
-    %     figure('color',[1 1 1])
-    %     subplot(2,1,1), bar(rat_F(s,:),'facecolor',hist_fire_color),title(['sub#',num2str(subs(s))])
-    %     set(gca,'XTick',1:ntrials,'fontsize',11,'XtickLabel',objsName),xtickangle(45)
-    %     subplot(2,1,2), bar(rat_B(s,:),'facecolor',hist_boat_color)
-    %     set(gca,'XTick',1:ntrials,'fontsize',11,'XtickLabel',objsName),xtickangle(45)
+        figure('color',[1 1 1])
+        subplot(2,1,1), bar(val_F(s,:),'facecolor',hist_fire_color),title(['sub#',num2str(subs(s))])
+        set(gca,'XTick',1:ntrials,'fontsize',11,'XtickLabel',objsName),xtickangle(45)
+        subplot(2,1,2), bar(val_B(s,:),'facecolor',hist_boat_color)
+        set(gca,'XTick',1:ntrials,'fontsize',11,'XtickLabel',objsName),xtickangle(45)
     
     % histogram value fire
     plotTight = 7;
@@ -386,7 +389,7 @@ for s = 1:length(subs)
     dC_B = dC_B(:);
     sumV_F = sumV_F(:);
     sumV_B = sumV_B(:);
-    sumC_F = sumC_B(:);
+    sumC_F = sumC_F(:);
     sumC_B = sumC_B(:);
     
     % logistic regressions
@@ -414,13 +417,17 @@ for s = 1:length(subs)
     offset(s).('BonF') = mdl_BonF.Coefficients.Estimate(1);
     
     %% create vectors for table
-    allSubs = [allSubs; s*ones(2*length(choice_F),1)];
-    allCond = [allCond; ones(length(choice_F),1); 2*ones(length(choice_F),1)];
-    alldV   = [alldV; dV_F/50; dV_B/50];
-    alldC   = [alldC; dC_F/50; dC_B/50];
-    allSumV   = [allSumV; sumV_F/50; sumV_B/50];
-    allSumC   = [allSumC; sumC_F/50; sumC_B/50];
+    allSubs     = [allSubs; s*ones(2*length(choice_F),1)];
+    allCond     = [allCond; ones(length(choice_F),1); 2*ones(length(choice_F),1)];
+    alldV       = [alldV; dV_F/50; dV_B/50];
+    alldC       = [alldC; dC_F/50; dC_B/50];
+    allSumV     = [allSumV; sumV_F/50; sumV_B/50];
+    allSumV_opp = [allSumV_opp; sumV_B/50; sumV_F/50];
+    
+    allSumC     = [allSumC;     sumC_F/50; sumC_B/50];
+    allSumC_opp = [allSumC_opp; sumC_B/50; sumC_F/50];
     alldV_opp   = [alldV_opp; dV_B/50; dV_F/50];
+    alldC_opp   = [alldC_opp; dC_B/50; dC_F/50];
     allCho  = [allCho; choice_F(:,3); choice_B(:,3)];
     allRT  = [allRT; choice_F(:,4); choice_B(:,4)];
     
@@ -481,10 +488,10 @@ for s = 1:length(subs)
     rsmStack_F(s,:,:) = RSM_ss_F;
     rsmStack_B(s,:,:) = RSM_ss_B;
     
-    %     figure('color',[1 1 1])
-    %     subplot(1,2,1),imagesc(RSM_ss_F),set(gca,'fontsize',12,'ytick',[],'xtick',[])
-    %     subplot(1,2,2),imagesc(RSM_ss_B),set(gca,'fontsize',12,'ytick',[],'xtick',[])
-    %     colormap bone
+        figure('color',[1 1 1])
+        subplot(1,2,1),imagesc(RSM_ss_F),set(gca,'fontsize',12,'ytick',[],'xtick',[])
+        subplot(1,2,2),imagesc(RSM_ss_B),set(gca,'fontsize',12,'ytick',[],'xtick',[])
+        colormap bone
     
     clear r_rat p_rat r_con p_con ratings_fire_ ratings_door_ confids_fire_ confids_door_
     
@@ -574,49 +581,49 @@ slopesIncon = [slopes.FonB] + [slopes.BonF];
 % slope_avg.FonB = mean([slopes.FonB]);
 % slope_avg.BonF = mean([slopes.BonF]);
 % slope_avg.BonB = mean([slopes.BonB]);
-% 
+%
 % offset_avg.FonF = mean([offset.FonF]);
 % offset_avg.FonB = mean([offset.FonB]);
 % offset_avg.BonF = mean([offset.BonF]);
 % offset_avg.BonB = mean([offset.BonB]);
-% 
+%
 % draw sigmoids with the average parameters
 % xspan = -50:0.1:50;
 % sigm_avg.FonF = sigmf(xspan,[slope_avg.FonF offset.FonF]);
 % sigm_avg.FonB = sigmf(xspan,[slope_avg.FonB offset.FonB]);
 % sigm_avg.BonF = sigmf(xspan,[slope_avg.BonF offset.BonF]);
 % sigm_avg.BonB = sigmf(xspan,[slope_avg.BonB offset.BonB]);
-% 
+%
 % sigm_avg.congru = sigmf(xspan,[mean([slope_avg.FonF, slope_avg.BonB]), mean([offset.FonF, offset.BonB])]);
 % sigm_avg.incong = sigmf(xspan,[mean([slope_avg.FonB, slope_avg.BonF]), mean([offset.FonB, offset.BonF])]);
-% 
+%
 % figure('color',[1 1 1])
 % subplot(4,4,[1 2 5 6])
 % plot(xspan,sigm_avg.FonF,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
 % set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),ylim([-0.025 1.025])
-% 
+%
 % subplot(4,4,[3 4 7 8])
 % plot(xspan,sigm_avg.BonF,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
 % set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
-% 
+%
 % subplot(4,4,[9 10 13 14])
 % plot(xspan,sigm_avg.FonB,'linewidth',5,'color',hist_fire_color), hold on % based on value assigned during fire
 % set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylabel('P(Choose right)'),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
-% 
+%
 % subplot(4,4,[11 12 15 16])
 % plot(xspan,sigm_avg.BonB,'linewidth',5,'color',hist_boat_color), hold on % based on value assigned during fire
 % set(gca,'fontsize',21,'ytick',[],'xtick',[]),xlabel('v_{right} - v_{left}'),ylim([-0.025 1.025])
-% 
+%
 % % draw sigmoids congruent/incongruent
 % figure('color',[1 1 1])
 % subplot(1,2,1)
 % plot(xspan,sigm_avg.congru,'linewidth',5,'color',hist_fire_color)
 % set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
-% 
+%
 % subplot(1,2,2)
 % plot(xspan,sigm_avg.incong,'linewidth',5,'color',hist_boat_color)
 % set(gca,'fontsize',21,'ytick',[],'xtick',[]),ylim([-0.025 1.025])
-% 
+%
 % clear xspan slope_avg offset
 %% separate worst subjects from best subjects
 subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
@@ -654,33 +661,66 @@ subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 %%%%%%%%%%%%%%
 
 % create table
-tblChoice = table(allSubs,allCond,alldV,alldV_opp,allSumV,alldC,allSumC,(allCho+1)/2,allRT);
-tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','dC','sumC','choice','RT'};
+tblChoice = table(allSubs,allCond,alldV,alldV_opp,allSumV,allSumV_opp,alldC,alldC_opp,allSumC,allSumC_opp,(allCho+1)/2,allRT);
+tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','sumVo','dC','dCo','sumC','sumCo','choice','RT'};
 
-
-lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC','distribution','binomial');
-lmeChoice = fitglm(tblChoice,'choice ~ 1 + dV + dC + dV:dC','distribution','binomial');
-
-lmeRT     = fitglm(tblChoice,'RT ~ 1 + dV + dC + sumV + sumC');
+% fit lme
+lmeChoice = fitglme(tblChoice,'choice ~ 1 + cond + dV + dVo + dC + dCo + dV:dC + dVo:dCo + (cond + dV + dVo + dC + dCo + dV:dC + dVo:dCo | sub)','distribution','binomial');
 
 % plot coefficients
-k_cond = lmeChoice.Coefficients(2,2).Estimate;
-k_dV   = lmeChoice.Coefficients(3,2).Estimate;
-k_dVo  = lmeChoice.Coefficients(4,2).Estimate;
-k_dC   = lmeChoice.Coefficients(5,2).Estimate;
-ce_cond = lmeChoice.Coefficients(2,3).SE;
-ce_dV  = lmeChoice.Coefficients(3,3).SE;
-ce_dVo = lmeChoice.Coefficients(4,3).SE;
-ce_dF  = lmeChoice.Coefficients(5,3).SE;
+k_mean(1) = lmeChoice.Coefficients(2,2).Estimate;
+k_mean(2) = lmeChoice.Coefficients(3,2).Estimate;
+k_mean(3) = lmeChoice.Coefficients(4,2).Estimate;
+k_mean(4) = lmeChoice.Coefficients(5,2).Estimate;
+k_mean(5) = lmeChoice.Coefficients(6,2).Estimate;
+k_mean(6) = lmeChoice.Coefficients(7,2).Estimate;
+k_mean(7) = lmeChoice.Coefficients(8,2).Estimate;
+
+e(1) = lmeChoice.Coefficients(2,3).SE;
+e(2) = lmeChoice.Coefficients(3,3).SE;
+e(3) = lmeChoice.Coefficients(4,3).SE;
+e(4) = lmeChoice.Coefficients(5,3).SE;
+e(5) = lmeChoice.Coefficients(6,3).SE;
+e(6) = lmeChoice.Coefficients(7,3).SE;
+e(7) = lmeChoice.Coefficients(8,3).SE;
+
+% extrast single subject random effects
+[B,Bnames] = randomEffects(lmeChoice);
+k(1,:) = B(strcmp(Bnames.Name,'cond'));
+k(2,:) = B(strcmp(Bnames.Name,'dV'));
+k(3,:) = B(strcmp(Bnames.Name,'dVo'));
+k(4,:) = B(strcmp(Bnames.Name,'dC'));
+k(5,:) = B(strcmp(Bnames.Name,'dCo'));
+k(6,:) = B(strcmp(Bnames.Name,'dV:dC'));
+k(7,:) = B(strcmp(Bnames.Name,'dVo:dCo'));
 
 figure('color',[1 1 1]),hold on
-xspan = -10:0.1:10;
-plot(xspan,zeros(length(xspan)),'linestyle',':','color',[0.5 0.5 0.5],'linewidth',2)
-set(gca,'fontsize',16,'xtick',[1 2 3 4],'xticklabel',{'Goal','dV same','dV ~same','dC'}),xlim([0.5 4.5]),ylim([-1.5 2])
-ylabel('Coefficient')
+xspanCong = [1.8 2.8 3.8];
+xspanInco = [2.2 3.2 4.2];
+plot(-1:0.05:6,zeros(numel(-1:0.05:6)),'linestyle',':','color',[0.5 0.5 0.5],'linewidth',1.5)
+set(gca,'fontsize',16,'xtick',[1 2 3 4],'xticklabel',{'Goal','\DeltaVal','\DeltaCon','\DeltaVal:\DeltaCon'})
+ylabel('Coefficient estimate'),xtickangle(45),xlim([0.5 4.5]),ylim([-3 8])
 
-% errorbar([1 2 3 4],[k_cond k_dV k_dVo k_dF],[ce_cond ce_dV ce_dVo ce_dF],'linestyle','none',...
-%     'color','k','linewidth',1.5,'capsize',0),hold on
-scatter([1 2 3 4],[k_cond k_dV k_dVo k_dC],180,'MarkerEdgeColor',[0 0 0],...
-    'MarkerFaceColor',[0 0 0])
+% plot goal
+colorGoal = [62,150,62]/255;
+scatter(1+0.03*randn(numel(subs),1),k_mean(1)+k(1,:),25,'MarkerEdgeColor',[202,255,202]/255,...
+    'MarkerFaceColor',[202,255,202]/255)
+scatter(1,k_mean(1),110,'MarkerEdgeColor',colorGoal,'MarkerFaceColor',colorGoal),hold on
+errorbar(1,k_mean(1),e(1),'linestyle','none','color',colorGoal,'linewidth',2.5,'capsize',0)
+
+% plot single subject random effects and means
+for i = 1:3
+    scatter(1+i-0.1+0.03*randn(numel(subs),1),k_mean(2*i)+k(2*i,:),25,'MarkerEdgeColor',[176,224,230]/255,...
+        'MarkerFaceColor',[176,224,230]/255)
+    scatter(1+i+0.1+0.03*randn(numel(subs),1),k_mean(2*i+1)+k(2*i+1,:),25,'MarkerEdgeColor',[200,200,200]/255,...
+        'MarkerFaceColor',[200,200,200]/255)
+    
+    colorCong = [30,70,122]/255;
+    scatter(1+i-0.1,k_mean(2*i),110,'MarkerEdgeColor',colorCong,'MarkerFaceColor',colorCong)
+    errorbar(1+i-0.1,k_mean(2*i),e(2*i),'linestyle','none','color',colorCong,'linewidth',2.5,'capsize',0)
+    
+    colorInco = [75,75,75]/255;
+    scatter(1+i+0.1,k_mean(2*i+1),110,'MarkerEdgeColor',colorInco,'MarkerFaceColor',colorInco)
+    errorbar(1+i+0.1,k_mean(2*i+1),e(2*i+1),'linestyle','none','color',colorInco,'linewidth',2.5,'capsize',0)
+end
 

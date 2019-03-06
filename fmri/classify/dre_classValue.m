@@ -38,7 +38,7 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 roiNamesTrue = roiNames;
 
 %% apply two masks: one for grey matter, one for ROI
@@ -153,10 +153,10 @@ for r = 1:length(roiNames)
         
         % add a constant for univoque determination of median
         rng(1);
-%         Y_F = objVal_F + (0.0000001*randn(120,1));
-%         Y_B = objVal_B + (0.0000001*randn(120,1));
-        Y_F = objVal_F + (0.0000001*(1:120)');
-        Y_B = objVal_B + (0.0000001*(1:120)');
+        Y_F = objVal_F + (0.0000001*randn(120,1));
+        Y_B = objVal_B + (0.0000001*randn(120,1));
+%         Y_F = objVal_F + (0.0000001*(1:120)');
+%         Y_B = objVal_B + (0.0000001*(1:120)');
         
         % find percentiles
         pl_F_low = prctile(Y_F,100/3);
@@ -202,16 +202,16 @@ for r = 1:length(roiNames)
         clear Mdl_F Mdl_B
         
         %% CV
-        nSweeps = 400;
-        c_F = cvpartition(Y_F_logic,'holdout',0.1);
-        c_B = cvpartition(Y_B_logic,'holdout',0.1);
-        for k = 1:nSweeps
+        nSweeps = 100;
+        c_F = cvpartition(Y_F_logic,'kfold',20);
+        c_B = cvpartition(Y_B_logic,'kfold',20);
+        for k = 1:20
             
             % c_F = cvpartition(Y_F_logic,'holdOut',0.1);
             % c_B = cvpartition(Y_B_logic,'holdOut',0.1);
             
-            idxTrain_F = training(c_F);
-            idxTrain_B = training(c_B);
+            idxTrain_F = training(c_F,k);
+            idxTrain_B = training(c_B,k);
             
             idxTest_F = ~idxTrain_F;
             idxTest_B = ~idxTrain_B;
@@ -309,6 +309,6 @@ for r = 1:length(roiNames)
     ylim([0.4 0.6]),xlim([0 5.5])
     
 end, clear r k s
-save('results_1000perm_33_bis')
+% save('results_1000perm_33_bis')
 clear responsePatterns
 

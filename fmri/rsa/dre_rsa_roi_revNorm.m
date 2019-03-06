@@ -30,10 +30,10 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% load masks
-roiNames = {'rsaVal_Occ','rsaVal_MCC','rsaVal_vmPFC'};
+roiNames = {'rsaCon_vmPFC_10mm_bis'};
 
 %% subjects
-subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 45 47:49];
+subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 47:49];
 
 %% reverse normalise mask to subjective space and coregister
 if true

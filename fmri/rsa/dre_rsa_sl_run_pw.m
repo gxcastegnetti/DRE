@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_ima_tris';
+analysisName = 'rsa_sl_ima';
 betaid       = 'rsa_pulse_ima';
 
 %% directories
@@ -83,7 +83,13 @@ end, clear weight wood metal plastic fabric
 
 %% compute correlation between value and weight/material and between goals
 RDM_weight_vec = vectorizeRDM(RDM_weight);
-RDM_material_vec = vectorizeRDM(RDM_material);
+
+foo = eye(120);
+foo(foo == 1) = nan;
+
+fooMat = [zeros(120),foo;foo,zeros(120)];
+
+RDM_material_vec = vectorizeRDM(RDM_material + fooMat);
 for s = 1:length(subs)
     RDM_value_vec = vectorizeRDM(RDMs{s}.val);
     [r_valVSmat(s),p_valVSmat(s)] = corr(RDM_value_vec',RDM_material_vec','type','spearman','rows','pairwise');
@@ -106,8 +112,8 @@ for s = 1:length(subs)
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     
     %% run searchlight
-    model = RDM_material;
+    model = RDM_material_vec;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_mat_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_valPcon_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

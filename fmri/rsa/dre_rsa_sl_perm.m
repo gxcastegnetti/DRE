@@ -7,7 +7,7 @@ close all
 restoredefaultpath
 
 %% analysisName
-analysisName = 'rsa_sl_ima_tris';
+analysisName = 'rsa_sl_ima_bis';
 
 %% directories
 dir.rsaCod = pwd;
@@ -45,7 +45,7 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.dir = {dirOut};
     
     % files
-    d = spm_select('List', dirData, '^sw.*\.nii$');
+    d = spm_select('List', dirData, '^swrMap_m.*\.nii$');
     files  = cellstr([repmat([dirData fs],size(d,1),1) d]);
     job{1}.spm.tools.snpm.des.OneSampT.P = files;
     
@@ -57,12 +57,12 @@ for m = 1:length(models)
     job{1}.spm.tools.snpm.des.OneSampT.DesignName = 'MultiSub: One Sample T test on diffs/contrasts';
     job{1}.spm.tools.snpm.des.OneSampT.DesignFile = 'snpm_bch_ui_OneSampT';
     job{1}.spm.tools.snpm.des.OneSampT.cov = struct('c', {}, 'cname', {});
-    job{1}.spm.tools.snpm.des.OneSampT.nPerm = 10000;
+    job{1}.spm.tools.snpm.des.OneSampT.nPerm = 1000;
     job{1}.spm.tools.snpm.des.OneSampT.vFWHM = [0 0 0];
     job{1}.spm.tools.snpm.des.OneSampT.masking.tm.tm_none = 1;
     job{1}.spm.tools.snpm.des.OneSampT.masking.im = 1;
     job{1}.spm.tools.snpm.des.OneSampT.ST.ST_U = 0.001;
-    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/cerebrum.nii'};
+    job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/atlas/frontalLobe.nii'};
 %     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {'/Users/gcastegnetti/Desktop/stds/DRE/out/fmri/masks/_useNow/gmAvg.nii'};
     job{1}.spm.tools.snpm.des.OneSampT.masking.em = {''};
     job{1}.spm.tools.snpm.des.OneSampT.globalc.g_omit = 1;

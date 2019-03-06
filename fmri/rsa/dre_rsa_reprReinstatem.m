@@ -36,8 +36,16 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 subsBest = sort([24,19,6,4,22,12,11,21,18,30,25,1,16,23,2]);
 subsWors = sort([15,7,5,8,3,10,28,13,17,20,14,9,26,29,27]);
 
-% subs = subs(subsBest);
-% taskOrd = taskOrd(subsBest);
+% subs = subs(subsWors);
+% taskOrd = taskOrd(subsWors);
+
+slopes = [0.244644048172450,0.223946840860126,0.208531637926186,0.400781101520874,0.214651122900286,...
+    0.527213302443985,0.222262713073930,0.214265149192790,0.113871322525068,0.208145500659497,...
+    0.303896467054236,0.310876174215477,0.157495707488989,0.123082743374363,0.223259451529286,...
+    0.233042188472160,0.134694830218049,0.278532556059753,0.548450276749430,0.128458679610595,...
+    0.286603706120169,0.333069644635516,0.227243248191941,0.650551192022550,0.262801817706755,...
+    0.150765971850011,0.0835213995036290,0.163443588603048,0.192293815632133,0.276329355358742];
+
 
 %% extract behavioural data and rearrange for visualisation
 bData = dre_extractData(dir,subs,taskOrd,0);
@@ -251,3 +259,31 @@ legend({'All subs','Best performing subs','Worst performing subs'},'location','n
 set(gca,'fontsize',18,'xtick',1:numel(roiNamesTrue),...
     'xticklabels',roiNamesTrue), ylim([-0.003 0.01]),xtickangle(45)
 ylabel('Correlation(ROI, model)')
+
+%% plot for paper 2
+means = [];
+means(1) = mean(corr_choiceVdiffere_sub(1,:));
+means(2) = mean(corr_choiceVdiffere_sub(2,:));
+sems(1) = std(corr_choiceVdiffere_sub(1,:))/sqrt(numel(subs));
+sems(2) = std(corr_choiceVdiffere_sub(2,:))/sqrt(numel(subs));
+
+roiNamesTrue = {'lHPC','rHPC'};
+myColors = [95,95,95]/255;
+myColors_ss = [170,170,170]/255;
+figure('color',[1 1 1])
+
+hb = bar(means,0.4); hold on
+hb.FaceColor = myColors;
+
+scatter(1+0.03*randn(numel(subs),1),corr_choiceVdiffere_sub(1,:),25,'MarkerEdgeColor',myColors_ss,...
+    'MarkerFaceColor',myColors_ss)
+scatter(2+0.03*randn(numel(subs),1),corr_choiceVdiffere_sub(2,:),25,'MarkerEdgeColor',myColors_ss,...
+    'MarkerFaceColor',myColors_ss)
+
+errorbar(1,means(1),sems(1),'linestyle','none','color','k','linewidth',2.5,'capsize',0)
+errorbar(2,means(2),sems(2),'linestyle','none','color','k','linewidth',2.5,'capsize',0)
+
+set(gca,'fontsize',18,'xtick',1:2,'xticklabels',{'lHPC','rHPC'}),...
+    ylim([-0.025 0.0301]),xtickangle(45)
+ylabel('Correlation(ROI, model)')
+

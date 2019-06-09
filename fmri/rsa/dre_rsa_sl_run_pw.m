@@ -112,8 +112,8 @@ for s = 1:length(subs)
     fileMask = [dir.mskOut,fs,'gm_SF',num2str(subs(s),'%03d'),'.nii'];
     
     %% run searchlight
-    model = RDM_material_vec;
+    model = RDM_material + fooMat;
     rs = searchlight_pw(dir,subs(s),analysisName,fileMask,model); %#ok<*ASGLU>
-    save([dir.out,fs,analysisName,fs,'sl_valPcon_SF',num2str(subs(s),'%03d')],'rs','model')
+    save([dir.out,fs,analysisName,fs,'sl_matExc_SF',num2str(subs(s),'%03d')],'rs','model')
     clear model rs binaryMask
 end

@@ -68,6 +68,7 @@ alldC      = [];
 allSumC    = [];
 allCho     = [];
 allRT      = [];
+allPrice   = [];
 
 %% initialise figures
 plotVal = figure('color',[1 1 1]);
@@ -117,26 +118,26 @@ for s = 1:length(subs)
     
     % histogram value fire
     plotTight = 7;
-    rowsPlots = 3;
-    figure(plotVal)
-    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
-    title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
-    
-    % make label closer to axis
-    xh = get(gca,'xlabel'); % handle to the label object
-    p = get(xh,'position'); % get the current position property
-    p(2) = 0.15*p(2) ;      % reduce distance,
-    set(xh,'position',p)    % set the new position
-    
-    % histogram value boat
-    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(val_B(s,:),20,'facecolor',hist_boat_color)
-    title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
-    
-    % make label closer to axis
-    xh = get(gca,'xlabel'); % handle to the label object
-    p = get(xh,'position'); % get the current position property
-    p(2) = 0.15*p(2) ;      % reduce distance,
-    set(xh,'position',p)    % set the new position
+%     rowsPlots = 3;
+%     figure(plotVal)
+%     subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(val_F(s,:),20,'facecolor',hist_fire_color)
+%     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
+%     
+%     % make label closer to axis
+%     xh = get(gca,'xlabel'); % handle to the label object
+%     p = get(xh,'position'); % get the current position property
+%     p(2) = 0.15*p(2) ;      % reduce distance,
+%     set(xh,'position',p)    % set the new position
+%     
+%     % histogram value boat
+%     subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(val_B(s,:),20,'facecolor',hist_boat_color)
+%     title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('value')
+%     
+%     % make label closer to axis
+%     xh = get(gca,'xlabel'); % handle to the label object
+%     p = get(xh,'position'); % get the current position property
+%     p(2) = 0.15*p(2) ;      % reduce distance,
+%     set(xh,'position',p)    % set the new position
     
     
     %% plot confidence
@@ -148,26 +149,26 @@ for s = 1:length(subs)
     %     subplot(2,1,2), bar(con_B(s,:),'facecolor',hist_boat_color)
     %     set(gca,'XTick',1:ntrials,'fontsize',11,'XtickLabel',objsName),xtickangle(45)
     
-    % histogram value fire
-    figure(plotCon)
-    subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(con_F(s,:),20,'facecolor',hist_fire_color)
-    title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
-    
-    % make label closer to axis
-    xh = get(gca,'xlabel'); % handle to the label object
-    p = get(xh,'position'); % get the current position property
-    p(2) = 0.15*p(2) ;      % reduce distance,
-    set(xh,'position',p)    % set the new position
-    
-    % histogram value boat
-    subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(con_B(s,:),20,'facecolor',hist_boat_color)
-    title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
-    
-    % make label closer to axis
-    xh = get(gca,'xlabel'); % handle to the label object
-    p = get(xh,'position'); % get the current position property
-    p(2) = 0.15*p(2) ;      % reduce distance,
-    set(xh,'position',p)    % set the new position
+%     % histogram value fire
+%     figure(plotCon)
+%     subplot(6,plotTight*6,1+plotTight*(s-1):3+plotTight*(s-1)),histogram(con_F(s,:),20,'facecolor',hist_fire_color)
+%     title(['Sub#',num2str(subs(s)),' - F'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
+%     
+%     % make label closer to axis
+%     xh = get(gca,'xlabel'); % handle to the label object
+%     p = get(xh,'position'); % get the current position property
+%     p(2) = 0.15*p(2) ;      % reduce distance,
+%     set(xh,'position',p)    % set the new position
+%     
+%     % histogram value boat
+%     subplot(6,plotTight*6,4+plotTight*(s-1):6+plotTight*(s-1)),histogram(con_B(s,:),20,'facecolor',hist_boat_color)
+%     title(['Sub#',num2str(subs(s)),' - B'],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',[1 50]), xlabel('confid.')
+%     
+%     % make label closer to axis
+%     xh = get(gca,'xlabel'); % handle to the label object
+%     p = get(xh,'position'); % get the current position property
+%     p(2) = 0.15*p(2) ;      % reduce distance,
+%     set(xh,'position',p)    % set the new position
     
     
     %% plot familiarity
@@ -178,9 +179,9 @@ for s = 1:length(subs)
     %     set(gca,'XTick',1:ntrials,'fontsize',11,'XtickLabel',objsName),xtickangle(45)
     
     % histogram value fire
-    figure(plotFam)
-    subplot(6,6,s),histogram(fam(s,:),20,'facecolor',[0.25 0.25 0.25])
-    title(['Sub#',num2str(subs(s))],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',0:10:50), xlabel('famil.')
+%     figure(plotFam)
+%     subplot(6,6,s),histogram(fam(s,:),20,'facecolor',[0.25 0.25 0.25])
+%     title(['Sub#',num2str(subs(s))],'fontsize',14), set(gca,'fontsize',12,'ytick',[],'xtick',0:10:50), xlabel('famil.')
     
     
     %% day 2 - extract choices
@@ -359,6 +360,11 @@ for s = 1:length(subs)
         dC_F(i) = item_confid_F_R - item_confid_F_L;
         sumC_F(i) = item_confid_F_R + item_confid_F_L;
         
+        % dPrice
+        item_price_F_L = data_p(data_p(:,2) == item_id_F_L,4);
+        item_price_F_R = data_p(data_p(:,2) == item_id_F_R,4);
+        dP_F(i) = item_price_F_R - item_price_F_L;
+        
         %%%%%%%%
         % boat %
         %%%%%%%%
@@ -379,6 +385,11 @@ for s = 1:length(subs)
         dC_B(i) = item_confid_B_R - item_confid_B_L;
         sumC_B(i) = item_confid_B_R + item_confid_B_L;
         
+        % dPrice
+        item_price_B_L = data_p(data_p(:,2) == item_id_B_L,4);
+        item_price_B_R = data_p(data_p(:,2) == item_id_B_R,4);
+        dP_B(i) = item_price_B_R - item_price_B_L;
+        
     end, clear item_id_F_L item_id_F_R item_id_B_L item_id_B_R item_rating_F_L item_rating_F_R item_rating_B_L item_rating_B_R
     clear item_famili_B_L item_famili_B_R item_famili_F_L item_famili_F_R
     
@@ -387,6 +398,8 @@ for s = 1:length(subs)
     dV_B = dV_B(:);
     dC_F = dC_F(:);
     dC_B = dC_B(:);
+    dP_F = dP_F(:);
+    dP_B = dP_B(:);    
     sumV_F = sumV_F(:);
     sumV_B = sumV_B(:);
     sumC_F = sumC_F(:);
@@ -423,7 +436,7 @@ for s = 1:length(subs)
     alldC       = [alldC; dC_F/50; dC_B/50];
     allSumV     = [allSumV; sumV_F/50; sumV_B/50];
     allSumV_opp = [allSumV_opp; sumV_B/50; sumV_F/50];
-    
+    allPrice    = [allPrice; dP_F; dP_B];  
     allSumC     = [allSumC;     sumC_F/50; sumC_B/50];
     allSumC_opp = [allSumC_opp; sumC_B/50; sumC_F/50];
     alldV_opp   = [alldV_opp; dV_B/50; dV_F/50];
@@ -661,11 +674,12 @@ subjectPerformance = mean([slopes.FonF;slopes.BonB],1);
 %%%%%%%%%%%%%%
 
 % create table
-tblChoice = table(allSubs,allCond,alldV,alldV_opp,allSumV,allSumV_opp,alldC,alldC_opp,allSumC,allSumC_opp,(allCho+1)/2,allRT);
-tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','sumVo','dC','dCo','sumC','sumCo','choice','RT'};
+tblChoice = table(allSubs,allCond,alldV,alldV_opp,allSumV,allSumV_opp,alldC,alldC_opp,allSumC,allSumC_opp,allPrice,(allCho+1)/2,allRT);
+tblChoice.Properties.VariableNames = {'sub','cond','dV','dVo','sumV','sumVo','dC','dCo','sumC','sumCo','price','choice','RT'};
 
 % fit lme
-lmeChoice = fitglme(tblChoice,'choice ~ 1 + cond + dV + dVo + dC + dCo + dV:dC + dVo:dCo + (cond + dV + dVo + dC + dCo + dV:dC + dVo:dCo | sub)','distribution','binomial');
+lmeChoice = fitglme(tblChoice,'choice ~ 1 + cond + dV + dVo + dC + dCo + dV:dC + dVo:dCo + price + (cond + dV + dVo + dC + dCo + dV:dC + dVo:dCo + price | sub)','distribution','binomial');
+lmeRT = fitglm(tblChoice,'RT ~ 1 + cond + dV + dVo + dC + dCo','distribution','normal');
 
 % plot coefficients
 k_mean(1) = lmeChoice.Coefficients(2,2).Estimate;

@@ -30,7 +30,7 @@ addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
 mkdir([dir.out,fs,analysisName])
 
 %% load masks
-roiNames = {'rsaCon_vmPFC_10mm_bis'};
+roiNames = {'vmPFC_20mm_McNamee'};
 
 %% subjects
 subs = [4 5 7:9 13:17 19:21 23 25:26 29:32 34 35 37 39:43 47:49];

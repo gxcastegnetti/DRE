@@ -54,9 +54,10 @@ bData = dre_extractData(dir,subs,taskOrd,0);
 %% which mask?
 roiNames = {'rsaVal_LG_10mm','rsaVal_ITG','rsaVal_PCC_10mm','l_hpc','r_hpc','rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm','rsaCon_vmPFC_10mm'};
-roiNames = {'l_hpc','r_hpc','rsaVal_vmPFC_10mm'};
+% roiNames = {'l_hpc','r_hpc','rsaVal_vmPFC_10mm'};
 % roiNamesTrue = {'LG','ITG','PCC','l HPC','r HPC','ACC','vmPFC','OFC','dlPFC'};
 roiNamesTrue = {'lHPC','rHPC','vmPFC'};
+roiNamesTrue = {'vmPFC','lOFC','dlPFC','mOFC'};
 
 %% prewhiten activity in the mask
 for r = 1:length(roiNames)
@@ -251,7 +252,7 @@ for r = 1:length(roiNames)
     for m = 1:size(RDM_model,1)
         scores = corrRoiModel(r,:,m);
         %         [h,pCorr(r,m),~,~] = ttest(scores,0,'Tail','right');
-        [pCorr(r,m),h,~] = signrank(scores,0,'Tail','right');
+        [pCorr(r,m),h,~] = signrank(scores,0,'Tail','left');
         [rPerf.r(r,m),rPerf.p(r,m)] = corr(scores',slopes','type','spearman');
     end
 end, clear r m mat_ID

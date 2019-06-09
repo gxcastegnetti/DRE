@@ -27,7 +27,7 @@ addpath([pwd,fs,'routines'])
 addpath([dir.uniCod,fs,'routines'])
 addpath([dir.rsaCod,fs,'routines'])
 addpath(genpath([dir.rsaCod,fs,'rsatoolbox']))
-addpath(genpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12'))
+addpath('/Users/gcastegnetti/Desktop/tools/matlab/spm12')
 mkdir([dir.out,fs,analysisName])
 
 %% subjects
@@ -38,7 +38,7 @@ taskOrd = [ones(1,10),2*ones(1,10),1,2,ones(1,5),2*ones(1,4)];
 bData = dre_extractData(dir,subs,taskOrd,0);
 
 %% load response patterns and apply mask
-roiNames = {'rsaVal_ACC_10mm','rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
+roiNames = {'rsaVal_vmPFC_10mm','rsaVal_OFC_10mm','rsaVal_dlPFC_10mm'};
 roiNamesTrue = roiNames;
 
 %% apply two masks: one for grey matter, one for ROI
@@ -100,6 +100,11 @@ for r = 1:length(roiNames)
         B = real(B([1:60,67:126,133:192,199:258],:));
         B = B(toNormalOrder,:)';
         
+        % mean *pattern* subtraction
+        for i = 1:size(B,1)
+            B(i,:) = B(i,:) - mean(B(i,:));
+        end
+        
         respPatt.(['roi',num2str(r)]).(subjName) = B;
         
     end
@@ -148,15 +153,17 @@ for r = 1:length(roiNames)
         X_B = respPatt.(roiNames{r}).(subNames{s})(:,121:240)';
         
         % fix nans
-        objVal_F(isnan(objVal_F)) = ceil(50*rand);
-        objVal_B(isnan(objVal_B)) = ceil(50*rand);
+        objVal_F(isnan(objVal_F)) = 25;
+        objVal_B(isnan(objVal_B)) = 25;
         
         % add a constant for univoque determination of median
-        rng(1);
-        Y_F = objVal_F + (0.0000001*randn(120,1));
-        Y_B = objVal_B + (0.0000001*randn(120,1));
-%         Y_F = objVal_F + (0.0000001*(1:120)');
-%         Y_B = objVal_B + (0.0000001*(1:120)');
+%         rng(1);
+        Y_F = objCon_F + (0.0000001*randn(120,1));
+        Y_B = objCon_B + (0.0000001*randn(120,1));
+%         Y_F = objVal_F;
+%         Y_B = objVal_B;
+        %         Y_F = objVal_F + (0.0000001*(1:120)');
+        %         Y_B = objVal_B + (0.0000001*(1:120)');
         
         % find percentiles
         pl_F_low = prctile(Y_F,100/3);
@@ -164,10 +171,10 @@ for r = 1:length(roiNames)
         pl_B_low = prctile(Y_B,100/3);
         pl_B_hig = prctile(Y_B,200/3);
         
-        %         pl_F_low = prctile(Y_F,33);
-        %         pl_F_hig = prctile(Y_F,66);
-        %         pl_B_low = prctile(Y_B,33);
-        %         pl_B_hig = prctile(Y_B,66);
+        pl_F_low = prctile(Y_F,25);
+        pl_F_hig = prctile(Y_F,75);
+        pl_B_low = prctile(Y_B,25);
+        pl_B_hig = prctile(Y_B,75);
         
         X_F_red = X_F(Y_F < pl_F_low | Y_F > pl_F_hig,:);
         Y_F_red = Y_F(Y_F < pl_F_low | Y_F > pl_F_hig);
@@ -203,15 +210,13 @@ for r = 1:length(roiNames)
         
         %% CV
         nSweeps = 100;
-        c_F = cvpartition(Y_F_logic,'kfold',20);
-        c_B = cvpartition(Y_B_logic,'kfold',20);
-        for k = 1:20
+        for k = 1:nSweeps
             
-            % c_F = cvpartition(Y_F_logic,'holdOut',0.1);
-            % c_B = cvpartition(Y_B_logic,'holdOut',0.1);
+            c_F = cvpartition(Y_F_logic,'holdOut',0.1);
+            c_B = cvpartition(Y_B_logic,'holdOut',0.1);
             
-            idxTrain_F = training(c_F,k);
-            idxTrain_B = training(c_B,k);
+            idxTrain_F = training(c_F);
+            idxTrain_B = training(c_B);
             
             idxTest_F = ~idxTrain_F;
             idxTest_B = ~idxTrain_B;
@@ -309,6 +314,6 @@ for r = 1:length(roiNames)
     ylim([0.4 0.6]),xlim([0 5.5])
     
 end, clear r k s
-% save('results_1000perm_33_bis')
+save('results_1000permConf_25')
 clear responsePatterns
 
